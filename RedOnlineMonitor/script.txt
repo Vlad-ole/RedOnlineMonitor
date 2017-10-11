@@ -1,0 +1,6 @@
+#!/bin/bash
+# use this command to make script executable: chmod +x ./script.txt
+trap 'echo "# $BASH_COMMAND"' DEBUG
+rootcint -f mainDic.cpp -c  mymainframe.h linkdef.h;
+g++ -o main main.cpp mymainframe.cpp mainDic.cpp `root-config --cflags --glibs`;
+#./main

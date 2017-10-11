@@ -9,7 +9,8 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    mymainframe.cpp
 
 INCLUDEPATH += "/home/darkside/Vlad_Programs/root/include"
 
@@ -93,3 +94,10 @@ LIBS += -L"/home/darkside/Vlad_Programs/root/lib" \
  -lVMC \
  -lX3d \
  -lXMLIO
+
+DISTFILES += \
+    script.txt
+
+HEADERS += \
+    linkdef.h \
+    mymainframe.h
