@@ -28,8 +28,18 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
     //Create a vertical frame for control_panel
     TGVerticalFrame *vframe_control_panel = new TGVerticalFrame(hframe_control_panel_tab_frame,300,900);
 
+    TGGroupFrame *gframe_control_panel = new TGGroupFrame(vframe_control_panel,"Control panel",kVerticalFrame);
+    gframe_control_panel->SetTitlePos(TGGroupFrame::kLeft);
+
+    TGGroupFrame *gframe_cp_common_opt = new TGGroupFrame(gframe_control_panel,"Common options",kVerticalFrame);
+    gframe_cp_common_opt->SetTitlePos(TGGroupFrame::kCenter);
+
+    TGGroupFrame *gframe_cp_hist_opt = new TGGroupFrame(gframe_control_panel,"Hist options",kVerticalFrame);
+    gframe_cp_hist_opt->SetTitlePos(TGGroupFrame::kCenter);
+
+    //========== common opt
     // Create a horizontal frame widget with buttons
-    TGHorizontalFrame *hframe = new TGHorizontalFrame(vframe_control_panel,200,40);
+    TGHorizontalFrame *hframe = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
     TGTextButton *draw = new TGTextButton(hframe,"&Draw");
     //draw->Connect("Clicked()","MyMainFrame",this,"DoDraw()");
     hframe->AddFrame(draw, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
@@ -37,14 +47,14 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
     hframe->AddFrame(exit, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
 
     //button_start
-    button_start = new TGTextButton(vframe_control_panel,"&Start acquisition");
+    button_start = new TGTextButton(gframe_cp_common_opt,"&Start acquisition");
     button_start->SetBackgroundColor(pixel_t_red);
     is_start_button_activated = false;
     button_start->Connect("Clicked()","MyMainFrame",this,"Clicked_start_button()");
  //   //button_start->Connect("Clicked()","MyWorker",worker,"DataAcquisition_Slot()");
 
     //set update_time
-    TGHorizontalFrame *hframe_update_time = new TGHorizontalFrame(vframe_control_panel,200,40);
+    TGHorizontalFrame *hframe_update_time = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
     TGNumberEntry *NEntr_update_time = new TGNumberEntry(hframe_update_time, 1000, 6, 1,
              TGNumberFormat::kNESInteger,   //style
              TGNumberFormat::kNEAPositive,   //input value filter
@@ -54,12 +64,28 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
     TGLabel *label_update_time = new TGLabel(hframe_update_time, "Set update time [ms]");
     hframe_update_time->AddFrame(NEntr_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_update_time->AddFrame(label_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    //========== end common opt
 
 
 
-    vframe_control_panel->AddFrame(button_start, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    vframe_control_panel->AddFrame(hframe_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    vframe_control_panel->AddFrame(hframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    //========== Hist options
+    TGTextButton *redraw_button = new TGTextButton(gframe_cp_hist_opt,"&Redraw hist");
+    redraw_button->Connect("Clicked()","MyMainFrame",this,"RedrawHist()");
+
+    //========== end Hist options
+
+
+
+    gframe_cp_common_opt->AddFrame(button_start, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_cp_common_opt->AddFrame(hframe_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_cp_common_opt->AddFrame(hframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+    gframe_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+    gframe_control_panel->AddFrame(gframe_cp_common_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_control_panel->AddFrame(gframe_cp_hist_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+    vframe_control_panel->AddFrame(gframe_control_panel, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
  //   //--------------end control_panel
 
 
@@ -278,14 +304,10 @@ void MyMainFrame::RunThread()
     slave_thread->Run();
 }
 
-//void MyMainFrame::RedrawHist()
-//{
-//    const int n_bins = hist->GetNbinsX();
-//    for (int i = 0; i < n_bins; ++i)
-//    {
-//        hist->SetBinContent(i, 0);
-//    }
-//}
+void MyMainFrame::RedrawHist()
+{
+    is_redraw_hist = true;
+}
 
 void *MyMainFrame::ReadoutLoop(void *aPtr)
 {

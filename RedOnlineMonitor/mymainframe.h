@@ -49,6 +49,8 @@ public:
     void RunThread();
     void InitGraphs();
 
+    void RedrawHist();
+
 private:
     //GUI
     TGMainFrame *fMain;
@@ -75,7 +77,7 @@ private:
     Int_t n_points;
     TCanvas **aCanvas_arr;
 
-    //void RedrawHist();
+    //
     //TGraph *gr;
 };
 
