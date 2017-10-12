@@ -387,7 +387,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 {
                     p->hist->SetBinContent(i, 0);
                 }
-
+                p->hist->SetEntries(0);
                 p->is_redraw_hist = false;
             }
 
