@@ -171,6 +171,15 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h)
 
     // Map main frame
     fMain->MapWindow();
+
+    //init DataStr
+    data_str.counter = 0;
+    data_str.data_vv.resize(6);
+    const int n_points = 100;
+    for (int i = 0; i < data_str.data_vv.size(); ++i)
+    {
+        data_str.data_vv[i].resize(n_points);
+    }
 }
 
 MyMainFrame::~MyMainFrame()
@@ -180,7 +189,6 @@ MyMainFrame::~MyMainFrame()
    delete fMain;
 }
 
-
 void MyMainFrame::Clicked_start_button()
 {
 
@@ -189,11 +197,93 @@ void MyMainFrame::Clicked_start_button()
         button_start->SetBackgroundColor(pixel_t_red);
 //        button_start->SetText("Start acquisition: inactive");
         is_start_button_activated = false;
+
     }
     else
     {
         button_start->SetBackgroundColor(pixel_t_yellow);
 //        button_start->SetText("Start acquisition: active");
         is_start_button_activated = true;
+
+    }
+}
+
+void MyMainFrame::InitGraphs()
+{
+    const int n_points = 100;
+    gr = new TGraph(n_points);
+
+    for (int i = 0; i < n_points; ++i)
+    {
+        gr->SetPoint(i,i,0);
+    }
+
+    TCanvas *aCanvas = fEcanvas->GetCanvas();
+    aCanvas->cd();
+    //gr->Draw("a");
+    gr->Draw();
+//    gr->SetMaximum(120);
+//    gr->SetMinimum(-120);
+    aCanvas->Update();
+}
+
+void MyMainFrame::RunThread()
+{
+    //Threads
+    slave_thread = new TThread("slave_thread", (void(*) (void *))ReadoutLoop, (void*) this);
+    slave_thread->Run();
+}
+
+void *MyMainFrame::ReadoutLoop(void *aPtr)
+{
+    printf("You are in MyMainFrame::ReadoutLoop() (Thread %d) \n", syscall(__NR_gettid));
+
+    MyMainFrame *p = (MyMainFrame*)aPtr;
+
+    TRandom rnd;
+    const int baseline = 4000;
+    const int n_points = 100;
+    vector<Float_t> xv(n_points);
+    for (int i = 0; i < n_points; ++i)
+    {
+        xv[i] = i;
+    }
+
+    vector<Float_t> yv(n_points);
+
+    while(1)
+    {
+        if (p->is_start_button_activated)
+        {
+            //GetData
+            for (int i = 0; i < n_points; ++i)
+            {
+                yv[i] = rnd.Uniform(-10, 10) + baseline;
+            }
+
+            //Global mutex to avoid data race
+            TThread::Lock();
+            for (int i = 0; i < n_points; ++i)
+            {
+                p->gr->SetPoint(i, xv[i], yv[i]);
+            }
+
+//            gr->SetMaximum(120);
+//            gr->SetMinimum(-120);
+            TThread::UnLock();
+
+            TCanvas *aCanvas = p->fEcanvas->GetCanvas();
+            aCanvas->Modified();
+            aCanvas->Update();
+
+            gSystem->Sleep(1000);//dummy
+        }
+        else
+        {
+            //Wait permission to read data
+            gSystem->Sleep(300);
+        }
+
+
     }
 }
