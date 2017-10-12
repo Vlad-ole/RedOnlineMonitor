@@ -234,6 +234,7 @@ void MyMainFrame::InitGraphs()
     }
 
     hist = new TH1F("h1", "N_pe histogram", 100, -1, 1);
+    hist->SetBit(TH1::kCanRebin);
     TRandom rnd;
     for (int i = 0; i < 1000; ++i)
     {
@@ -308,6 +309,10 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
         yvv[i].resize(p->n_points);
     }
 
+    vector<Double_t> integral(p->aNrGraphs);
+    const int time_step = 1;//ns
+    double total_integral;;
+
     while(1)
     {
         if (p->is_start_button_activated)
@@ -321,8 +326,23 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 }
             }
 
-            //analize data (you can move this code in slave_2 thread)
+            //analize data ( you can move this code in slave_2 thread if you know how to do this:) )
+            for (int i = 0; i < p->aNrGraphs; ++i)
+            {
+                integral[i] = 0;
+                for (int j = 0; j < p->n_points; ++j)
+                {
+                    integral[i] += (yvv[i][j] - baseline);
+                }
 
+                integral[i] *= time_step;
+            }
+
+            total_integral = 0;
+            for (int i = 0; i < p->aNrGraphs; ++i)
+            {
+                total_integral += integral[i];
+            }
 
 
             //Global mutex to avoid data race (it is not so important in my case, but it is better do not remove mutex)
@@ -341,7 +361,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             if(p->is_redraw_hist)
             {
                 const int n_bins = p->hist->GetNbinsX();
-                for (int i = 0; i < n_bins; ++i)
+                for (int i = 0; i < n_bins + 1; ++i)
                 {
                     p->hist->SetBinContent(i, 0);
                 }
@@ -349,6 +369,12 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 p->is_redraw_hist = false;
             }
 
+            p->hist->Fill(total_integral);
+
+//            for (int i = 0; i < total; ++i)
+//            {
+//                p->hist->Fill();
+//            }
 
             //canvases
             for (int i = 0; i < p->n_canvases; ++i)
@@ -360,7 +386,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
 
             TThread::UnLock();
 
-            gSystem->Sleep(900);//dummy
+            gSystem->Sleep(500);//dummy
         }
         else
         {
