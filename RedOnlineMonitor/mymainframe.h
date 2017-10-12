@@ -8,6 +8,7 @@
 #include <TApplication.h>
 #include <TCanvas.h>
 #include <TF1.h>
+#include <TH1.h>
 #include <TGraph.h>
 #include <TRandom.h>
 #include "TAxis.h"
@@ -57,6 +58,8 @@ private:
     TGTextButton *button_start;
     bool is_start_button_activated;
 
+    bool is_redraw_hist;
+
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;
 
@@ -67,9 +70,12 @@ private:
     //
     DataStr data_str;
     TGraph **graphs;
+    TH1F *hist;
     Int_t aNrGraphs;
     Int_t n_points;
     TCanvas **aCanvas_arr;
+
+    //void RedrawHist();
     //TGraph *gr;
 };
 

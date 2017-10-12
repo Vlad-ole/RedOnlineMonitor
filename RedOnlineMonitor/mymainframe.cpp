@@ -186,6 +186,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
     //Set params
     aNrGraphs = 6;
     n_points = 100;
+    is_redraw_hist = true;
 }
 
 MyMainFrame::~MyMainFrame()
@@ -232,11 +233,16 @@ void MyMainFrame::InitGraphs()
        graphs[i]->SetMarkerSize(0.3);
     }
 
+    hist = new TH1F("h1", "N_pe histogram", 100, -1, 1);
+    TRandom rnd;
+    for (int i = 0; i < 1000; ++i)
+    {
+        hist->Fill(rnd.Uniform(-1, 1));
+    }
+
     char y_axis_name[] = "Voltage [mV]";
 
-    //TCanvas **aCanvas_arr = new TCanvas*[n_canvases];
     aCanvas_arr = new TCanvas*[n_canvases];
-
     for (int i = 0; i < n_canvases; ++i)
     {
         aCanvas_arr[i] = fEcanvas_arr[i]->GetCanvas();
@@ -251,8 +257,12 @@ void MyMainFrame::InitGraphs()
             oss << "ch_" << i;
             graphs[i]->SetTitle(oss.str().c_str());
 
-            graphs[i]->GetYaxis()->SetTitle(y_axis_name);
+            //graphs[i]->GetYaxis()->SetTitle(y_axis_name);//Axis titles do not work for slave thread. I do not know why
 
+        }
+        else if (i == 6)
+        {
+            hist->Draw();
         }
 
         aCanvas_arr[i]->Update();
@@ -267,15 +277,25 @@ void MyMainFrame::RunThread()
     slave_thread->Run();
 }
 
+//void MyMainFrame::RedrawHist()
+//{
+//    const int n_bins = hist->GetNbinsX();
+//    for (int i = 0; i < n_bins; ++i)
+//    {
+//        hist->SetBinContent(i, 0);
+//    }
+//}
+
 void *MyMainFrame::ReadoutLoop(void *aPtr)
 {
+    //the whole func ReadoutLoop will be in slave thread
     printf("You are in MyMainFrame::ReadoutLoop() (Thread %d) \n", syscall(__NR_gettid));
 
     MyMainFrame *p = (MyMainFrame*)aPtr;
 
     TRandom rnd;
     const int baseline = 4000;
-     vector<Float_t> xv(p->n_points);
+    vector<Float_t> xv(p->n_points);
     for (int i = 0; i < p->n_points; ++i)
     {
         xv[i] = i;
@@ -301,8 +321,14 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 }
             }
 
-            //Global mutex to avoid data race
+            //analize data (you can move this code in slave_2 thread)
+
+
+
+            //Global mutex to avoid data race (it is not so important in my case, but it is better do not remove mutex)
             TThread::Lock();
+
+            //graphs
             for (int i = 0; i < p->aNrGraphs; ++i)
             {
                 for (int j = 0; j < p->n_points; ++j)
@@ -311,6 +337,20 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 }
             }
 
+            //hist
+            if(p->is_redraw_hist)
+            {
+                const int n_bins = p->hist->GetNbinsX();
+                for (int i = 0; i < n_bins; ++i)
+                {
+                    p->hist->SetBinContent(i, 0);
+                }
+
+                p->is_redraw_hist = false;
+            }
+
+
+            //canvases
             for (int i = 0; i < p->n_canvases; ++i)
             {
                 p->aCanvas_arr[i] = p->fEcanvas_arr[i]->GetCanvas();
