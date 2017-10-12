@@ -232,9 +232,10 @@ void MyMainFrame::InitGraphs()
        graphs[i]->SetMarkerSize(0.3);
     }
 
-//    char *y_axis_name = "Voltage [mV]";
+    char y_axis_name[] = "Voltage [mV]";
 
-    TCanvas **aCanvas_arr = new TCanvas*[n_canvases];
+    //TCanvas **aCanvas_arr = new TCanvas*[n_canvases];
+    aCanvas_arr = new TCanvas*[n_canvases];
 
     for (int i = 0; i < n_canvases; ++i)
     {
@@ -245,9 +246,13 @@ void MyMainFrame::InitGraphs()
         if (i < 6)
         {
             graphs[i]->Draw();
+
             std::ostringstream oss;
             oss << "ch_" << i;
             graphs[i]->SetTitle(oss.str().c_str());
+
+            graphs[i]->GetYaxis()->SetTitle(y_axis_name);
+
         }
 
         aCanvas_arr[i]->Update();
@@ -306,39 +311,14 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 }
             }
 
-            TThread::UnLock();
-
-            TCanvas **aCanvas_arr = new TCanvas*[p->n_canvases];
             for (int i = 0; i < p->n_canvases; ++i)
             {
-                aCanvas_arr[i] = p->fEcanvas_arr[i]->GetCanvas();
-                aCanvas_arr[i]->Modified();
-                aCanvas_arr[i]->Update();
+                p->aCanvas_arr[i] = p->fEcanvas_arr[i]->GetCanvas();
+                p->aCanvas_arr[i]->Modified();
+                p->aCanvas_arr[i]->Update();
             }
 
-//            TCanvas *aCanvas = p->fEcanvas_arr[0]->GetCanvas();
-//            aCanvas->Modified();
-//            aCanvas->Update();
-
-            //TCanvas *aCanvas_ch1 = p->fEcanvas_ch1->GetCanvas();
-//            aCanvas_ch1->Modified();
-//            aCanvas_ch1->Update();
-
-//            TCanvas *aCanvas_ch2 = p->fEcanvas_ch2->GetCanvas();
-//            aCanvas_ch2->Modified();
-//            aCanvas_ch2->Update();
-
-//            TCanvas *aCanvas_ch3 = p->fEcanvas_ch3->GetCanvas();
-//            aCanvas_ch3->Modified();
-//            aCanvas_ch3->Update();
-
-//            TCanvas *aCanvas_ch4 = p->fEcanvas_ch4->GetCanvas();
-//            aCanvas_ch4->Modified();
-//            aCanvas_ch4->Update();
-
-//            TCanvas *aCanvas_ch5 = p->fEcanvas_ch5->GetCanvas();
-//            aCanvas_ch5->Modified();
-//            aCanvas_ch5->Update();
+            TThread::UnLock();
 
             gSystem->Sleep(900);//dummy
         }

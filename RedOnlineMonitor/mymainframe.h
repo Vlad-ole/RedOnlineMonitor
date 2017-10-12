@@ -10,6 +10,7 @@
 #include <TF1.h>
 #include <TGraph.h>
 #include <TRandom.h>
+#include "TAxis.h"
 
 //root cern Thread
 #include "TThread.h"
@@ -50,9 +51,6 @@ public:
 private:
     //GUI
     TGMainFrame *fMain;
-//    TRootEmbeddedCanvas *fEcanvas, *fEcanvas_ch1, *fEcanvas_ch2, *fEcanvas_ch3, *fEcanvas_ch4, *fEcanvas_ch5;
-//    TRootEmbeddedCanvas *fEcanvas_evergy_spectrum, *fEcanvas_Npe_vs_time;
-
     TRootEmbeddedCanvas **fEcanvas_arr;
     const Int_t n_canvases;
 
@@ -71,6 +69,7 @@ private:
     TGraph **graphs;
     Int_t aNrGraphs;
     Int_t n_points;
+    TCanvas **aCanvas_arr;
     //TGraph *gr;
 };
 
