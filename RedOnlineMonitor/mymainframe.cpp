@@ -1,6 +1,6 @@
 #include "mymainframe.h"
 
-MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h)
+MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
 {
     // Create the main frame
     fMain = new TGMainFrame(p,w,h);
@@ -78,6 +78,8 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h)
 
 
     //---------------- canvases
+    fEcanvas_arr = new TRootEmbeddedCanvas*[ n_canvases ];
+
     //Create vertical frame for 2 rows
     TGVerticalFrame *vframe_canvases = new TGVerticalFrame(tab_frame,w,h);
 
@@ -88,16 +90,16 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h)
 
     // Create canvas widget
     //ch_0
-    fEcanvas = new TRootEmbeddedCanvas("Ecanvas",hframe_canvas_row,canvas_w,canvas_h);
-    hframe_canvas_row->AddFrame(fEcanvas, fL_canvas);
+    /*fEcanvas*/fEcanvas_arr[0]  = new TRootEmbeddedCanvas("Ecanvas",hframe_canvas_row,canvas_w,canvas_h);
+    hframe_canvas_row->AddFrame(/*fEcanvas*/ fEcanvas_arr[0], fL_canvas);
 
     //ch_1
-    fEcanvas_ch1 = new TRootEmbeddedCanvas("Ecanvas_ch1",hframe_canvas_row,canvas_w,canvas_h);
-    hframe_canvas_row->AddFrame(fEcanvas_ch1, fL_canvas);
+    /*fEcanvas_ch1*/ fEcanvas_arr[1] = new TRootEmbeddedCanvas("Ecanvas_ch1",hframe_canvas_row,canvas_w,canvas_h);
+    hframe_canvas_row->AddFrame(/*fEcanvas_ch1*/ fEcanvas_arr[1], fL_canvas);
 
     //ch_2
-    fEcanvas_ch2 = new TRootEmbeddedCanvas("Ecanvas_ch2",hframe_canvas_row,canvas_w,canvas_h);
-    hframe_canvas_row->AddFrame(fEcanvas_ch2, fL_canvas);
+    /*fEcanvas_ch2*/ fEcanvas_arr[2] = new TRootEmbeddedCanvas("Ecanvas_ch2",hframe_canvas_row,canvas_w,canvas_h);
+    hframe_canvas_row->AddFrame(/*fEcanvas_ch2*/ fEcanvas_arr[2], fL_canvas);
     //----
 
 
@@ -108,16 +110,16 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h)
     TGHorizontalFrame *hframe_canvas_row2 = new TGHorizontalFrame(vframe_canvases,w,h);
 
     //ch_3
-    fEcanvas_ch3 = new TRootEmbeddedCanvas("Ecanvas_ch3",hframe_canvas_row2,canvas_w,canvas_h);
-    hframe_canvas_row2->AddFrame(fEcanvas_ch3, fL_canvas);
+    /*fEcanvas_ch3*/ fEcanvas_arr[3] = new TRootEmbeddedCanvas("Ecanvas_ch3",hframe_canvas_row2,canvas_w,canvas_h);
+    hframe_canvas_row2->AddFrame(/*fEcanvas_ch3*/ fEcanvas_arr[3], fL_canvas);
 
     //ch_4
-    fEcanvas_ch4 = new TRootEmbeddedCanvas("Ecanvas_ch4",hframe_canvas_row2,canvas_w,canvas_h);
-    hframe_canvas_row2->AddFrame(fEcanvas_ch4, fL_canvas);
+    /*fEcanvas_ch4*/ fEcanvas_arr[4] = new TRootEmbeddedCanvas("Ecanvas_ch4",hframe_canvas_row2,canvas_w,canvas_h);
+    hframe_canvas_row2->AddFrame(/*fEcanvas_ch4*/ fEcanvas_arr[4], fL_canvas);
 
     //ch_5
-    fEcanvas_ch5 = new TRootEmbeddedCanvas("Ecanvas_ch5",hframe_canvas_row2,canvas_w,canvas_h);
-    hframe_canvas_row2->AddFrame(fEcanvas_ch5, fL_canvas);
+    /*fEcanvas_ch5*/ fEcanvas_arr[5] = new TRootEmbeddedCanvas("Ecanvas_ch5",hframe_canvas_row2,canvas_w,canvas_h);
+    hframe_canvas_row2->AddFrame(/*fEcanvas_ch5*/ fEcanvas_arr[5], fL_canvas);
     //----
     //---------------- end canvases
 
@@ -139,11 +141,11 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h)
 
     TGHorizontalFrame *hframe_tab2 = new TGHorizontalFrame(tab_frame,200,40);
 
-    fEcanvas_evergy_spectrum = new TRootEmbeddedCanvas("Ecanvas_evergy_spectrum",hframe_tab2,canvas_w,canvas_h);
-    hframe_tab2->AddFrame(fEcanvas_evergy_spectrum, fL_canvas);
+    /*fEcanvas_evergy_spectrum*/ fEcanvas_arr[6] = new TRootEmbeddedCanvas("Ecanvas_evergy_spectrum",hframe_tab2,canvas_w,canvas_h);
+    hframe_tab2->AddFrame(/*fEcanvas_evergy_spectrum*/ fEcanvas_arr[6], fL_canvas);
 
-    fEcanvas_Npe_vs_time = new TRootEmbeddedCanvas("Ecanvas_Npe_vs_time",hframe_tab2,canvas_w,canvas_h);
-    hframe_tab2->AddFrame(fEcanvas_Npe_vs_time, fL_canvas);
+    /*fEcanvas_Npe_vs_time*/ fEcanvas_arr[7] = new TRootEmbeddedCanvas("Ecanvas_Npe_vs_time",hframe_tab2,canvas_w,canvas_h);
+    hframe_tab2->AddFrame(/*fEcanvas_Npe_vs_time*/ fEcanvas_arr[7], fL_canvas);
 
 
     tab_frame->AddFrame(hframe_tab2, fL_canvas);
@@ -172,14 +174,18 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h)
     // Map main frame
     fMain->MapWindow();
 
-    //init DataStr
-    data_str.counter = 0;
-    data_str.data_vv.resize(6);
-    const int n_points = 100;
-    for (int i = 0; i < data_str.data_vv.size(); ++i)
-    {
-        data_str.data_vv[i].resize(n_points);
-    }
+//    //init DataStr
+//    data_str.counter = 0;
+//    data_str.data_vv.resize(6);
+//    const int n_points = 100;
+//    for (int i = 0; i < data_str.data_vv.size(); ++i)
+//    {
+//        data_str.data_vv[i].resize(n_points);
+//    }
+
+    //Set params
+    aNrGraphs = 6;
+    n_points = 100;
 }
 
 MyMainFrame::~MyMainFrame()
@@ -210,21 +216,43 @@ void MyMainFrame::Clicked_start_button()
 
 void MyMainFrame::InitGraphs()
 {
-    const int n_points = 100;
-    gr = new TGraph(n_points);
+    graphs = new TGraph*[ aNrGraphs ];
 
-    for (int i = 0; i < n_points; ++i)
+    for (int i = 0; i < aNrGraphs; i++)
     {
-        gr->SetPoint(i,i,0);
+       graphs[i] = new TGraph( n_points );
+       for(Int_t j = 0; j < n_points; j++)
+       {
+          graphs[i]->SetPoint(j, j, i);
+       }
+
+       graphs[i]->SetMarkerColor(2);
+       graphs[i]->SetLineColor(2);
+       graphs[i]->SetMarkerStyle(21);
+       graphs[i]->SetMarkerSize(0.3);
     }
 
-    TCanvas *aCanvas = fEcanvas->GetCanvas();
-    aCanvas->cd();
-    //gr->Draw("a");
-    gr->Draw();
-//    gr->SetMaximum(120);
-//    gr->SetMinimum(-120);
-    aCanvas->Update();
+//    char *y_axis_name = "Voltage [mV]";
+
+    TCanvas **aCanvas_arr = new TCanvas*[n_canvases];
+
+    for (int i = 0; i < n_canvases; ++i)
+    {
+        aCanvas_arr[i] = fEcanvas_arr[i]->GetCanvas();
+        aCanvas_arr[i]->cd();
+
+        //waveforms
+        if (i < 6)
+        {
+            graphs[i]->Draw();
+            std::ostringstream oss;
+            oss << "ch_" << i;
+            graphs[i]->SetTitle(oss.str().c_str());
+        }
+
+        aCanvas_arr[i]->Update();
+    }
+
 }
 
 void MyMainFrame::RunThread()
@@ -242,41 +270,77 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
 
     TRandom rnd;
     const int baseline = 4000;
-    const int n_points = 100;
-    vector<Float_t> xv(n_points);
-    for (int i = 0; i < n_points; ++i)
+     vector<Float_t> xv(p->n_points);
+    for (int i = 0; i < p->n_points; ++i)
     {
         xv[i] = i;
     }
 
-    vector<Float_t> yv(n_points);
+    vector< vector<Float_t> > yvv;
+    yvv.resize(p->aNrGraphs);
+    for (int i = 0; i < p->aNrGraphs; ++i)
+    {
+        yvv[i].resize(p->n_points);
+    }
 
     while(1)
     {
         if (p->is_start_button_activated)
         {
             //GetData
-            for (int i = 0; i < n_points; ++i)
+            for (int i = 0; i < p->aNrGraphs; ++i)
             {
-                yv[i] = rnd.Uniform(-10, 10) + baseline;
+                for (int j = 0; j < p->n_points; ++j)
+                {
+                    yvv[i][j] = rnd.Uniform(-10, 10) + baseline;
+                }
             }
 
             //Global mutex to avoid data race
             TThread::Lock();
-            for (int i = 0; i < n_points; ++i)
+            for (int i = 0; i < p->aNrGraphs; ++i)
             {
-                p->gr->SetPoint(i, xv[i], yv[i]);
+                for (int j = 0; j < p->n_points; ++j)
+                {
+                    p->graphs[i]->SetPoint(j, xv[j], yvv[i][j]);
+                }
             }
 
-//            gr->SetMaximum(120);
-//            gr->SetMinimum(-120);
             TThread::UnLock();
 
-            TCanvas *aCanvas = p->fEcanvas->GetCanvas();
-            aCanvas->Modified();
-            aCanvas->Update();
+            TCanvas **aCanvas_arr = new TCanvas*[p->n_canvases];
+            for (int i = 0; i < p->n_canvases; ++i)
+            {
+                aCanvas_arr[i] = p->fEcanvas_arr[i]->GetCanvas();
+                aCanvas_arr[i]->Modified();
+                aCanvas_arr[i]->Update();
+            }
 
-            gSystem->Sleep(1000);//dummy
+//            TCanvas *aCanvas = p->fEcanvas_arr[0]->GetCanvas();
+//            aCanvas->Modified();
+//            aCanvas->Update();
+
+            //TCanvas *aCanvas_ch1 = p->fEcanvas_ch1->GetCanvas();
+//            aCanvas_ch1->Modified();
+//            aCanvas_ch1->Update();
+
+//            TCanvas *aCanvas_ch2 = p->fEcanvas_ch2->GetCanvas();
+//            aCanvas_ch2->Modified();
+//            aCanvas_ch2->Update();
+
+//            TCanvas *aCanvas_ch3 = p->fEcanvas_ch3->GetCanvas();
+//            aCanvas_ch3->Modified();
+//            aCanvas_ch3->Update();
+
+//            TCanvas *aCanvas_ch4 = p->fEcanvas_ch4->GetCanvas();
+//            aCanvas_ch4->Modified();
+//            aCanvas_ch4->Update();
+
+//            TCanvas *aCanvas_ch5 = p->fEcanvas_ch5->GetCanvas();
+//            aCanvas_ch5->Modified();
+//            aCanvas_ch5->Update();
+
+            gSystem->Sleep(900);//dummy
         }
         else
         {

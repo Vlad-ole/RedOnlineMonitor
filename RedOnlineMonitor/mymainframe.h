@@ -2,7 +2,7 @@
 #define MYMAINFRAME_H
 
 //c++
-
+#include <sstream>
 
 //root cern general
 #include <TApplication.h>
@@ -50,8 +50,11 @@ public:
 private:
     //GUI
     TGMainFrame *fMain;
-    TRootEmbeddedCanvas *fEcanvas, *fEcanvas_ch1, *fEcanvas_ch2, *fEcanvas_ch3, *fEcanvas_ch4, *fEcanvas_ch5;
-    TRootEmbeddedCanvas *fEcanvas_evergy_spectrum, *fEcanvas_Npe_vs_time;
+//    TRootEmbeddedCanvas *fEcanvas, *fEcanvas_ch1, *fEcanvas_ch2, *fEcanvas_ch3, *fEcanvas_ch4, *fEcanvas_ch5;
+//    TRootEmbeddedCanvas *fEcanvas_evergy_spectrum, *fEcanvas_Npe_vs_time;
+
+    TRootEmbeddedCanvas **fEcanvas_arr;
+    const Int_t n_canvases;
 
     TGTextButton *button_start;
     bool is_start_button_activated;
@@ -65,8 +68,10 @@ private:
 
     //
     DataStr data_str;
-    //TGraph **graphs;
-    TGraph *gr;
+    TGraph **graphs;
+    Int_t aNrGraphs;
+    Int_t n_points;
+    //TGraph *gr;
 };
 
 #endif // MYMAINFRAME_H
