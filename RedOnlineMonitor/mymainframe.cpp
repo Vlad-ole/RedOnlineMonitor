@@ -370,12 +370,28 @@ void MyMainFrame::InitGraphs()
     gr_mean->SetTitle("<N_pe> vs time");
     gr_mean->SetFillColor(kGreen);
 
+    //hists
+    TRandom rnd;
+    hists = new TH1F*[ aNrGraphs ];
+    for (int i = 0; i < aNrGraphs; i++)
+    {
+        std::ostringstream oss;
+        oss << "ch_" << i;
+
+        hists[i] = new TH1F( oss.str().c_str(), oss.str().c_str(), 100, -1, 1 );
+        hists[i]->SetBit(TH1::kCanRebin);
+        for(Int_t j = 0; j < n_points; j++)
+        {
+            hists[i]->Fill(rnd.Uniform(-0.5 + i, 0.5 + i));
+        }
+    }
+
+
     //hist
     //TH1::SetDefaultSumw2(kTRUE);
     summ_value_hist = 0;
     hist = new TH1F("h1", "N_pe histogram", 100, -1, 1);
     hist->SetBit(TH1::kCanRebin);
-    TRandom rnd;
     for (int i = 0; i < 1000; ++i)
     {
         hist->Fill(rnd.Uniform(-1, 1));
@@ -402,6 +418,10 @@ void MyMainFrame::InitGraphs()
 
             //graphs[i]->GetYaxis()->SetTitle(y_axis_name);//Axis titles do not work for slave thread. I do not know why
 
+        }
+        else if (i >= 6 && i < 12)
+        {
+            hists[i-6]->Draw();
         }
         else if (i == 12)
         {
@@ -467,7 +487,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             {
                 for (int j = 0; j < p->n_points; ++j)
                 {
-                    yvv[i][j] = rnd.Uniform(-10, 10) + baseline;
+                    yvv[i][j] = rnd.Uniform(-10 * (i+1), 10 * (i+1)) + baseline;
                 }
             }
 
@@ -489,6 +509,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             }
 
 
+            //================================================================================
             //Global mutex to avoid data race (it is not so important in my case, but it is better do not remove mutex)
             TThread::Lock();
 
@@ -499,6 +520,24 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 {
                     p->graphs[i]->SetPoint(j, xv[j], yvv[i][j]);
                 }
+            }
+
+            //hists
+            if(p->is_redraw_hist)
+            {
+                for (int i = 0; i < p->aNrGraphs; ++i)
+                {
+                    const int n_bins = p->hists[i]->GetNbinsX();
+                    for (int j = 0; j < n_bins + 1; ++j)
+                    {
+                        p->hists[i]->SetBinContent(j, 0);
+                    }
+                    p->hists[i]->SetEntries(0);
+                }
+            }
+            for (int i = 0; i < p->aNrGraphs; ++i)
+            {
+                p->hists[i]->Fill(integral[i]);
             }
 
             //hist
@@ -542,6 +581,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             }
 
             TThread::UnLock();
+            //================================================================================
 
             gSystem->Sleep(500);//dummy
         }
