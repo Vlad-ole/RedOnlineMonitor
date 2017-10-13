@@ -73,6 +73,12 @@ private:
     DataStr data_str;
     TGraph **graphs;
     TH1F *hist;
+    Double_t summ_value_hist;
+
+    TGraph *gr_mean;
+    std::vector<Double_t> xv_gr_mean;
+    std::vector<Double_t> yv_gr_mean;
+
     Int_t aNrGraphs;
     Int_t n_points;
     TCanvas **aCanvas_arr;

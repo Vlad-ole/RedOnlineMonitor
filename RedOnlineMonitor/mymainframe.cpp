@@ -47,11 +47,13 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
     hframe->AddFrame(exit, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
 
     //button_start
-    button_start = new TGTextButton(gframe_cp_common_opt,"&Start acquisition");
+    TGHorizontalFrame *hframe_start = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
+    button_start = new TGTextButton(hframe_start,"&Start acquisition");
     button_start->SetBackgroundColor(pixel_t_red);
     is_start_button_activated = false;
     button_start->Connect("Clicked()","MyMainFrame",this,"Clicked_start_button()");
- //   //button_start->Connect("Clicked()","MyWorker",worker,"DataAcquisition_Slot()");
+    hframe_start->AddFrame(button_start, fL_control_panel);
+
 
     //set update_time
     TGHorizontalFrame *hframe_update_time = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
@@ -76,7 +78,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
 
 
 
-    gframe_cp_common_opt->AddFrame(button_start, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_cp_common_opt->AddFrame(hframe_start, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_cp_common_opt->AddFrame(hframe_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_cp_common_opt->AddFrame(hframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
@@ -243,8 +245,8 @@ void MyMainFrame::Clicked_start_button()
 
 void MyMainFrame::InitGraphs()
 {
+    //graphs
     graphs = new TGraph*[ aNrGraphs ];
-
     for (int i = 0; i < aNrGraphs; i++)
     {
        graphs[i] = new TGraph( n_points );
@@ -259,6 +261,20 @@ void MyMainFrame::InitGraphs()
        graphs[i]->SetMarkerSize(0.3);
     }
 
+    //gr_mean
+    const int n_points_gr_mean = 1000;
+    xv_gr_mean.resize(n_points_gr_mean);
+    for (int i = 0; i < n_points_gr_mean; ++i)
+    {
+        xv_gr_mean[i] = i;
+    }
+    yv_gr_mean.resize(n_points_gr_mean);
+    gr_mean = new TGraph(n_points_gr_mean, &xv_gr_mean[0], &yv_gr_mean[0]);
+    gr_mean->SetLineColor(kGreen);
+
+    //hist
+    //TH1::SetDefaultSumw2(kTRUE);
+    summ_value_hist = 0;
     hist = new TH1F("h1", "N_pe histogram", 100, -1, 1);
     hist->SetBit(TH1::kCanRebin);
     TRandom rnd;
@@ -267,8 +283,9 @@ void MyMainFrame::InitGraphs()
         hist->Fill(rnd.Uniform(-1, 1));
     }
 
-    char y_axis_name[] = "Voltage [mV]";
+    //char y_axis_name[] = "Voltage [mV]";
 
+    //TCanvas
     aCanvas_arr = new TCanvas*[n_canvases];
     for (int i = 0; i < n_canvases; ++i)
     {
@@ -290,6 +307,10 @@ void MyMainFrame::InitGraphs()
         else if (i == 6)
         {
             hist->Draw();
+        }
+        else if (i == 7)
+        {
+            gr_mean->Draw();
         }
 
         aCanvas_arr[i]->Update();
@@ -333,7 +354,8 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
 
     vector<Double_t> integral(p->aNrGraphs);
     const int time_step = 1;//ns
-    double total_integral;;
+    double total_integral;
+
 
     while(1)
     {
@@ -389,14 +411,23 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 }
                 p->hist->SetEntries(0);
                 p->is_redraw_hist = false;
+                p->summ_value_hist = 0;
             }
-
+            p->summ_value_hist += total_integral;
             p->hist->Fill(total_integral);
 
-//            for (int i = 0; i < total; ++i)
-//            {
-//                p->hist->Fill();
-//            }
+            //gr_mean
+            Double_t mean_value_hist = p->summ_value_hist / p->hist->GetEntries();
+
+            //shit values to right
+            p->yv_gr_mean.pop_back();
+            p->yv_gr_mean.insert(p->yv_gr_mean.begin(), mean_value_hist);
+            for (int j = 0; j < p->yv_gr_mean.size(); ++j)
+            {
+                p->gr_mean->SetPoint(j, p->xv_gr_mean[j], p->yv_gr_mean[j]);
+            }
+
+            cout << "GetMean = " << mean_value_hist << endl;
 
             //canvases
             for (int i = 0; i < p->n_canvases; ++i)
