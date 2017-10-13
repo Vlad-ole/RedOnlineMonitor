@@ -1,6 +1,6 @@
 #include "mymainframe.h"
 
-MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
+MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
 {
     // Create the main frame
     fMain = new TGMainFrame(p,w,h);
@@ -125,15 +125,15 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
     //create the Tab widget
     TGTab *fTab = new TGTab(hframe_control_panel_tab_frame, 300, 300);
 
+    //---------------- canvases
+    fEcanvas_arr = new TRootEmbeddedCanvas*[ n_canvases ];
+
+
 
 
     //----------------------------- Wavefoms tab
     //Create Tab_1
-    TGCompositeFrame *tab_frame = fTab->AddTab("Waveforms (ch0 - ch1)");
-
-
-    //---------------- canvases
-    fEcanvas_arr = new TRootEmbeddedCanvas*[ n_canvases ];
+    TGCompositeFrame *tab_frame = fTab->AddTab("Waveforms (ch0 - ch1)");    
 
     //Create vertical frame for 2 rows
     TGVerticalFrame *vframe_canvases = new TGVerticalFrame(tab_frame,w,h);
@@ -145,16 +145,16 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
 
     // Create canvas widget
     //ch_0
-    /*fEcanvas*/fEcanvas_arr[0]  = new TRootEmbeddedCanvas("Ecanvas",hframe_canvas_row,canvas_w,canvas_h);
-    hframe_canvas_row->AddFrame(/*fEcanvas*/ fEcanvas_arr[0], fL_canvas);
+    fEcanvas_arr[0]  = new TRootEmbeddedCanvas("Ecanvas",hframe_canvas_row,canvas_w,canvas_h);
+    hframe_canvas_row->AddFrame(fEcanvas_arr[0], fL_canvas);
 
     //ch_1
-    /*fEcanvas_ch1*/ fEcanvas_arr[1] = new TRootEmbeddedCanvas("Ecanvas_ch1",hframe_canvas_row,canvas_w,canvas_h);
-    hframe_canvas_row->AddFrame(/*fEcanvas_ch1*/ fEcanvas_arr[1], fL_canvas);
+    fEcanvas_arr[1] = new TRootEmbeddedCanvas("Ecanvas_ch1",hframe_canvas_row,canvas_w,canvas_h);
+    hframe_canvas_row->AddFrame(fEcanvas_arr[1], fL_canvas);
 
     //ch_2
-    /*fEcanvas_ch2*/ fEcanvas_arr[2] = new TRootEmbeddedCanvas("Ecanvas_ch2",hframe_canvas_row,canvas_w,canvas_h);
-    hframe_canvas_row->AddFrame(/*fEcanvas_ch2*/ fEcanvas_arr[2], fL_canvas);
+    fEcanvas_arr[2] = new TRootEmbeddedCanvas("Ecanvas_ch2",hframe_canvas_row,canvas_w,canvas_h);
+    hframe_canvas_row->AddFrame(fEcanvas_arr[2], fL_canvas);
     //----
 
 
@@ -165,16 +165,16 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
     TGHorizontalFrame *hframe_canvas_row2 = new TGHorizontalFrame(vframe_canvases,w,h);
 
     //ch_3
-    /*fEcanvas_ch3*/ fEcanvas_arr[3] = new TRootEmbeddedCanvas("Ecanvas_ch3",hframe_canvas_row2,canvas_w,canvas_h);
-    hframe_canvas_row2->AddFrame(/*fEcanvas_ch3*/ fEcanvas_arr[3], fL_canvas);
+    fEcanvas_arr[3] = new TRootEmbeddedCanvas("Ecanvas_ch3",hframe_canvas_row2,canvas_w,canvas_h);
+    hframe_canvas_row2->AddFrame(fEcanvas_arr[3], fL_canvas);
 
     //ch_4
-    /*fEcanvas_ch4*/ fEcanvas_arr[4] = new TRootEmbeddedCanvas("Ecanvas_ch4",hframe_canvas_row2,canvas_w,canvas_h);
-    hframe_canvas_row2->AddFrame(/*fEcanvas_ch4*/ fEcanvas_arr[4], fL_canvas);
+    fEcanvas_arr[4] = new TRootEmbeddedCanvas("Ecanvas_ch4",hframe_canvas_row2,canvas_w,canvas_h);
+    hframe_canvas_row2->AddFrame(fEcanvas_arr[4], fL_canvas);
 
     //ch_5
-    /*fEcanvas_ch5*/ fEcanvas_arr[5] = new TRootEmbeddedCanvas("Ecanvas_ch5",hframe_canvas_row2,canvas_w,canvas_h);
-    hframe_canvas_row2->AddFrame(/*fEcanvas_ch5*/ fEcanvas_arr[5], fL_canvas);
+    fEcanvas_arr[5] = new TRootEmbeddedCanvas("Ecanvas_ch5",hframe_canvas_row2,canvas_w,canvas_h);
+    hframe_canvas_row2->AddFrame(fEcanvas_arr[5], fL_canvas);
     //----
     //---------------- end canvases
 
@@ -190,17 +190,79 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
 
 
 
+
+
+    //----------------------------- Hists tab
+    tab_frame = fTab->AddTab("Hists (ch0 - ch1)");
+
+    //Create vertical frame for 2 rows
+    TGVerticalFrame *vframe_hists = new TGVerticalFrame(tab_frame,w,h);
+
+    //----
+    //row 1
+    //Create a horizontal frame widget with Ecanvases
+    TGHorizontalFrame *hframe_hists_row = new TGHorizontalFrame(vframe_hists,w,h);
+
+    // Create canvas widgets
+    //ch_0
+    fEcanvas_arr[6]  = new TRootEmbeddedCanvas("Ecanvas_hist_ch0",hframe_hists_row,canvas_w,canvas_h);
+    hframe_hists_row->AddFrame(fEcanvas_arr[6], fL_canvas);
+
+    //ch_1
+    fEcanvas_arr[7] = new TRootEmbeddedCanvas("Ecanvas_hist_ch1",hframe_hists_row,canvas_w,canvas_h);
+    hframe_hists_row->AddFrame(fEcanvas_arr[7], fL_canvas);
+
+    //ch_2
+    fEcanvas_arr[8] = new TRootEmbeddedCanvas("Ecanvas_hist_ch2",hframe_hists_row,canvas_w,canvas_h);
+    hframe_hists_row->AddFrame(fEcanvas_arr[8], fL_canvas);
+    //----
+
+
+    //----
+    //row 2
+    //Create a horizontal frame widget with Ecanvases
+    TGHorizontalFrame *hframe_hists_row2 = new TGHorizontalFrame(vframe_hists,w,h);
+
+    // Create canvas widgets
+    //ch_3
+    fEcanvas_arr[9]  = new TRootEmbeddedCanvas("Ecanvas_hist_ch3",hframe_hists_row2,canvas_w,canvas_h);
+    hframe_hists_row2->AddFrame(fEcanvas_arr[9], fL_canvas);
+
+    //ch_4
+    fEcanvas_arr[10] = new TRootEmbeddedCanvas("Ecanvas_hist_ch4",hframe_hists_row2,canvas_w,canvas_h);
+    hframe_hists_row2->AddFrame(fEcanvas_arr[10], fL_canvas);
+
+    //ch_5
+    fEcanvas_arr[11] = new TRootEmbeddedCanvas("Ecanvas_hist_ch5",hframe_hists_row2,canvas_w,canvas_h);
+    hframe_hists_row2->AddFrame(fEcanvas_arr[11], fL_canvas);
+    //----
+
+
+    //Fill vframe_hists frame with 2 rows
+    vframe_hists->AddFrame(hframe_hists_row, fL_canvas);
+    vframe_hists->AddFrame(hframe_hists_row2, fL_canvas);
+
+    tab_frame->AddFrame(vframe_hists, fL_canvas);
+
+    //----------------------------- end Hists tab
+
+
+
+
+
+
+
     //----------------------------- Evergy_information tab
-    //Create Tab_1
+    //Create Tab_2
     tab_frame = fTab->AddTab("Energy info");
 
     TGHorizontalFrame *hframe_tab2 = new TGHorizontalFrame(tab_frame,200,40);
 
-    /*fEcanvas_evergy_spectrum*/ fEcanvas_arr[6] = new TRootEmbeddedCanvas("Ecanvas_evergy_spectrum",hframe_tab2,canvas_w,canvas_h);
-    hframe_tab2->AddFrame(/*fEcanvas_evergy_spectrum*/ fEcanvas_arr[6], fL_canvas);
+    fEcanvas_arr[12] = new TRootEmbeddedCanvas("Ecanvas_evergy_spectrum",hframe_tab2,canvas_w,canvas_h);
+    hframe_tab2->AddFrame(fEcanvas_arr[12], fL_canvas);
 
-    /*fEcanvas_Npe_vs_time*/ fEcanvas_arr[7] = new TRootEmbeddedCanvas("Ecanvas_Npe_vs_time",hframe_tab2,canvas_w,canvas_h);
-    hframe_tab2->AddFrame(/*fEcanvas_Npe_vs_time*/ fEcanvas_arr[7], fL_canvas);
+    fEcanvas_arr[13] = new TRootEmbeddedCanvas("Ecanvas_Npe_vs_time",hframe_tab2,canvas_w,canvas_h);
+    hframe_tab2->AddFrame(fEcanvas_arr[13], fL_canvas);
 
 
     tab_frame->AddFrame(hframe_tab2, fL_canvas);
@@ -341,11 +403,11 @@ void MyMainFrame::InitGraphs()
             //graphs[i]->GetYaxis()->SetTitle(y_axis_name);//Axis titles do not work for slave thread. I do not know why
 
         }
-        else if (i == 6)
+        else if (i == 12)
         {
             hist->Draw();
         }
-        else if (i == 7)
+        else if (i == 13)
         {
             gr_mean->Draw(/*"AB"*/);
         }
