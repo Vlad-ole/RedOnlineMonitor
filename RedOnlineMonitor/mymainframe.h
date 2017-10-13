@@ -50,6 +50,7 @@ public:
     void InitGraphs();
 
     void RedrawHist();
+    void ChangeNEventsForAvr();
 
 private:
     //GUI
@@ -62,8 +63,12 @@ private:
 
     bool is_redraw_hist;
 
+    TGNumberEntry *NEntr_n_events_for_avr;
+
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;
+
+
 
     //Threads
     static void *ReadoutLoop(void*);
@@ -72,8 +77,10 @@ private:
     //
     DataStr data_str;
     TGraph **graphs;
+    TH1F **hists;
     TH1F *hist;
     Double_t summ_value_hist;
+    Int_t n_events_for_avr;
 
     TGraph *gr_mean;
     std::vector<Double_t> xv_gr_mean;
@@ -82,6 +89,8 @@ private:
     Int_t aNrGraphs;
     Int_t n_points;
     TCanvas **aCanvas_arr;
+
+    ULong64_t global_counter;
 
     //
     //TGraph *gr;

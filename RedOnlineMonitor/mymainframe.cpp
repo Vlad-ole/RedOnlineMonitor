@@ -37,10 +37,14 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
     TGGroupFrame *gframe_cp_hist_opt = new TGGroupFrame(gframe_control_panel,"Hist options",kVerticalFrame);
     gframe_cp_hist_opt->SetTitlePos(TGGroupFrame::kCenter);
 
+    TGGroupFrame *gframe_cp_stability_gr_opt = new TGGroupFrame(gframe_control_panel,"Stability graph options",kVerticalFrame);
+    gframe_cp_stability_gr_opt->SetTitlePos(TGGroupFrame::kCenter);
+
     //========== common opt
     // Create a horizontal frame widget with buttons
     TGHorizontalFrame *hframe = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
     TGTextButton *draw = new TGTextButton(hframe,"&Draw");
+    draw->SetEnabled(kFALSE);
     //draw->Connect("Clicked()","MyMainFrame",this,"DoDraw()");
     hframe->AddFrame(draw, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
     TGTextButton *exit = new TGTextButton(hframe,"&Exit","gApplication->Terminate(0)");
@@ -62,6 +66,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
              100,5000);                         //limit values
+    NEntr_update_time->SetState(kFALSE);
 
     TGLabel *label_update_time = new TGLabel(hframe_update_time, "Set update time [ms]");
     hframe_update_time->AddFrame(NEntr_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -78,14 +83,36 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
 
 
 
+    //========== Stability graph options
+    TGHorizontalFrame *hframe_n_events_for_avr = new TGHorizontalFrame(gframe_cp_stability_gr_opt,200,40);
+    NEntr_n_events_for_avr = new TGNumberEntry(hframe_n_events_for_avr, 1, 6, 2,
+             TGNumberFormat::kNESInteger,   //style
+             TGNumberFormat::kNEAPositive,   //input value filter
+             TGNumberFormat::kNELLimitMinMax, //specify limits
+             1,5000);
+    //NEntr_n_events_for_avr->Connect("Activated(Int_t)", "MyMainFrame", this, "ChangeNEventsForAvr()");
+    NEntr_n_events_for_avr->Connect("ValueSet(Long_t)", "MyMainFrame", this, "ChangeNEventsForAvr()");
+    (NEntr_n_events_for_avr->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "ChangeNEventsForAvr()");
+
+
+    TGLabel *label_n_events_for_avr = new TGLabel(hframe_n_events_for_avr, "Set n_event for avr");
+    hframe_n_events_for_avr->AddFrame(NEntr_n_events_for_avr, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    hframe_n_events_for_avr->AddFrame(label_n_events_for_avr, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    //========== end Stability graph options
+
+
+
     gframe_cp_common_opt->AddFrame(hframe_start, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_cp_common_opt->AddFrame(hframe_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_cp_common_opt->AddFrame(hframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
     gframe_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
+    gframe_cp_stability_gr_opt->AddFrame(hframe_n_events_for_avr, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
     gframe_control_panel->AddFrame(gframe_cp_common_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_control_panel->AddFrame(gframe_cp_hist_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_control_panel->AddFrame(gframe_cp_stability_gr_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
     vframe_control_panel->AddFrame(gframe_control_panel, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
  //   //--------------end control_panel
@@ -215,6 +242,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(8)
     aNrGraphs = 6;
     n_points = 100;
     is_redraw_hist = true;
+    global_counter = 0;
 }
 
 MyMainFrame::~MyMainFrame()
@@ -243,6 +271,12 @@ void MyMainFrame::Clicked_start_button()
     }
 }
 
+void MyMainFrame::ChangeNEventsForAvr()
+{
+    n_events_for_avr = NEntr_n_events_for_avr->GetNumberEntry()->GetIntNumber();
+    cout << "n_events_for_avr =" << n_events_for_avr << endl;
+}
+
 void MyMainFrame::InitGraphs()
 {
     //graphs
@@ -262,7 +296,7 @@ void MyMainFrame::InitGraphs()
     }
 
     //gr_mean
-    const int n_points_gr_mean = 1000;
+    const int n_points_gr_mean = 200;
     xv_gr_mean.resize(n_points_gr_mean);
     for (int i = 0; i < n_points_gr_mean; ++i)
     {
@@ -271,6 +305,8 @@ void MyMainFrame::InitGraphs()
     yv_gr_mean.resize(n_points_gr_mean);
     gr_mean = new TGraph(n_points_gr_mean, &xv_gr_mean[0], &yv_gr_mean[0]);
     gr_mean->SetLineColor(kGreen);
+    gr_mean->SetTitle("<N_pe> vs time");
+    gr_mean->SetFillColor(kGreen);
 
     //hist
     //TH1::SetDefaultSumw2(kTRUE);
@@ -282,6 +318,7 @@ void MyMainFrame::InitGraphs()
     {
         hist->Fill(rnd.Uniform(-1, 1));
     }
+
 
     //char y_axis_name[] = "Voltage [mV]";
 
@@ -310,7 +347,7 @@ void MyMainFrame::InitGraphs()
         }
         else if (i == 7)
         {
-            gr_mean->Draw();
+            gr_mean->Draw(/*"AB"*/);
         }
 
         aCanvas_arr[i]->Update();
@@ -361,6 +398,8 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
     {
         if (p->is_start_button_activated)
         {
+            p->global_counter++;
+
             //GetData
             for (int i = 0; i < p->aNrGraphs; ++i)
             {
@@ -381,7 +420,6 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
 
                 integral[i] *= time_step;
             }
-
             total_integral = 0;
             for (int i = 0; i < p->aNrGraphs; ++i)
             {
@@ -413,21 +451,25 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 p->is_redraw_hist = false;
                 p->summ_value_hist = 0;
             }
-            p->summ_value_hist += total_integral;
             p->hist->Fill(total_integral);
 
             //gr_mean
+            //if(global_counter % n_events_for_avr == 0) p->summ_value_hist = 0;
+            p->summ_value_hist += total_integral;
             Double_t mean_value_hist = p->summ_value_hist / p->hist->GetEntries();
 
-            //shit values to right
-            p->yv_gr_mean.pop_back();
-            p->yv_gr_mean.insert(p->yv_gr_mean.begin(), mean_value_hist);
+//            //shit right
+//            p->yv_gr_mean.pop_back();
+//            p->yv_gr_mean.insert(p->yv_gr_mean.begin(), mean_value_hist);
+            //shift left
+            p->yv_gr_mean.erase(p->yv_gr_mean.begin());
+            p->yv_gr_mean.insert( p->yv_gr_mean.end(), mean_value_hist );
+
             for (int j = 0; j < p->yv_gr_mean.size(); ++j)
             {
                 p->gr_mean->SetPoint(j, p->xv_gr_mean[j], p->yv_gr_mean[j]);
             }
 
-            cout << "GetMean = " << mean_value_hist << endl;
 
             //canvases
             for (int i = 0; i < p->n_canvases; ++i)
