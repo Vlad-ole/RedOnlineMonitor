@@ -31,22 +31,22 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     TGGroupFrame *gframe_control_panel = new TGGroupFrame(vframe_control_panel,"Control panel",kVerticalFrame);
     gframe_control_panel->SetTitlePos(TGGroupFrame::kLeft);
 
-    TGGroupFrame *gframe_cp_common_opt = new TGGroupFrame(gframe_control_panel,"Common options",kVerticalFrame);
-    gframe_cp_common_opt->SetTitlePos(TGGroupFrame::kCenter);
-
     TGGroupFrame *gframe_cp_hist_opt = new TGGroupFrame(gframe_control_panel,"Hist options",kVerticalFrame);
     gframe_cp_hist_opt->SetTitlePos(TGGroupFrame::kCenter);
 
     TGGroupFrame *gframe_cp_stability_gr_opt = new TGGroupFrame(gframe_control_panel,"Stability graph options",kVerticalFrame);
     gframe_cp_stability_gr_opt->SetTitlePos(TGGroupFrame::kCenter);
 
+
+
     //========== common opt
+    TGGroupFrame *gframe_cp_common_opt = new TGGroupFrame(gframe_control_panel,"Common options",kVerticalFrame);
+    gframe_cp_common_opt->SetTitlePos(TGGroupFrame::kCenter);
+
+
+
     // Create a horizontal frame widget with buttons
     TGHorizontalFrame *hframe = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
-    TGTextButton *draw = new TGTextButton(hframe,"&Draw");
-    draw->SetEnabled(kFALSE);
-    //draw->Connect("Clicked()","MyMainFrame",this,"DoDraw()");
-    hframe->AddFrame(draw, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
     TGTextButton *exit = new TGTextButton(hframe,"&Exit","gApplication->Terminate(0)");
     hframe->AddFrame(exit, new TGLayoutHints(kLHintsCenterX,5,5,3,4));
 
@@ -57,6 +57,13 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     is_start_button_activated = false;
     button_start->Connect("Clicked()","MyMainFrame",this,"Clicked_start_button()");
     hframe_start->AddFrame(button_start, fL_control_panel);
+
+    //signle_run
+    TGTextButton *signle_run = new TGTextButton(hframe_start,"Single&Run");
+    signle_run->SetEnabled(kFALSE);
+    //signle_run->Connect("Clicked()","MyMainFrame",this,"DoDraw()");
+    hframe_start->AddFrame(signle_run, fL_control_panel);
+
 
 
     //set update_time
