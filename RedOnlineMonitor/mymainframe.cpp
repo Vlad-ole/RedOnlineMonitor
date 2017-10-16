@@ -512,7 +512,8 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 {
                     yvv[i][j] = rnd.Uniform(-10 * (i+1), 10 * (i+1)) + baseline;
                 }
-            }            
+            }
+            //gSystem->Sleep(1);//test
             t_income_rate.Stop();
             accumulated_income_time += t_income_rate.RealTime();
             income_counter++;
@@ -542,8 +543,13 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             //income rate
             if(p->is_can_draw_now)
             {
-                cout <<  income_counter << "; " << accumulated_income_time << endl;
-                p->fLabel_income_rate->SetText( Form("%gf", income_counter / accumulated_income_time ));
+                double rate = income_counter / accumulated_income_time;
+                std::ostringstream strs_rate;
+                strs_rate /*<< std::setw(3)*/ << std::setprecision(4) << rate;
+                std::string str_rate = strs_rate.str();
+
+                //p->fLabel_income_rate->SetText( Form("%f", rate ));
+                p->fLabel_income_rate->SetText( str_rate.c_str()  );
                 // Parent frame Layout() method will redraw the label showing the new value.
                 p->gframe_cp_income_rate->Layout();
                 income_counter = 0;
@@ -633,10 +639,6 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             TThread::UnLock();
             //================================================================================
 
-            //gSystem->Sleep(1000);//dummy
-
-
-            //cout << "Real time[s] = " << t.RealTime() << endl;
 
         }
         else
