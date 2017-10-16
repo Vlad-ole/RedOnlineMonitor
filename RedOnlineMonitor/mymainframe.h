@@ -12,6 +12,7 @@
 #include <TGraph.h>
 #include <TRandom.h>
 #include "TAxis.h"
+#include "TStopwatch.h"
 
 //root cern Thread
 #include "TThread.h"
@@ -59,15 +60,17 @@ private:
     const Int_t n_canvases;
 
     TGTextButton *button_start;
-    bool is_start_button_activated;
 
+    bool is_start_button_activated;
+    bool is_can_draw_now;
     bool is_redraw_hist;
 
+    TGLabel *fLabel_income_rate;
     TGNumberEntry *NEntr_n_events_for_avr;
+    TGGroupFrame *gframe_cp_income_rate;
 
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;
-
 
 
     //Threads
@@ -91,6 +94,8 @@ private:
     TCanvas **aCanvas_arr;
 
     ULong64_t global_counter;
+    //ULong64_t income_counter;
+    //Double_t income_rate;
 
     //
     //TGraph *gr;

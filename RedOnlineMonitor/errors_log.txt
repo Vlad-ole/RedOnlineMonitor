@@ -1,0 +1,69 @@
+Warning in <TH1::GetBinContent>: this method must be overridden!
+
+ *** Break *** segmentation violation
+
+
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+
+Thread 2 (Thread 0x7f6ebe353700 (LWP 18622)):
+#0  0x00007f6ec1f826d5 in pthread_cond_wait
+
+GLIBC_2.3.2 () from /lib64/libpthread.so.0
+#1  0x00007f6ec2bd7825 in TThread::XARequest(char const*, int, void**, int*) () from /home/darkside/Vlad_Programs/root/lib/libThread.so
+#2  0x00007f6ec42e28c6 in TCanvas::Update() () from /home/darkside/Vlad_Programs/root/lib/libGpad.so
+#3  0x00000000004109cd in MyMainFrame::ReadoutLoop(void*) ()
+#4  0x00007f6ec2bd754e in TThread::Function(void*) () from /home/darkside/Vlad_Programs/root/lib/libThread.so
+#5  0x00007f6ec1f7edc5 in start_thread () from /lib64/libpthread.so.0
+#6  0x00007f6ec1cad76d in clone () from /lib64/libc.so.6
+
+Thread 1 (Thread 0x7f6ec7b99140 (LWP 18615)):
+#0  0x00007f6ec1c742c9 in waitpid () from /lib64/libc.so.6
+#1  0x00007f6ec1bf7c72 in do_system () from /lib64/libc.so.6
+#2  0x00007f6ec1bf8021 in system () from /lib64/libc.so.6
+#3  0x00007f6ec6884b79 in TUnixSystem::StackTrace() () from /home/darkside/Vlad_Programs/root/lib/libCore.so
+#4  0x00007f6ec68867bc in TUnixSystem::DispatchSignals(ESignals) () from /home/darkside/Vlad_Programs/root/lib/libCore.so
+#5  <signal handler called>
+#6  0x00007f6ebe4827cc in THistPainter::DistancetoPrimitive(int, int) () from /home/darkside/Vlad_Programs/root/lib/libHistPainter.so
+#7  0x00007f6ebe49bf2b in TGraphPainter::DistancetoPrimitiveHelper(TGraph*, int, int) () from /home/darkside/Vlad_Programs/root/lib/libHistPainter.so
+#8  0x00007f6ec42bbd5b in TPad::Pick(int, int, TObjLink*&) () from /home/darkside/Vlad_Programs/root/lib/libGpad.so
+#9  0x00007f6ec42e1356 in TCanvas::Pick(int, int, TObject*) () from /home/darkside/Vlad_Programs/root/lib/libGpad.so
+#10 0x00007f6ec42e3085 in TCanvas::HandleInput(EEventType, int, int) () from /home/darkside/Vlad_Programs/root/lib/libGpad.so
+#11 0x00007f6ec7200e44 in TRootEmbeddedCanvas::HandleContainerMotion(Event_t*) () from /home/darkside/Vlad_Programs/root/lib/libGui.so
+#12 0x00007f6ec7219171 in TGFrame::HandleEvent(Event_t*) () from /home/darkside/Vlad_Programs/root/lib/libGui.so
+#13 0x00007f6ec7256d88 in TGClient::HandleEvent(Event_t*) () from /home/darkside/Vlad_Programs/root/lib/libGui.so
+#14 0x00007f6ec725703d in TGClient::ProcessOneEvent() () from /home/darkside/Vlad_Programs/root/lib/libGui.so
+#15 0x00007f6ec725709d in TGClient::HandleInput() () from /home/darkside/Vlad_Programs/root/lib/libGui.so
+#16 0x00007f6ec6886a28 in TUnixSystem::DispatchOneEvent(bool) () from /home/darkside/Vlad_Programs/root/lib/libCore.so
+#17 0x00007f6ec6815e16 in TSystem::InnerLoop() () from /home/darkside/Vlad_Programs/root/lib/libCore.so
+#18 0x00007f6ec68169c0 in TSystem::Run() () from /home/darkside/Vlad_Programs/root/lib/libCore.so
+#19 0x00007f6ec682532f in TApplication::Run(bool) () from /home/darkside/Vlad_Programs/root/lib/libCore.so
+#20 0x000000000040cbbb in main ()
+===========================================================
+
+
+The lines below might hint at the cause of the crash.
+If they do not help you then please submit a bug report at
+http://root.cern.ch/bugs. Please post the ENTIRE stack trace
+from above as an attachment in addition to anything else
+that might help us fixing this issue.
+===========================================================
+#6  0x00007f6ebe4827cc in THistPainter::DistancetoPrimitive(int, int) () from /home/darkside/Vlad_Programs/root/lib/libHistPainter.so
+#7  0x00007f6ebe49bf2b in TGraphPainter::DistancetoPrimitiveHelper(TGraph*, int, int) () from /home/darkside/Vlad_Programs/root/lib/libHistPainter.so
+#8  0x00007f6ec42bbd5b in TPad::Pick(int, int, TObjLink*&) () from /home/darkside/Vlad_Programs/root/lib/libGpad.so
+#9  0x00007f6ec42e1356 in TCanvas::Pick(int, int, TObject*) () from /home/darkside/Vlad_Programs/root/lib/libGpad.so
+#10 0x00007f6ec42e3085 in TCanvas::HandleInput(EEventType, int, int) () from /home/darkside/Vlad_Programs/root/lib/libGpad.so
+#11 0x00007f6ec7200e44 in TRootEmbeddedCanvas::HandleContainerMotion(Event_t*) () from /home/darkside/Vlad_Programs/root/lib/libGui.so
+#12 0x00007f6ec7219171 in TGFrame::HandleEvent(Event_t*) () from /home/darkside/Vlad_Programs/root/lib/libGui.so
+#13 0x00007f6ec7256d88 in TGClient::HandleEvent(Event_t*) () from /home/darkside/Vlad_Programs/root/lib/libGui.so
+#14 0x00007f6ec725703d in TGClient::ProcessOneEvent() () from /home/darkside/Vlad_Programs/root/lib/libGui.so
+#15 0x00007f6ec725709d in TGClient::HandleInput() () from /home/darkside/Vlad_Programs/root/lib/libGui.so
+#16 0x00007f6ec6886a28 in TUnixSystem::DispatchOneEvent(bool) () from /home/darkside/Vlad_Programs/root/lib/libCore.so
+#17 0x00007f6ec6815e16 in TSystem::InnerLoop() () from /home/darkside/Vlad_Programs/root/lib/libCore.so
+#18 0x00007f6ec68169c0 in TSystem::Run() () from /home/darkside/Vlad_Programs/root/lib/libCore.so
+#19 0x00007f6ec682532f in TApplication::Run(bool) () from /home/darkside/Vlad_Programs/root/lib/libCore.so
+#20 0x000000000040cbbb in main ()
+===========================================================

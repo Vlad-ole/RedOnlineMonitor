@@ -96,7 +96,8 @@ LIBS += -L"/home/darkside/Vlad_Programs/root/lib" \
  -lXMLIO
 
 DISTFILES += \
-    script.txt
+    script.txt \
+    errors_log.txt
 
 HEADERS += \
     linkdef.h \

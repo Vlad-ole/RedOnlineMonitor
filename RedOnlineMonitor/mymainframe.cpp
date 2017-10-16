@@ -40,6 +40,9 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     TGGroupFrame *gframe_cp_stability_gr_opt = new TGGroupFrame(gframe_control_panel,"Stability graph options",kVerticalFrame);
     gframe_cp_stability_gr_opt->SetTitlePos(TGGroupFrame::kCenter);
 
+    gframe_cp_income_rate = new TGGroupFrame(gframe_control_panel,"Income rate [Hz]",kVerticalFrame);
+    gframe_cp_income_rate->SetTitlePos(TGGroupFrame::kLeft);
+
     //========== common opt
     // Create a horizontal frame widget with buttons
     TGHorizontalFrame *hframe = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
@@ -101,6 +104,13 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     //========== end Stability graph options
 
 
+    //========== Income rate
+    fLabel_income_rate = new TGLabel(gframe_cp_income_rate, "No input.");
+    //fLabel_income_rate->SetT
+    gframe_cp_income_rate->AddFrame(fLabel_income_rate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    //========== end Income rate
+
+
 
     gframe_cp_common_opt->AddFrame(hframe_start, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_cp_common_opt->AddFrame(hframe_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -113,6 +123,8 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     gframe_control_panel->AddFrame(gframe_cp_common_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_control_panel->AddFrame(gframe_cp_hist_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_control_panel->AddFrame(gframe_cp_stability_gr_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_control_panel->AddFrame(gframe_cp_income_rate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
 
     vframe_control_panel->AddFrame(gframe_control_panel, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
  //   //--------------end control_panel
@@ -305,6 +317,8 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     n_points = 100;
     is_redraw_hist = true;
     global_counter = 0;
+    //income_counter = 0;
+    is_can_draw_now = true;
 }
 
 MyMainFrame::~MyMainFrame()
@@ -456,6 +470,11 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
 
     MyMainFrame *p = (MyMainFrame*)aPtr;
 
+    TStopwatch t_income_rate;
+    Double_t accumulated_income_time = 0;
+    ULong64_t income_counter = 0;
+
+    //----------- prepare local data
     TRandom rnd;
     const int baseline = 4000;
     vector<Float_t> xv(p->n_points);
@@ -474,22 +493,29 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
     vector<Double_t> integral(p->aNrGraphs);
     const int time_step = 1;//ns
     double total_integral;
+    //-----------
 
 
     while(1)
     {
         if (p->is_start_button_activated)
         {
+
             p->global_counter++;
 
+
             //GetData
+            t_income_rate.Start();
             for (int i = 0; i < p->aNrGraphs; ++i)
             {
                 for (int j = 0; j < p->n_points; ++j)
                 {
                     yvv[i][j] = rnd.Uniform(-10 * (i+1), 10 * (i+1)) + baseline;
                 }
-            }
+            }            
+            t_income_rate.Stop();
+            accumulated_income_time += t_income_rate.RealTime();
+            income_counter++;
 
             //analize data ( you can move this code in slave_2 thread if you know how to do this:) )
             for (int i = 0; i < p->aNrGraphs; ++i)
@@ -513,14 +539,29 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             //Global mutex to avoid data race (it is not so important in my case, but it is better do not remove mutex)
             TThread::Lock();
 
-            //graphs
-            for (int i = 0; i < p->aNrGraphs; ++i)
+            //income rate
+            if(p->is_can_draw_now)
             {
-                for (int j = 0; j < p->n_points; ++j)
+                cout <<  income_counter << "; " << accumulated_income_time << endl;
+                p->fLabel_income_rate->SetText( Form("%gf", income_counter / accumulated_income_time ));
+                // Parent frame Layout() method will redraw the label showing the new value.
+                p->gframe_cp_income_rate->Layout();
+                income_counter = 0;
+                accumulated_income_time = 0;
+            }
+
+            //graphs
+            if(p->is_can_draw_now)
+            {
+                for (int i = 0; i < p->aNrGraphs; ++i)
                 {
-                    p->graphs[i]->SetPoint(j, xv[j], yvv[i][j]);
+                    for (int j = 0; j < p->n_points; ++j)
+                    {
+                        p->graphs[i]->SetPoint(j, xv[j], yvv[i][j]);
+                    }
                 }
             }
+
 
             //hists
             if(p->is_redraw_hist)
@@ -541,16 +582,19 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             }
 
             //hist
-            if(p->is_redraw_hist)
+            if(p->is_can_draw_now) //you should decide what to do in this case: there are several variants
             {
-                const int n_bins = p->hist->GetNbinsX();
-                for (int i = 0; i < n_bins + 1; ++i)
+                if(p->is_redraw_hist)
                 {
-                    p->hist->SetBinContent(i, 0);
+                    const int n_bins = p->hist->GetNbinsX();
+                    for (int i = 0; i < n_bins + 1; ++i)
+                    {
+                        p->hist->SetBinContent(i, 0);
+                    }
+                    p->hist->SetEntries(0);
+                    p->is_redraw_hist = false;
+                    p->summ_value_hist = 0;
                 }
-                p->hist->SetEntries(0);
-                p->is_redraw_hist = false;
-                p->summ_value_hist = 0;
             }
             p->hist->Fill(total_integral);
 
@@ -566,24 +610,34 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             p->yv_gr_mean.erase(p->yv_gr_mean.begin());
             p->yv_gr_mean.insert( p->yv_gr_mean.end(), mean_value_hist );
 
-            for (int j = 0; j < p->yv_gr_mean.size(); ++j)
+            if(p->is_can_draw_now)
             {
-                p->gr_mean->SetPoint(j, p->xv_gr_mean[j], p->yv_gr_mean[j]);
+                for (int j = 0; j < p->yv_gr_mean.size(); ++j)
+                {
+                    p->gr_mean->SetPoint(j, p->xv_gr_mean[j], p->yv_gr_mean[j]);
+                }
             }
 
 
             //canvases
-            for (int i = 0; i < p->n_canvases; ++i)
+            if(p->is_can_draw_now)
             {
-                p->aCanvas_arr[i] = p->fEcanvas_arr[i]->GetCanvas();
-                p->aCanvas_arr[i]->Modified();
-                p->aCanvas_arr[i]->Update();
+                for (int i = 0; i < p->n_canvases; ++i)
+                {
+                    p->aCanvas_arr[i] = p->fEcanvas_arr[i]->GetCanvas();
+                    p->aCanvas_arr[i]->Modified();
+                    p->aCanvas_arr[i]->Update();
+                }
             }
 
             TThread::UnLock();
             //================================================================================
 
-            gSystem->Sleep(500);//dummy
+            //gSystem->Sleep(1000);//dummy
+
+
+            //cout << "Real time[s] = " << t.RealTime() << endl;
+
         }
         else
         {
