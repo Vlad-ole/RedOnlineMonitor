@@ -53,6 +53,7 @@ public:
 
     void RedrawHist();
     void ChangeNEventsForAvr();
+    void SetDesirableUpdateRate();
 
 private:
     //GUI
@@ -65,6 +66,7 @@ private:
     bool is_start_button_activated;
     bool is_can_draw_now;
     bool is_redraw_hist;
+    Double_t desirable_update_rate;
 
     TGLabel *fLabel_income_rate;
     TGLabel *fLabel_update_rate;
@@ -72,6 +74,7 @@ private:
     TGGroupFrame *gframe_cp_update_rate;
 
     TGNumberEntry *NEntr_n_events_for_avr;
+    TGNumberEntry *NEntr_update_time;
 
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;

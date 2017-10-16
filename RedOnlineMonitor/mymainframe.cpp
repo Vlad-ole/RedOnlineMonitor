@@ -61,14 +61,16 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
 
     //set update_time
     TGHorizontalFrame *hframe_update_time = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
-    TGNumberEntry *NEntr_update_time = new TGNumberEntry(hframe_update_time, 1000, 6, 1,
-             TGNumberFormat::kNESInteger,   //style
+    NEntr_update_time = new TGNumberEntry(hframe_update_time, 1, 6, 1,
+             TGNumberFormat::kNESReal,   //style
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
-             100,5000);                         //limit values
-    NEntr_update_time->SetState(kFALSE);
+             0.1,100);                         //limit values
+    //NEntr_update_time->SetState(kFALSE);
+    NEntr_update_time->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetDesirableUpdateRate()");
+    (NEntr_update_time->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetDesirableUpdateRate()");
 
-    TGLabel *label_update_time = new TGLabel(hframe_update_time, "Set update time [ms]");
+    TGLabel *label_update_time = new TGLabel(hframe_update_time, "Set desirable update rate [Hz]");
     hframe_update_time->AddFrame(NEntr_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_update_time->AddFrame(label_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     //========== end common opt
@@ -332,6 +334,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     global_counter = 0;
     //income_counter = 0;
     is_can_draw_now = true;
+    desirable_update_rate = 1;
 }
 
 MyMainFrame::~MyMainFrame()
@@ -476,6 +479,12 @@ void MyMainFrame::RedrawHist()
     is_redraw_hist = true;
 }
 
+void MyMainFrame::SetDesirableUpdateRate()
+{
+    desirable_update_rate = NEntr_update_time->GetNumberEntry()->GetNumber();
+    cout << "desirable_update_rate =" << desirable_update_rate << endl;
+}
+
 void *MyMainFrame::ReadoutLoop(void *aPtr)
 {
     //the whole func ReadoutLoop will be in slave thread
@@ -484,6 +493,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
     MyMainFrame *p = (MyMainFrame*)aPtr;
 
     TStopwatch t_update_rate;
+    Double_t real_update_time = 10;//in sec
 
     TStopwatch t_income_rate;
     Double_t accumulated_income_time = 0;
@@ -517,6 +527,18 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
         {
             t_update_rate.Start();
             p->global_counter++;
+
+
+            //is_can_draw_now
+            if(real_update_time > (1.0 / p->desirable_update_rate) )
+            {
+                p->is_can_draw_now = true;
+                //real_update_time = 0;
+            }
+            else
+            {
+                p->is_can_draw_now = false;
+            }
 
 
             //GetData
@@ -554,6 +576,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             //================================================================================
             //Global mutex to avoid data race (it is not so important in my case, but it is better do not remove mutex)
             TThread::Lock();
+
 
             //graphs
             if(p->is_can_draw_now)
@@ -652,16 +675,20 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 accumulated_income_time = 0;
 
                 //update rate
-                t_update_rate.Stop();
                 std::ostringstream strs_update_rate;
-                strs_update_rate << std::setprecision(4) << (1 / t_update_rate.RealTime());
+                //Double_t tmp_update_rate = (t_update_rate.RealTime()) > 0 ? (1 / t_update_rate.RealTime()) : 0;
+                Double_t tmp_update_rate = 1 / real_update_time;
+                strs_update_rate << std::setprecision(4) << tmp_update_rate;
                 std::string str_update_rate = strs_update_rate.str();
 
                 p->fLabel_update_rate->SetText( str_update_rate.c_str()  );
                 p->gframe_cp_update_rate->Layout(); // Layout() method will redraw the label
+
+                real_update_time = 0;
             }
 
-
+            t_update_rate.Stop();
+            real_update_time += t_update_rate.RealTime();
 
             TThread::UnLock();
             //================================================================================
