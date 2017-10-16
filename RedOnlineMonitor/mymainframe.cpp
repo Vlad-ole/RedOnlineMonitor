@@ -40,9 +40,6 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     TGGroupFrame *gframe_cp_stability_gr_opt = new TGGroupFrame(gframe_control_panel,"Stability graph options",kVerticalFrame);
     gframe_cp_stability_gr_opt->SetTitlePos(TGGroupFrame::kCenter);
 
-    gframe_cp_income_rate = new TGGroupFrame(gframe_control_panel,"Income rate [Hz]",kVerticalFrame);
-    gframe_cp_income_rate->SetTitlePos(TGGroupFrame::kLeft);
-
     //========== common opt
     // Create a horizontal frame widget with buttons
     TGHorizontalFrame *hframe = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
@@ -104,11 +101,27 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     //========== end Stability graph options
 
 
-    //========== Income rate
+
+    //========== rate
+    TGHorizontalFrame *hframe_rate = new TGHorizontalFrame(gframe_control_panel,200,40);
+
+    gframe_cp_income_rate = new TGGroupFrame(hframe_rate,"Income rate [Hz]",kVerticalFrame);
+    gframe_cp_income_rate->SetTitlePos(TGGroupFrame::kLeft);
+
+    gframe_cp_update_rate = new TGGroupFrame(hframe_rate,"Update rate [Hz]",kVerticalFrame);
+    gframe_cp_update_rate->SetTitlePos(TGGroupFrame::kLeft);
+
+
     fLabel_income_rate = new TGLabel(gframe_cp_income_rate, "No input.");
-    //fLabel_income_rate->SetT
     gframe_cp_income_rate->AddFrame(fLabel_income_rate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    //========== end Income rate
+
+    fLabel_update_rate = new TGLabel(gframe_cp_update_rate, "No input.");
+    gframe_cp_update_rate->AddFrame(fLabel_update_rate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+
+    hframe_rate->AddFrame(gframe_cp_income_rate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    hframe_rate->AddFrame(gframe_cp_update_rate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    //========== end rate
 
 
 
@@ -123,7 +136,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     gframe_control_panel->AddFrame(gframe_cp_common_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_control_panel->AddFrame(gframe_cp_hist_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_control_panel->AddFrame(gframe_cp_stability_gr_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    gframe_control_panel->AddFrame(gframe_cp_income_rate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_control_panel->AddFrame(hframe_rate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
 
     vframe_control_panel->AddFrame(gframe_control_panel, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -470,6 +483,8 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
 
     MyMainFrame *p = (MyMainFrame*)aPtr;
 
+    TStopwatch t_update_rate;
+
     TStopwatch t_income_rate;
     Double_t accumulated_income_time = 0;
     ULong64_t income_counter = 0;
@@ -500,7 +515,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
     {
         if (p->is_start_button_activated)
         {
-
+            t_update_rate.Start();
             p->global_counter++;
 
 
@@ -513,7 +528,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     yvv[i][j] = rnd.Uniform(-10 * (i+1), 10 * (i+1)) + baseline;
                 }
             }
-            //gSystem->Sleep(1);//test
+            gSystem->Sleep(5);//test
             t_income_rate.Stop();
             accumulated_income_time += t_income_rate.RealTime();
             income_counter++;
@@ -539,22 +554,6 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             //================================================================================
             //Global mutex to avoid data race (it is not so important in my case, but it is better do not remove mutex)
             TThread::Lock();
-
-            //income rate
-            if(p->is_can_draw_now)
-            {
-                double rate = income_counter / accumulated_income_time;
-                std::ostringstream strs_rate;
-                strs_rate /*<< std::setw(3)*/ << std::setprecision(4) << rate;
-                std::string str_rate = strs_rate.str();
-
-                //p->fLabel_income_rate->SetText( Form("%f", rate ));
-                p->fLabel_income_rate->SetText( str_rate.c_str()  );
-                // Parent frame Layout() method will redraw the label showing the new value.
-                p->gframe_cp_income_rate->Layout();
-                income_counter = 0;
-                accumulated_income_time = 0;
-            }
 
             //graphs
             if(p->is_can_draw_now)
@@ -635,6 +634,34 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     p->aCanvas_arr[i]->Update();
                 }
             }
+
+
+
+            //rate
+            if(p->is_can_draw_now)
+            {
+                //income rate
+                double rate = income_counter / accumulated_income_time;
+                std::ostringstream strs_income_rate;
+                strs_income_rate << std::setprecision(4) << rate;
+                std::string str_income_rate = strs_income_rate.str();
+
+                p->fLabel_income_rate->SetText( str_income_rate.c_str()  );
+                p->gframe_cp_income_rate->Layout(); // Layout() method will redraw the label
+                income_counter = 0;
+                accumulated_income_time = 0;
+
+                //update rate
+                t_update_rate.Stop();
+                std::ostringstream strs_update_rate;
+                strs_update_rate << std::setprecision(4) << (1 / t_update_rate.RealTime());
+                std::string str_update_rate = strs_update_rate.str();
+
+                p->fLabel_update_rate->SetText( str_update_rate.c_str()  );
+                p->gframe_cp_update_rate->Layout(); // Layout() method will redraw the label
+            }
+
+
 
             TThread::UnLock();
             //================================================================================

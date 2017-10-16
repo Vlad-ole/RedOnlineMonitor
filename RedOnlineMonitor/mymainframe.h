@@ -67,8 +67,11 @@ private:
     bool is_redraw_hist;
 
     TGLabel *fLabel_income_rate;
-    TGNumberEntry *NEntr_n_events_for_avr;
+    TGLabel *fLabel_update_rate;
     TGGroupFrame *gframe_cp_income_rate;
+    TGGroupFrame *gframe_cp_update_rate;
+
+    TGNumberEntry *NEntr_n_events_for_avr;
 
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;
