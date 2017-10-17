@@ -36,7 +36,8 @@ void MyMainFrame::ChangeNEventsForAvr()
 
 void MyMainFrame::SetBaselineGateFrom()
 {
-
+    time_baseline_gate_from = NEntr_baseline_gate_from->GetNumberEntry()->GetNumber();
+    cout << "time_baseline_gate_from =" << time_baseline_gate_from << endl;
 }
 
 void MyMainFrame::SetBaselineGateTo()

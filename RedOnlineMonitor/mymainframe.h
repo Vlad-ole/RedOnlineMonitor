@@ -15,6 +15,7 @@
 #include "TAxis.h"
 #include "TStopwatch.h"
 #include "TMath.h"
+#include "TLine.h"
 
 //root cern Thread
 #include "TThread.h"
@@ -48,15 +49,14 @@ public:
     MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h);
     virtual ~MyMainFrame();
 
-    void Clicked_start_button();
     void RunThread();
     void InitGraphs();
 
+    //slots
+    void Clicked_start_button();
     void RedrawHist();
-
     void ChangeNEventsForAvr();
     void SetDesirableUpdateRate();
-
     void SetBaselineGateFrom();
     void SetBaselineGateTo();
     void SetSignalGateFrom();
@@ -112,6 +112,12 @@ private:
     TH1F *hist;
     Double_t summ_value_hist;
     Int_t n_events_for_avr;
+
+    TLine **line_baseline_gate_from;
+    TLine **line_baseline_gate_to;
+    TLine **line_signal_gate_from;
+    TLine **line_signal_gate_to;
+    TLine **line_signal_gate_fast_to;
 
     TGraph *gr_mean;
     std::vector<Double_t> xv_gr_mean;

@@ -117,6 +117,20 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 }
             }
 
+            //gate lines
+            if(p->is_can_draw_now)
+            {
+                for (int i = 0; i < p->aNrGraphs; ++i)
+                {
+                    Double_t y_min = p->graphs[i]->GetYaxis()->GetXmin();
+                    Double_t y_max = p->graphs[i]->GetYaxis()->GetXmax();
+
+                    p->line_baseline_gate_from[i]->SetX1(p->time_baseline_gate_from);
+                    p->line_baseline_gate_from[i]->SetX2(p->time_baseline_gate_from);
+                    p->line_baseline_gate_from[i]->SetY1(y_min);
+                    p->line_baseline_gate_from[i]->SetY2(y_max);
+                }
+            }
 
             //hists
             if(p->is_redraw_hist)

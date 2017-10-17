@@ -99,6 +99,8 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     //baseline gate
     TGGroupFrame *gframe_cp_common_opt_baseline_gate = new TGGroupFrame(hframe_gates,"Baseline gate",kVerticalFrame);
     TGVerticalFrame *vframe_cp_copt_bgate_gframe = new TGVerticalFrame(gframe_cp_common_opt_baseline_gate,300,900);
+
+
     //row1
     TGHorizontalFrame *hframe_cp_copt_bgate_gframe_row1 = new TGHorizontalFrame(vframe_cp_copt_bgate_gframe,200,40);
     NEntr_baseline_gate_from = new TGNumberEntry(hframe_cp_copt_bgate_gframe_row1, time_baseline_gate_from, 6, 2,
@@ -106,9 +108,14 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
              0,1E6);
+    NEntr_baseline_gate_from->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetBaselineGateFrom()");
+    (NEntr_baseline_gate_from->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetBaselineGateFrom()");
+
     TGLabel *label_bgate_row1 = new TGLabel(hframe_cp_copt_bgate_gframe_row1, "t_from [us]");
     hframe_cp_copt_bgate_gframe_row1->AddFrame(NEntr_baseline_gate_from, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_bgate_gframe_row1->AddFrame(label_bgate_row1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+
     //row2
     TGHorizontalFrame *hframe_cp_copt_bgate_gframe_row2 = new TGHorizontalFrame(vframe_cp_copt_bgate_gframe,200,40);
     NEntr_baseline_gate_to = new TGNumberEntry(hframe_cp_copt_bgate_gframe_row2, time_baseline_gate_to, 6, 3,
@@ -458,11 +465,41 @@ void MyMainFrame::InitGraphs()
           graphs[i]->SetPoint(j, j, i);
        }
 
+       //Double_t y_max = TMath::MaxElement(graphs[i]->GetN(), graphs[i]->GetY());
+       //Double_t y_max = graphs[i]->GetYaxis()->GetXmax();
+       //graphs[i]->GetYaxis()->SetRangeUser(0., y_max);
+
+
        graphs[i]->SetMarkerColor(2);
        //graphs[i]->SetLineColor(2);
        graphs[i]->SetMarkerStyle(21);
        graphs[i]->SetMarkerSize(0.3);
     }
+
+
+    //---------------- gate lines
+    Double_t x1 = 2;
+
+    line_baseline_gate_from = new TLine*[ aNrGraphs ];
+    for (int i = 0; i < aNrGraphs; i++)
+    {
+        Double_t y_min = graphs[i]->GetYaxis()->GetXmin();
+        Double_t y_max = graphs[i]->GetYaxis()->GetXmax();
+
+        line_baseline_gate_from[i] = new TLine(x1, y_min, x1, y_max /*4000*/);
+        line_baseline_gate_from[i]->SetLineColor(kRed);
+    }
+
+
+//    TLine **line_baseline_gate_to;
+//    TLine **line_signal_gate_from;
+//    TLine **line_signal_gate_to;
+//    TLine **line_signal_gate_fast_to;
+
+    //---------------- end gate lines
+
+
+
 
     //gr_mean
     const int n_points_gr_mean = 200;
@@ -525,6 +562,7 @@ void MyMainFrame::InitGraphs()
 
             //graphs[i]->GetYaxis()->SetTitle(y_axis_name);//Axis titles do not work for slave thread. I do not know why
 
+            line_baseline_gate_from[i]->Draw();
         }
         else if (i >= 6 && i < 12)
         {
