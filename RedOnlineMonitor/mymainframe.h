@@ -75,6 +75,8 @@ private:
 
     TGNumberEntry *NEntr_n_events_for_avr;
     TGNumberEntry *NEntr_update_time;
+    TGNumberEntry *NEntr_baseline_gate_from;
+    TGNumberEntry *NEntr_baseline_gate_to;
 
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;

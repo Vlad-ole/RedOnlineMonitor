@@ -39,7 +39,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
 
 
 
-    //========== common opt
+    //============================================== common opt
     TGGroupFrame *gframe_cp_common_opt = new TGGroupFrame(gframe_control_panel,"Common options",kVerticalFrame);
     gframe_cp_common_opt->SetTitlePos(TGGroupFrame::kCenter);
 
@@ -80,7 +80,57 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     TGLabel *label_update_time = new TGLabel(hframe_update_time, "Set desirable update rate [Hz]");
     hframe_update_time->AddFrame(NEntr_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_update_time->AddFrame(label_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    //========== end common opt
+
+
+
+
+
+
+    //---------gates
+    TGHorizontalFrame *hframe_gates = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
+
+    //baseline gate
+    TGGroupFrame *gframe_cp_common_opt_baseline_gate = new TGGroupFrame(hframe_gates,"Baseline gate",kVerticalFrame);
+    TGVerticalFrame *vframe_cp_copt_bgate_gframe = new TGVerticalFrame(gframe_cp_common_opt_baseline_gate,300,900);
+    //row1
+    TGHorizontalFrame *hframe_cp_copt_bgate_gframe_row1 = new TGHorizontalFrame(vframe_cp_copt_bgate_gframe,200,40);
+    NEntr_baseline_gate_from = new TGNumberEntry(hframe_cp_copt_bgate_gframe_row1, 1, 6, 2,
+             TGNumberFormat::kNESReal,   //style
+             TGNumberFormat::kNEAPositive,   //input value filter
+             TGNumberFormat::kNELLimitMinMax, //specify limits
+             0,1E6);
+    TGLabel *label_bgate_row1 = new TGLabel(hframe_cp_copt_bgate_gframe_row1, "t_from [us]");
+    hframe_cp_copt_bgate_gframe_row1->AddFrame(NEntr_baseline_gate_from, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    hframe_cp_copt_bgate_gframe_row1->AddFrame(label_bgate_row1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    //row2
+    TGHorizontalFrame *hframe_cp_copt_bgate_gframe_row2 = new TGHorizontalFrame(vframe_cp_copt_bgate_gframe,200,40);
+    NEntr_baseline_gate_to = new TGNumberEntry(hframe_cp_copt_bgate_gframe_row2, 1, 6, 3,
+             TGNumberFormat::kNESReal,   //style
+             TGNumberFormat::kNEAPositive,   //input value filter
+             TGNumberFormat::kNELLimitMinMax, //specify limits
+             0,1E6);
+    TGLabel *label_bgate_row2 = new TGLabel(hframe_cp_copt_bgate_gframe_row2, "t_to [us]");
+    hframe_cp_copt_bgate_gframe_row2->AddFrame(NEntr_baseline_gate_to, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    hframe_cp_copt_bgate_gframe_row2->AddFrame(label_bgate_row2, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+
+    vframe_cp_copt_bgate_gframe->AddFrame(hframe_cp_copt_bgate_gframe_row1, new TGLayoutHints(kLHintsLeft,2,2,2,2));
+    vframe_cp_copt_bgate_gframe->AddFrame(hframe_cp_copt_bgate_gframe_row2, new TGLayoutHints(kLHintsLeft,2,2,2,2));
+    gframe_cp_common_opt_baseline_gate->AddFrame(vframe_cp_copt_bgate_gframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    hframe_gates->AddFrame(gframe_cp_common_opt_baseline_gate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+
+    //signal gate
+    TGGroupFrame *gframe_cp_common_opt_signal_gate = new TGGroupFrame(hframe_gates,"Signal gate",kVerticalFrame);
+    hframe_gates->AddFrame(gframe_cp_common_opt_signal_gate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+    //---------end gates
+
+
+
+
+
+    //============================================== end common opt
 
 
 
@@ -136,6 +186,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
 
     gframe_cp_common_opt->AddFrame(hframe_start, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_cp_common_opt->AddFrame(hframe_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_cp_common_opt->AddFrame(hframe_gates, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_cp_common_opt->AddFrame(hframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
     gframe_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -357,14 +408,11 @@ void MyMainFrame::Clicked_start_button()
     if(is_start_button_activated)
     {
         button_start->SetBackgroundColor(pixel_t_red);
-//        button_start->SetText("Start acquisition: inactive");
         is_start_button_activated = false;
-
     }
     else
     {
         button_start->SetBackgroundColor(pixel_t_yellow);
-//        button_start->SetText("Start acquisition: active");
         is_start_button_activated = true;
 
     }
@@ -706,6 +754,11 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
         {
             //Wait permission to read data
             gSystem->Sleep(300);
+
+//            TThread::Lock();
+//            p->fLabel_income_rate->SetText( "No input."  );
+//            p->fLabel_update_rate->SetText( "No input."  );
+//            TThread::UnLock();
         }
 
 
