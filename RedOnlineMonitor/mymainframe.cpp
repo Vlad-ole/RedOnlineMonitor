@@ -481,11 +481,6 @@ void MyMainFrame::InitGraphs()
           graphs[i]->SetPoint(j, j, i);
        }
 
-       //Double_t y_max = TMath::MaxElement(graphs[i]->GetN(), graphs[i]->GetY());
-       //Double_t y_max = graphs[i]->GetYaxis()->GetXmax();
-       //graphs[i]->GetYaxis()->SetRangeUser(0., y_max);
-
-
        graphs[i]->SetMarkerColor(2);
        //graphs[i]->SetLineColor(2);
        graphs[i]->SetMarkerStyle(21);
@@ -494,16 +489,36 @@ void MyMainFrame::InitGraphs()
 
 
     //---------------- gate lines
-    Double_t x1 = 2;
+    Double_t x_baseline_gate_from = 100;
+    Double_t x_baseline_gate_to = 200;
+    Double_t x_signal_gate_from = 300;
+    Double_t x_signal_gate_fast_to = 400;
+    Double_t x_signal_gate_to = 500;
 
     line_baseline_gate_from = new TLine*[ aNrGraphs ];
+    line_baseline_gate_to = new TLine*[ aNrGraphs ];
+    line_signal_gate_from = new TLine*[ aNrGraphs ];
+    line_signal_gate_fast_to = new TLine*[ aNrGraphs ];
+    line_signal_gate_to = new TLine*[ aNrGraphs ];
     for (int i = 0; i < aNrGraphs; i++)
     {
         Double_t y_min = graphs[i]->GetYaxis()->GetXmin();
         Double_t y_max = graphs[i]->GetYaxis()->GetXmax();
 
-        line_baseline_gate_from[i] = new TLine(x1, y_min, x1, y_max /*4000*/);
+        line_baseline_gate_from[i] = new TLine(x_baseline_gate_from, y_min, x_baseline_gate_from, y_max);
         line_baseline_gate_from[i]->SetLineColor(kRed);
+
+        line_baseline_gate_to[i] = new TLine(x_baseline_gate_to, y_min, x_baseline_gate_to, y_max);
+        line_baseline_gate_to[i]->SetLineColor(kGreen);
+
+        line_signal_gate_from[i] = new TLine(x_signal_gate_from, y_min, x_signal_gate_from, y_max);
+        line_signal_gate_from[i]->SetLineColor(kBlue);
+
+        line_signal_gate_fast_to[i] = new TLine(x_signal_gate_fast_to, y_min, x_signal_gate_fast_to, y_max);
+        line_signal_gate_fast_to[i]->SetLineColor(kOrange);
+
+        line_signal_gate_to[i] = new TLine(x_signal_gate_to, y_min, x_signal_gate_to, y_max);
+        line_signal_gate_to[i]->SetLineColor(kMagenta);
     }
 
 
@@ -579,6 +594,10 @@ void MyMainFrame::InitGraphs()
             //graphs[i]->GetYaxis()->SetTitle(y_axis_name);//Axis titles do not work for slave thread. I do not know why
 
             line_baseline_gate_from[i]->Draw();
+            line_baseline_gate_to[i]->Draw();
+            line_signal_gate_from[i]->Draw();
+            line_signal_gate_fast_to[i]->Draw();
+            line_signal_gate_to[i]->Draw();
         }
         else if (i >= 6 && i < 12)
         {

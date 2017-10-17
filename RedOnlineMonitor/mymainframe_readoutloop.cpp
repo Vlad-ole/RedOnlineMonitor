@@ -129,6 +129,26 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     p->line_baseline_gate_from[i]->SetX2(p->time_baseline_gate_from);
                     p->line_baseline_gate_from[i]->SetY1(y_min);
                     p->line_baseline_gate_from[i]->SetY2(y_max);
+
+                    p->line_baseline_gate_to[i]->SetX1(p->time_baseline_gate_to);
+                    p->line_baseline_gate_to[i]->SetX2(p->time_baseline_gate_to);
+                    p->line_baseline_gate_to[i]->SetY1(y_min);
+                    p->line_baseline_gate_to[i]->SetY2(y_max);
+
+                    p->line_signal_gate_from[i]->SetX1(p->time_signal_gate_from);
+                    p->line_signal_gate_from[i]->SetX2(p->time_signal_gate_from);
+                    p->line_signal_gate_from[i]->SetY1(y_min);
+                    p->line_signal_gate_from[i]->SetY2(y_max);
+
+                    p->line_signal_gate_fast_to[i]->SetX1(p->time_signal_gate_fast_to);
+                    p->line_signal_gate_fast_to[i]->SetX2(p->time_signal_gate_fast_to);
+                    p->line_signal_gate_fast_to[i]->SetY1(y_min);
+                    p->line_signal_gate_fast_to[i]->SetY2(y_max);
+
+                    p->line_signal_gate_to[i]->SetX1(p->time_signal_gate_to);
+                    p->line_signal_gate_to[i]->SetX2(p->time_signal_gate_to);
+                    p->line_signal_gate_to[i]->SetY1(y_min);
+                    p->line_signal_gate_to[i]->SetY2(y_max);
                 }
             }
 

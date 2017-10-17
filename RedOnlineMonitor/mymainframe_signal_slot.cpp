@@ -62,3 +62,48 @@ void MyMainFrame::SetSignalGateFastTo()
     time_signal_gate_fast_to = NEntr_signal_gate_fast_to->GetNumberEntry()->GetNumber();
     cout << "time_signal_gate_fast_to =" << time_signal_gate_fast_to << endl;
 }
+
+//has not been finished!
+bool MyMainFrame::IsGoodGateValues()
+{
+    bool is_good_gate_value = true;
+
+    if(time_baseline_gate_from > time_baseline_gate_to)
+    {
+        is_good_gate_value = false;
+    }
+
+    if(time_signal_gate_from > time_signal_gate_to)
+    {
+        is_good_gate_value = false;
+    }
+
+    if(time_signal_gate_from > time_signal_gate_fast_to)
+    {
+        is_good_gate_value = false;
+    }
+
+    if(time_signal_gate_fast_to > time_signal_gate_fast_to)
+    {
+        is_good_gate_value = false;
+    }
+
+    if( (time_baseline_gate_from > time_signal_gate_from) && (time_baseline_gate_from < time_signal_gate_to) )
+    {
+        is_good_gate_value = false;
+    }
+
+    if ( (time_baseline_gate_to > time_signal_gate_from) && (time_baseline_gate_to < time_signal_gate_to) )
+    {
+        is_good_gate_value = false;
+    }
+
+
+//    time_baseline_gate_from
+//    time_baseline_gate_to
+//    time_signal_gate_from
+//    time_signal_gate_to
+//    time_signal_gate_fast_to
+
+    return is_good_gate_value;
+}

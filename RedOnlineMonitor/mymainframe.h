@@ -91,6 +91,7 @@ private:
     TGNumberEntry *NEntr_n_events_for_avr;
     TGNumberEntry *NEntr_update_time;
 
+    bool IsGoodGateValues();
     TGNumberEntry *NEntr_baseline_gate_from;
     TGNumberEntry *NEntr_baseline_gate_to;
     TGNumberEntry *NEntr_signal_gate_from;
