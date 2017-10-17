@@ -82,7 +82,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
              0.1,100);                         //limit values
     //NEntr_update_time->SetState(kFALSE);
     NEntr_update_time->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetDesirableUpdateRate()");
-    (NEntr_update_time->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetDesirableUpdateRate()");
+    //(NEntr_update_time->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetDesirableUpdateRate()");
 
     TGLabel *label_update_time = new TGLabel(hframe_update_time, "Set desirable update rate [Hz]");
     hframe_update_time->AddFrame(NEntr_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -109,7 +109,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
              TGNumberFormat::kNELLimitMinMax, //specify limits
              0,1E6);
     NEntr_baseline_gate_from->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetBaselineGateFrom()");
-    (NEntr_baseline_gate_from->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetBaselineGateFrom()");
+    //(NEntr_baseline_gate_from->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetBaselineGateFrom()");
 
     TGLabel *label_bgate_row1 = new TGLabel(hframe_cp_copt_bgate_gframe_row1, "t_from [us]");
     hframe_cp_copt_bgate_gframe_row1->AddFrame(NEntr_baseline_gate_from, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -123,6 +123,9 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
              0,1E6);
+    NEntr_baseline_gate_to->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetBaselineGateTo()");
+    //(NEntr_baseline_gate_to->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetBaselineGateTo()");
+
     TGLabel *label_bgate_row2 = new TGLabel(hframe_cp_copt_bgate_gframe_row2, "t_to [us]");
     hframe_cp_copt_bgate_gframe_row2->AddFrame(NEntr_baseline_gate_to, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_bgate_gframe_row2->AddFrame(label_bgate_row2, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -143,9 +146,14 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
              0,1E6);
+    NEntr_signal_gate_from->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetSignalGateFrom()");
+    //(NEntr_signal_gate_from->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetSignalGateFrom()");
+
     TGLabel *label_sgate_row1 = new TGLabel(hframe_cp_copt_sgate_gframe_row1, "t_from [us]");
     hframe_cp_copt_sgate_gframe_row1->AddFrame(NEntr_signal_gate_from, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_sgate_gframe_row1->AddFrame(label_sgate_row1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+
     //row2
     TGHorizontalFrame *hframe_cp_copt_sgate_gframe_row2 = new TGHorizontalFrame(vframe_cp_copt_sgate_gframe,200,40);
     NEntr_signal_gate_to = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row2, time_signal_gate_to, 6, 5,
@@ -153,9 +161,14 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
              0,1E6);
+    NEntr_signal_gate_to->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetSignalGateTo()");
+    //(NEntr_signal_gate_to->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetSignalGateTo()");
+
     TGLabel *label_sgate_row2 = new TGLabel(hframe_cp_copt_sgate_gframe_row2, "t_to [us]");
     hframe_cp_copt_sgate_gframe_row2->AddFrame(NEntr_signal_gate_to, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_sgate_gframe_row2->AddFrame(label_sgate_row2, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+
     //row3
     TGHorizontalFrame *hframe_cp_copt_sgate_gframe_row3 = new TGHorizontalFrame(vframe_cp_copt_sgate_gframe,200,40);
     NEntr_signal_gate_fast_to = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row3, time_signal_gate_fast_to, 6, 6,
@@ -163,6 +176,9 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
              0,1E6);
+    NEntr_signal_gate_fast_to->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetSignalGateFastTo()");
+    //(NEntr_signal_gate_fast_to->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetSignalGateFastTo()");
+
     TGLabel *label_sgate_row3 = new TGLabel(hframe_cp_copt_sgate_gframe_row3, "t_fast_to [us]");
     hframe_cp_copt_sgate_gframe_row3->AddFrame(NEntr_signal_gate_fast_to, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_sgate_gframe_row3->AddFrame(label_sgate_row3, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -201,7 +217,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
              1,5000);
     //NEntr_n_events_for_avr->Connect("Activated(Int_t)", "MyMainFrame", this, "ChangeNEventsForAvr()");
     NEntr_n_events_for_avr->Connect("ValueSet(Long_t)", "MyMainFrame", this, "ChangeNEventsForAvr()");
-    (NEntr_n_events_for_avr->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "ChangeNEventsForAvr()");
+    //(NEntr_n_events_for_avr->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "ChangeNEventsForAvr()");
 
 
     TGLabel *label_n_events_for_avr = new TGLabel(hframe_n_events_for_avr, "Set n_event for avr");

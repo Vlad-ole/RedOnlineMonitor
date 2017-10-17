@@ -61,7 +61,7 @@ public:
     void SetBaselineGateTo();
     void SetSignalGateFrom();
     void SetSignalGateTo();
-    void SetSignalFastTo();
+    void SetSignalGateFastTo();
 
 
 private:
