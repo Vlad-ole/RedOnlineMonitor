@@ -77,6 +77,9 @@ private:
     TGNumberEntry *NEntr_update_time;
     TGNumberEntry *NEntr_baseline_gate_from;
     TGNumberEntry *NEntr_baseline_gate_to;
+    TGNumberEntry *NEntr_signal_gate_from;
+    TGNumberEntry *NEntr_signal_gate_to;
+    TGNumberEntry *NEntr_signal_gate_fast_to;
 
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;

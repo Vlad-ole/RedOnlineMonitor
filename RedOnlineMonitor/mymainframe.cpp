@@ -113,7 +113,6 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     hframe_cp_copt_bgate_gframe_row2->AddFrame(NEntr_baseline_gate_to, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_bgate_gframe_row2->AddFrame(label_bgate_row2, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
-
     vframe_cp_copt_bgate_gframe->AddFrame(hframe_cp_copt_bgate_gframe_row1, new TGLayoutHints(kLHintsLeft,2,2,2,2));
     vframe_cp_copt_bgate_gframe->AddFrame(hframe_cp_copt_bgate_gframe_row2, new TGLayoutHints(kLHintsLeft,2,2,2,2));
     gframe_cp_common_opt_baseline_gate->AddFrame(vframe_cp_copt_bgate_gframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -122,6 +121,43 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
 
     //signal gate
     TGGroupFrame *gframe_cp_common_opt_signal_gate = new TGGroupFrame(hframe_gates,"Signal gate",kVerticalFrame);
+    TGVerticalFrame *vframe_cp_copt_sgate_gframe = new TGVerticalFrame(gframe_cp_common_opt_signal_gate,300,900);
+    //row1
+    TGHorizontalFrame *hframe_cp_copt_sgate_gframe_row1 = new TGHorizontalFrame(vframe_cp_copt_sgate_gframe,200,40);
+    NEntr_signal_gate_from = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row1, 1, 6, 4,
+             TGNumberFormat::kNESReal,   //style
+             TGNumberFormat::kNEAPositive,   //input value filter
+             TGNumberFormat::kNELLimitMinMax, //specify limits
+             0,1E6);
+    TGLabel *label_sgate_row1 = new TGLabel(hframe_cp_copt_sgate_gframe_row1, "t_from [us]");
+    hframe_cp_copt_sgate_gframe_row1->AddFrame(NEntr_signal_gate_from, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    hframe_cp_copt_sgate_gframe_row1->AddFrame(label_sgate_row1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    //row2
+    TGHorizontalFrame *hframe_cp_copt_sgate_gframe_row2 = new TGHorizontalFrame(vframe_cp_copt_sgate_gframe,200,40);
+    NEntr_signal_gate_to = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row2, 1, 6, 5,
+             TGNumberFormat::kNESReal,   //style
+             TGNumberFormat::kNEAPositive,   //input value filter
+             TGNumberFormat::kNELLimitMinMax, //specify limits
+             0,1E6);
+    TGLabel *label_sgate_row2 = new TGLabel(hframe_cp_copt_sgate_gframe_row2, "t_to [us]");
+    hframe_cp_copt_sgate_gframe_row2->AddFrame(NEntr_signal_gate_to, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    hframe_cp_copt_sgate_gframe_row2->AddFrame(label_sgate_row2, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    //row3
+    TGHorizontalFrame *hframe_cp_copt_sgate_gframe_row3 = new TGHorizontalFrame(vframe_cp_copt_sgate_gframe,200,40);
+    NEntr_signal_gate_fast_to = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row3, 1, 6, 6,
+             TGNumberFormat::kNESReal,   //style
+             TGNumberFormat::kNEAPositive,   //input value filter
+             TGNumberFormat::kNELLimitMinMax, //specify limits
+             0,1E6);
+    TGLabel *label_sgate_row3 = new TGLabel(hframe_cp_copt_sgate_gframe_row3, "t_fast_to [us]");
+    hframe_cp_copt_sgate_gframe_row3->AddFrame(NEntr_signal_gate_fast_to, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    hframe_cp_copt_sgate_gframe_row3->AddFrame(label_sgate_row3, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+
+    vframe_cp_copt_sgate_gframe->AddFrame(hframe_cp_copt_sgate_gframe_row1, new TGLayoutHints(kLHintsLeft,2,2,2,2));
+    vframe_cp_copt_sgate_gframe->AddFrame(hframe_cp_copt_sgate_gframe_row2, new TGLayoutHints(kLHintsLeft,2,2,2,2));
+    vframe_cp_copt_sgate_gframe->AddFrame(hframe_cp_copt_sgate_gframe_row3, new TGLayoutHints(kLHintsLeft,2,2,2,2));
+    gframe_cp_common_opt_signal_gate->AddFrame(vframe_cp_copt_sgate_gframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_gates->AddFrame(gframe_cp_common_opt_signal_gate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
     //---------end gates
