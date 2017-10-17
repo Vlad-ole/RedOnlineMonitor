@@ -14,6 +14,7 @@
 #include <TRandom.h>
 #include "TAxis.h"
 #include "TStopwatch.h"
+#include "TMath.h"
 
 //root cern Thread
 #include "TThread.h"

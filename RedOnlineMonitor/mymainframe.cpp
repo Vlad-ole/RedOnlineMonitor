@@ -94,7 +94,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     TGVerticalFrame *vframe_cp_copt_bgate_gframe = new TGVerticalFrame(gframe_cp_common_opt_baseline_gate,300,900);
     //row1
     TGHorizontalFrame *hframe_cp_copt_bgate_gframe_row1 = new TGHorizontalFrame(vframe_cp_copt_bgate_gframe,200,40);
-    NEntr_baseline_gate_from = new TGNumberEntry(hframe_cp_copt_bgate_gframe_row1, 1, 6, 2,
+    NEntr_baseline_gate_from = new TGNumberEntry(hframe_cp_copt_bgate_gframe_row1, 0, 6, 2,
              TGNumberFormat::kNESReal,   //style
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
@@ -104,7 +104,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     hframe_cp_copt_bgate_gframe_row1->AddFrame(label_bgate_row1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     //row2
     TGHorizontalFrame *hframe_cp_copt_bgate_gframe_row2 = new TGHorizontalFrame(vframe_cp_copt_bgate_gframe,200,40);
-    NEntr_baseline_gate_to = new TGNumberEntry(hframe_cp_copt_bgate_gframe_row2, 1, 6, 3,
+    NEntr_baseline_gate_to = new TGNumberEntry(hframe_cp_copt_bgate_gframe_row2, 10, 6, 3,
              TGNumberFormat::kNESReal,   //style
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
@@ -124,7 +124,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     TGVerticalFrame *vframe_cp_copt_sgate_gframe = new TGVerticalFrame(gframe_cp_common_opt_signal_gate,300,900);
     //row1
     TGHorizontalFrame *hframe_cp_copt_sgate_gframe_row1 = new TGHorizontalFrame(vframe_cp_copt_sgate_gframe,200,40);
-    NEntr_signal_gate_from = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row1, 1, 6, 4,
+    NEntr_signal_gate_from = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row1, 15, 6, 4,
              TGNumberFormat::kNESReal,   //style
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
@@ -134,7 +134,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     hframe_cp_copt_sgate_gframe_row1->AddFrame(label_sgate_row1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     //row2
     TGHorizontalFrame *hframe_cp_copt_sgate_gframe_row2 = new TGHorizontalFrame(vframe_cp_copt_sgate_gframe,200,40);
-    NEntr_signal_gate_to = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row2, 1, 6, 5,
+    NEntr_signal_gate_to = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row2, 20, 6, 5,
              TGNumberFormat::kNESReal,   //style
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
@@ -144,7 +144,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     hframe_cp_copt_sgate_gframe_row2->AddFrame(label_sgate_row2, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     //row3
     TGHorizontalFrame *hframe_cp_copt_sgate_gframe_row3 = new TGHorizontalFrame(vframe_cp_copt_sgate_gframe,200,40);
-    NEntr_signal_gate_fast_to = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row3, 1, 6, 6,
+    NEntr_signal_gate_fast_to = new TGNumberEntry(hframe_cp_copt_sgate_gframe_row3, 15.2, 6, 6,
              TGNumberFormat::kNESReal,   //style
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
@@ -423,7 +423,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
 
     //Set params
     aNrGraphs = 6;
-    n_points = 100;
+    n_points = 1000;
     is_redraw_hist = true;
     global_counter = 0;
     //income_counter = 0;
@@ -593,10 +593,11 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
     //----------- prepare local data
     TRandom rnd;
     const int baseline = 4000;
+    const double time_step = 0.010;//ns
     vector<Float_t> xv(p->n_points);
     for (int i = 0; i < p->n_points; ++i)
     {
-        xv[i] = i;
+        xv[i] = i * time_step;
     }
 
     vector< vector<Float_t> > yvv;
@@ -607,7 +608,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
     }
 
     vector<Double_t> integral(p->aNrGraphs);
-    const int time_step = 1;//ns
+
     double total_integral;
     //-----------
 
@@ -634,11 +635,22 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
 
             //GetData
             t_income_rate.Start();
+
+            const double tau_slow = 1.700;
+            const double t0 = 1.500;
             for (int i = 0; i < p->aNrGraphs; ++i)
             {
                 for (int j = 0; j < p->n_points; ++j)
                 {
-                    yvv[i][j] = rnd.Uniform(-10 * (i+1), 10 * (i+1)) + baseline;
+                    Double_t val = rnd.Uniform(-10, 10) + baseline;
+                    Double_t tmp_time = j * time_step;
+                    if(tmp_time > 1.500 && tmp_time < 10.000)
+                    {
+                        //val -= 1000 * ( TMath::Gaus(tmp_time, 2000, 100, kTRUE) ) ;
+                        val -= 50 * TMath::Exp( - (tmp_time - t0) / tau_slow) /* /  tau_slow*/;
+                    }
+
+                    yvv[i][j] = val;
                 }
             }
             gSystem->Sleep(5);//test
