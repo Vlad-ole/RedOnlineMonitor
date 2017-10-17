@@ -53,8 +53,16 @@ public:
     void InitGraphs();
 
     void RedrawHist();
+
     void ChangeNEventsForAvr();
     void SetDesirableUpdateRate();
+
+    void SetBaselineGateFrom();
+    void SetBaselineGateTo();
+    void SetSignalGateFrom();
+    void SetSignalGateTo();
+    void SetSignalFastTo();
+
 
 private:
     //GUI
@@ -69,6 +77,12 @@ private:
     bool is_redraw_hist;
     Double_t desirable_update_rate;
 
+    Double_t time_baseline_gate_from;
+    Double_t time_baseline_gate_to;
+    Double_t time_signal_gate_from;
+    Double_t time_signal_gate_to;
+    Double_t time_signal_gate_fast_to;
+
     TGLabel *fLabel_income_rate;
     TGLabel *fLabel_update_rate;
     TGGroupFrame *gframe_cp_income_rate;
@@ -76,6 +90,7 @@ private:
 
     TGNumberEntry *NEntr_n_events_for_avr;
     TGNumberEntry *NEntr_update_time;
+
     TGNumberEntry *NEntr_baseline_gate_from;
     TGNumberEntry *NEntr_baseline_gate_to;
     TGNumberEntry *NEntr_signal_gate_from;
@@ -107,11 +122,7 @@ private:
     TCanvas **aCanvas_arr;
 
     ULong64_t global_counter;
-    //ULong64_t income_counter;
-    //Double_t income_rate;
 
-    //
-    //TGraph *gr;
 };
 
 #endif // MYMAINFRAME_H

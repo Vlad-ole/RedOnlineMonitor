@@ -10,7 +10,9 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    mymainframe.cpp
+    mymainframe.cpp \
+    mymainframe_readoutloop.cpp \
+    mymainframe_signal_slot.cpp
 
 INCLUDEPATH += "/home/darkside/Vlad_Programs/root/include"
 
