@@ -113,7 +113,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
 
     TGLabel *label_bgate_row1 = new TGLabel(hframe_cp_copt_bgate_gframe_row1, "t_from [us]");
     hframe_cp_copt_bgate_gframe_row1->AddFrame(NEntr_baseline_gate_from, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    hframe_cp_copt_bgate_gframe_row1->AddFrame(label_bgate_row1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    hframe_cp_copt_bgate_gframe_row1->AddFrame(label_bgate_row1, new TGLayoutHints(kLHintsLeft));
 
 
     //row2
@@ -215,9 +215,8 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
              TGNumberFormat::kNEAPositive,   //input value filter
              TGNumberFormat::kNELLimitMinMax, //specify limits
              1,5000);
-    //NEntr_n_events_for_avr->Connect("Activated(Int_t)", "MyMainFrame", this, "ChangeNEventsForAvr()");
     NEntr_n_events_for_avr->Connect("ValueSet(Long_t)", "MyMainFrame", this, "ChangeNEventsForAvr()");
-    //(NEntr_n_events_for_avr->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "ChangeNEventsForAvr()");
+    NEntr_n_events_for_avr->SetState(kFALSE);
 
 
     TGLabel *label_n_events_for_avr = new TGLabel(hframe_n_events_for_avr, "Set n_event for avr");
@@ -251,18 +250,18 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
 
 
     gframe_cp_common_opt->AddFrame(hframe_start, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    gframe_cp_common_opt->AddFrame(hframe_update_time, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    gframe_cp_common_opt->AddFrame(hframe_gates, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_cp_common_opt->AddFrame(hframe_update_time, new TGLayoutHints(kLHintsLeft,0,0,0,0));
+    gframe_cp_common_opt->AddFrame(hframe_gates, new TGLayoutHints(kLHintsLeft));
     gframe_cp_common_opt->AddFrame(hframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
     gframe_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
     gframe_cp_stability_gr_opt->AddFrame(hframe_n_events_for_avr, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
-    gframe_control_panel->AddFrame(gframe_cp_common_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    gframe_control_panel->AddFrame(gframe_cp_hist_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    gframe_control_panel->AddFrame(gframe_cp_stability_gr_opt, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    gframe_control_panel->AddFrame(hframe_rate, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_control_panel->AddFrame(gframe_cp_common_opt, new TGLayoutHints(kLHintsLeft));
+    gframe_control_panel->AddFrame(gframe_cp_hist_opt, new TGLayoutHints(kLHintsLeft));
+    gframe_control_panel->AddFrame(gframe_cp_stability_gr_opt, new TGLayoutHints(kLHintsLeft));
+    gframe_control_panel->AddFrame(hframe_rate, new TGLayoutHints(kLHintsLeft));
 
 
     vframe_control_panel->AddFrame(gframe_control_panel, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
