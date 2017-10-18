@@ -610,9 +610,9 @@ void MyMainFrame::InitGraphs()
 
             line_baseline_gate_from[i]->Draw();
             line_baseline_gate_to[i]->Draw();
-//            line_signal_gate_from[i]->Draw();
-//            line_signal_gate_fast_to[i]->Draw();
-//            line_signal_gate_to[i]->Draw();
+            line_signal_gate_from[i]->Draw();
+            line_signal_gate_fast_to[i]->Draw();
+            line_signal_gate_to[i]->Draw();
         }
         else if (i >= 6 && i < 12)
         {

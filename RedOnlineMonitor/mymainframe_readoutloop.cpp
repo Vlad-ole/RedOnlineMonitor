@@ -32,10 +32,12 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
     }
 
     vector<Double_t> integral(p->aNrGraphs);
+    vector<Double_t> integral_fast(p->aNrGraphs);
 
     double total_integral;
 
     bool is_good_baseline_calc = true;
+    bool is_good_integral_calc = true;
     //-----------
 
 
@@ -87,44 +89,64 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             //analize data ( you can move this code in slave_2 thread if you know how to do this:) )
             for (int i = 0; i < p->aNrGraphs; ++i)
             {
+                //check time gates
+                UInt_t point_baseline_gate_from = (p->time_baseline_gate_from / time_step);
+                UInt_t point_baseline_gate_to = (p->time_baseline_gate_to / time_step);
+                if(point_baseline_gate_from >= point_baseline_gate_to) // incorrect situation
+                {
+                    is_good_baseline_calc = false;
+                    break;
+                }
+                UInt_t point_signal_gate_from = (p->time_signal_gate_from / time_step);
+                UInt_t point_signal_gate_to = (p->time_signal_gate_to / time_step);
+                if(point_signal_gate_from >= point_signal_gate_to) // incorrect situation
+                {
+                    is_good_integral_calc = false;
+                    break;
+                }
+                UInt_t point_signal_gate_fast_to = (p->time_signal_gate_fast_to / time_step);
+                if(point_signal_gate_from >= point_signal_gate_fast_to) // incorrect situation
+                {
+                    is_good_integral_calc = false;
+                    break;
+                }
+
+
                 //calc baseline
                 Double_t baseline_cacl = 0;
-                const UInt_t point_from = (p->time_baseline_gate_from / time_step);
-                const UInt_t point_to = (p->time_baseline_gate_to / time_step);
-                if(point_from == point_to) // possible, but undesirable situation
+                // standart situation
+                for (int j = point_baseline_gate_from; j < point_baseline_gate_to; ++j)
                 {
-                    is_good_baseline_calc = false;
-                    break;
+                    baseline_cacl += yvv[i][j];
                 }
-                else if (point_from > point_to) // incorrect situation
-                {
-                    is_good_baseline_calc = false;
-                    break;
-                }
-                else // standart situation
-                {
-                    for (int j = point_from; j < point_to; ++j)
-                    {
-                       baseline_cacl += yvv[i][j];
-                    }
+                baseline_cacl /= (point_baseline_gate_to - point_baseline_gate_from);
 
-                    baseline_cacl /= (point_to - point_from);
-                }
-
-//                cout << "for ch_" << i <<  " baseline_cacl = " << baseline_cacl << endl;
-//                gSystem->Sleep(300);//test
 
                 //calc integral
                 integral[i] = 0;
-                for (int j = 0; j < p->n_points; ++j)
+                for (int j = point_signal_gate_from; j < point_signal_gate_to; ++j)
                 {
                     integral[i] += (yvv[i][j] - baseline_cacl);
                 }
                 integral[i] *= time_step;
+                //cout << "for ch_" << i <<  " integral = " << integral[i] << endl;//test
+                //gSystem->Sleep(300);//test
 
+
+                //calc fast integral
+                integral_fast[i] = 0;
+                for (int j = point_signal_gate_from; j < point_signal_gate_fast_to; ++j)
+                {
+                    integral_fast[i] += (yvv[i][j] - baseline_cacl);
+                }
+                integral_fast[i] *= time_step;
+                cout << "for ch_" << i <<  " integral_fast = " << integral_fast[i] << endl;//test
+                gSystem->Sleep(300);//test
 
 
             }
+            cout << endl;//test
+
             total_integral = 0;
             for (int i = 0; i < p->aNrGraphs; ++i)
             {
@@ -145,19 +167,30 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 //I am in global mutex, but there is something strange. May be data race with the main thread.
                 //I have to fix this #experimental
 
-                //v1
+                //v1 problems
                 p->twStatus_label->AddLine(osstr.str().c_str());
                 p->twStatus_label->ShowBottom();
 
-//                //v2
+//                //v2 problems
 //                p->twStatus_label->AddLine(osstr.str().c_str());
 //                p->twStatus_label->SetVsbPosition(p->twStatus_label->ReturnLineCount());
 //                p->twStatus_label->ShowBottom();
 
-//                //v3
+//                //v3 problems
 //                p->twStatus_label->AddLineFast(osstr.str().c_str());
 //                p->twStatus_label->Update();
 //                p->twStatus_label->ShowBottom();
+            }
+
+            if(p->is_can_draw_now && !is_good_integral_calc)
+            {
+                std::ostringstream osstr;
+                osstr << p->GetCurrentTime() << "Error! There are no points to calc integtal";
+
+                //#experimental
+                //v1 problems
+                p->twStatus_label->AddLine(osstr.str().c_str());
+                p->twStatus_label->ShowBottom();
             }
 
 
