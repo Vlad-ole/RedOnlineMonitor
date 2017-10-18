@@ -2,13 +2,14 @@
 
 void MyMainFrame::Clicked_start_button()
 {
+    sst_status_label.str("");
 
     if(is_start_button_activated)
     {
         button_start->SetBackgroundColor(pixel_t_red);
         is_start_button_activated = false;
 
-        sst_status_label.str("");
+
         sst_status_label << GetCurrentTime() << "Program has been stopped";
         twStatus_label->AddLine(sst_status_label.str().c_str());
     }
@@ -17,10 +18,11 @@ void MyMainFrame::Clicked_start_button()
         button_start->SetBackgroundColor(pixel_t_yellow);
         is_start_button_activated = true;
 
-        sst_status_label.str("");
         sst_status_label << GetCurrentTime() << "Program is working";
         twStatus_label->AddLine(sst_status_label.str().c_str());
     }
+
+    twStatus_label->ShowBottom();
 }
 
 void MyMainFrame::RedrawHist()
@@ -36,6 +38,7 @@ void MyMainFrame::SetDesirableUpdateRate()
     sst_status_label.str("");
     sst_status_label << GetCurrentTime() << "Desirable update rate has been changed to: " << desirable_update_rate;
     twStatus_label->AddLine(sst_status_label.str().c_str());
+    twStatus_label->ShowBottom();
 }
 
 
@@ -48,54 +51,101 @@ void MyMainFrame::ChangeNEventsForAvr()
 
 void MyMainFrame::SetBaselineGateFrom()
 {
-
-    //cout << "time_baseline_gate_from =" << time_baseline_gate_from << endl;
-
     sst_status_label.str("");
+    std:string result = IsGoodBaselineGateValues();
 
-    if ( IsGoodGateValues() )
+    if ( result.compare("good values") == 0 )
     {
         time_baseline_gate_from = NEntr_baseline_gate_from->GetNumberEntry()->GetNumber();
         sst_status_label << GetCurrentTime() << "Time_from for baseline gate has been changed to: " << time_baseline_gate_from;
     }
     else
     {
-        sst_status_label << GetCurrentTime() << "Sorry, I can't set such values, because:" ;
+        sst_status_label << GetCurrentTime() << "Sorry, I can't set such values, because: " << result ;
     }
 
-
     twStatus_label->AddLine(sst_status_label.str().c_str());
+    twStatus_label->ShowBottom();
 }
 
 void MyMainFrame::SetBaselineGateTo()
 {
-    time_baseline_gate_to = NEntr_baseline_gate_to->GetNumberEntry()->GetNumber();
-    //cout << "time_baseline_gate_to =" << time_baseline_gate_to << endl;
-
     sst_status_label.str("");
-    sst_status_label << "Time_to for baseline gate has been changed to: " << time_baseline_gate_to;
-    //lStatus_label->SetText(sst_status_label.str().c_str());
+    std:string result = IsGoodBaselineGateValues();
+
+    if ( result.compare("good values") == 0 )
+    {
+        time_baseline_gate_to = NEntr_baseline_gate_to->GetNumberEntry()->GetNumber();
+        sst_status_label << GetCurrentTime() << "Time_to for baseline gate has been changed to: " << time_baseline_gate_to;
+    }
+    else
+    {
+        sst_status_label << GetCurrentTime() << "Sorry, I can't set such values, because: " << result ;
+    }
+
+    twStatus_label->AddLine(sst_status_label.str().c_str());
+    twStatus_label->ShowBottom();
+
 }
 
 void MyMainFrame::SetSignalGateFrom()
 {
-    time_signal_gate_from = NEntr_signal_gate_from->GetNumberEntry()->GetNumber();
-    //cout << "time_signal_gate_from =" << time_signal_gate_from << endl;
-
     sst_status_label.str("");
-    sst_status_label << "Time_from for signal gate has been changed to: " << time_signal_gate_from;
-    //lStatus_label->SetText(sst_status_label.str().c_str());
+    std:string result = IsGoodSignalGateValues();
+
+    if ( result.compare("good values") == 0 )
+    {
+        time_signal_gate_from = NEntr_signal_gate_from->GetNumberEntry()->GetNumber();
+        sst_status_label << GetCurrentTime() << "Time_from for signal gate has been changed to: " << time_signal_gate_from;
+    }
+    else
+    {
+        sst_status_label << GetCurrentTime() << "Sorry, I can't set such values, because: " << result ;
+    }
+
+    twStatus_label->AddLine(sst_status_label.str().c_str());
+    twStatus_label->ShowBottom();
+
 }
 
 void MyMainFrame::SetSignalGateTo()
 {
-    time_signal_gate_to = NEntr_signal_gate_to->GetNumberEntry()->GetNumber();
-    cout << "time_signal_gate_to =" << time_signal_gate_to << endl;
+    sst_status_label.str("");
+    std:string result = IsGoodSignalGateValues();
+
+    if ( result.compare("good values") == 0 )
+    {
+        time_signal_gate_to = NEntr_signal_gate_to->GetNumberEntry()->GetNumber();
+        sst_status_label << GetCurrentTime() << "Time_to for signal gate has been changed to: " << time_signal_gate_to;
+    }
+    else
+    {
+        sst_status_label << GetCurrentTime() << "Sorry, I can't set such values, because: " << result ;
+    }
+
+    twStatus_label->AddLine(sst_status_label.str().c_str());
+    twStatus_label->ShowBottom();
+
 }
+
 void MyMainFrame::SetSignalGateFastTo()
 {
-    time_signal_gate_fast_to = NEntr_signal_gate_fast_to->GetNumberEntry()->GetNumber();
-    cout << "time_signal_gate_fast_to =" << time_signal_gate_fast_to << endl;
+    sst_status_label.str("");
+    std:string result = IsGoodSignalGateValues();
+
+    if ( result.compare("good values") == 0 )
+    {
+        time_signal_gate_fast_to = NEntr_signal_gate_fast_to->GetNumberEntry()->GetNumber();
+        sst_status_label << GetCurrentTime() << "Time_to for signal fast gate has been changed to: " << time_signal_gate_fast_to;
+    }
+    else
+    {
+        sst_status_label << GetCurrentTime() << "Sorry, I can't set such values, because: " << result ;
+    }
+
+    twStatus_label->AddLine(sst_status_label.str().c_str());
+    twStatus_label->ShowBottom();
+
 }
 
 std::string MyMainFrame::GetCurrentTime()
@@ -108,50 +158,51 @@ std::string MyMainFrame::GetCurrentTime()
     return str;
 }
 
-//has not been finished!
-bool MyMainFrame::IsGoodGateValues()
+
+std::string MyMainFrame::IsGoodBaselineGateValues()
 {
-    bool is_good_gate_value = true;
+    std::string str_status = "good values";
 
     Double_t time_baseline_gate_from_tmp = NEntr_baseline_gate_from->GetNumberEntry()->GetNumber();
     Double_t time_baseline_gate_to_tmp = NEntr_baseline_gate_to->GetNumberEntry()->GetNumber();
 
-    if(time_baseline_gate_from_tmp > time_baseline_gate_to_tmp)
+    if(time_baseline_gate_from_tmp >= time_baseline_gate_to_tmp)
     {
-        is_good_gate_value = false;
+        str_status.clear();
+        str_status = "time_baseline_gate_from >= time_baseline_gate_to";
     }
 
-//    if(time_signal_gate_from > time_signal_gate_to)
-//    {
-//        is_good_gate_value = false;
-//    }
-
-//    if(time_signal_gate_from > time_signal_gate_fast_to)
-//    {
-//        is_good_gate_value = false;
-//    }
-
-//    if(time_signal_gate_fast_to > time_signal_gate_fast_to)
-//    {
-//        is_good_gate_value = false;
-//    }
-
-//    if( (time_baseline_gate_from > time_signal_gate_from) && (time_baseline_gate_from < time_signal_gate_to) )
-//    {
-//        is_good_gate_value = false;
-//    }
-
-//    if ( (time_baseline_gate_to > time_signal_gate_from) && (time_baseline_gate_to < time_signal_gate_to) )
-//    {
-//        is_good_gate_value = false;
-//    }
-
-
-//    time_baseline_gate_from
-//    time_baseline_gate_to
-//    time_signal_gate_from
-//    time_signal_gate_to
-//    time_signal_gate_fast_to
-
-    return is_good_gate_value;
+    return str_status;
 }
+
+std::string MyMainFrame::IsGoodSignalGateValues()
+{
+    std::string str_status = "good values";
+
+    Double_t time_signal_gate_from_tmp = NEntr_signal_gate_from->GetNumberEntry()->GetNumber();
+    Double_t time_signal_gate_to_tmp = NEntr_signal_gate_to->GetNumberEntry()->GetNumber();
+    Double_t time_signal_gate_fast_to_tmp = NEntr_signal_gate_fast_to->GetNumberEntry()->GetNumber();
+
+    if(time_signal_gate_from_tmp >= time_signal_gate_to_tmp)
+    {
+        str_status.clear();
+        str_status = "time_signal_gate_from >= time_signal_gate_to";
+    }
+
+    if(time_signal_gate_from_tmp > time_signal_gate_fast_to_tmp) // they can equal and it will not be erro
+    {
+        str_status.clear();
+        str_status = "time_signal_gate_from > time_signal_gate_fast_to";
+    }
+
+    if(time_signal_gate_fast_to_tmp > time_signal_gate_to_tmp) // they can equal and it will not be error
+    {
+        str_status.clear();
+        str_status = "time_signal_gate_fast_to > time_signal_gate_to";
+    }
+
+
+    return str_status;
+}
+
+

@@ -33,6 +33,7 @@
 #include <TQObject.h>
 #include <RQ_OBJECT.h>
 #include "TGTextView.h"
+#include <Getline.h>
 
 //to show thread_id for linux systems
 #include <sys/types.h>
@@ -102,7 +103,8 @@ private:
     std::ostringstream sst_status_label;
 
     //gates
-    bool IsGoodGateValues();
+    std::string IsGoodBaselineGateValues();
+    std::string IsGoodSignalGateValues();
     TGNumberEntry *NEntr_baseline_gate_from;
     TGNumberEntry *NEntr_baseline_gate_to;
     TGNumberEntry *NEntr_signal_gate_from;
