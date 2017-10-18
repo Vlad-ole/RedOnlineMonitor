@@ -21,6 +21,10 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
     //colors
     gClient->GetColorByName("yellow",pixel_t_yellow);
     gClient->GetColorByName("red", pixel_t_red);
+    gClient->GetColorByName("blue", pixel_t_blue);
+    gClient->GetColorByName("orange", pixel_t_orange);
+    gClient->GetColorByName("magenta", pixel_t_magenta);
+    gClient->GetColorByName("green", pixel_t_green);
     gClient->GetColorByName("white",pixel_t_white);
 
 
@@ -114,8 +118,12 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
              0,1E6);
     NEntr_baseline_gate_from->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetBaselineGateFrom()");
     //(NEntr_baseline_gate_from->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetBaselineGateFrom()");
+//    TGCheckButton *cbutt_bgate_from = new TGCheckButton(hframe_cp_copt_bgate_gframe_row1, "",1);
+//    cbutt_bgate_from->SetState(kButtonDown);
 
     TGLabel *label_bgate_row1 = new TGLabel(hframe_cp_copt_bgate_gframe_row1, "t_from [us]");
+    label_bgate_row1->SetTextColor(pixel_t_red);
+    //hframe_cp_copt_bgate_gframe_row1->AddFrame(cbutt_bgate_from, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_bgate_gframe_row1->AddFrame(NEntr_baseline_gate_from, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_bgate_gframe_row1->AddFrame(label_bgate_row1, new TGLayoutHints(kLHintsLeft));
 
@@ -131,6 +139,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
     //(NEntr_baseline_gate_to->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetBaselineGateTo()");
 
     TGLabel *label_bgate_row2 = new TGLabel(hframe_cp_copt_bgate_gframe_row2, "t_to [us]");
+    label_bgate_row2->SetTextColor(pixel_t_green);
     hframe_cp_copt_bgate_gframe_row2->AddFrame(NEntr_baseline_gate_to, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_bgate_gframe_row2->AddFrame(label_bgate_row2, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
@@ -154,6 +163,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
     //(NEntr_signal_gate_from->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetSignalGateFrom()");
 
     TGLabel *label_sgate_row1 = new TGLabel(hframe_cp_copt_sgate_gframe_row1, "t_from [us]");
+    label_sgate_row1->SetTextColor(pixel_t_blue);
     hframe_cp_copt_sgate_gframe_row1->AddFrame(NEntr_signal_gate_from, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_sgate_gframe_row1->AddFrame(label_sgate_row1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
@@ -169,6 +179,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
     //(NEntr_signal_gate_to->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetSignalGateTo()");
 
     TGLabel *label_sgate_row2 = new TGLabel(hframe_cp_copt_sgate_gframe_row2, "t_to [us]");
+    label_sgate_row2->SetTextColor(pixel_t_magenta);
     hframe_cp_copt_sgate_gframe_row2->AddFrame(NEntr_signal_gate_to, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_sgate_gframe_row2->AddFrame(label_sgate_row2, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
@@ -184,6 +195,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
     //(NEntr_signal_gate_fast_to->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetSignalGateFastTo()");
 
     TGLabel *label_sgate_row3 = new TGLabel(hframe_cp_copt_sgate_gframe_row3, "t_fast_to [us]");
+    label_sgate_row3->SetTextColor(pixel_t_orange);
     hframe_cp_copt_sgate_gframe_row3->AddFrame(NEntr_signal_gate_fast_to, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     hframe_cp_copt_sgate_gframe_row3->AddFrame(label_sgate_row3, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 

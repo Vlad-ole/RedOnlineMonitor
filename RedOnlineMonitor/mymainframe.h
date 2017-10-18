@@ -113,6 +113,10 @@ private:
 
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;
+    Pixel_t pixel_t_blue;
+    Pixel_t pixel_t_orange;
+    Pixel_t pixel_t_magenta;
+    Pixel_t pixel_t_green;
     Pixel_t pixel_t_white;
 
 

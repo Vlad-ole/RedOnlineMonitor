@@ -140,12 +140,12 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     integral_fast[i] += (yvv[i][j] - baseline_cacl);
                 }
                 integral_fast[i] *= time_step;
-                cout << "for ch_" << i <<  " integral_fast = " << integral_fast[i] << endl;//test
-                gSystem->Sleep(300);//test
+                //cout << "for ch_" << i <<  " integral_fast = " << integral_fast[i] << endl;//test
+                //2gSystem->Sleep(300);//test
 
 
             }
-            cout << endl;//test
+            //cout << endl;//test
 
             total_integral = 0;
             for (int i = 0; i < p->aNrGraphs; ++i)
