@@ -16,6 +16,7 @@
 #include "TStopwatch.h"
 #include "TMath.h"
 #include "TLine.h"
+#include "TDatime.h"
 
 //root cern Thread
 #include "TThread.h"
@@ -31,6 +32,7 @@
 #include "TGLabel.h"
 #include <TQObject.h>
 #include <RQ_OBJECT.h>
+#include "TGTextView.h"
 
 //to show thread_id for linux systems
 #include <sys/types.h>
@@ -83,6 +85,7 @@ private:
     Double_t time_signal_gate_to;
     Double_t time_signal_gate_fast_to;
 
+    //rates
     TGLabel *fLabel_income_rate;
     TGLabel *fLabel_update_rate;
     TGGroupFrame *gframe_cp_income_rate;
@@ -91,6 +94,14 @@ private:
     TGNumberEntry *NEntr_n_events_for_avr;
     TGNumberEntry *NEntr_update_time;
 
+    //status label
+    std::string GetCurrentTime();
+    TGTextView *twStatus_label;
+    TDatime tdatime;
+    TGGroupFrame *gframe_status_label;
+    std::ostringstream sst_status_label;
+
+    //gates
     bool IsGoodGateValues();
     TGNumberEntry *NEntr_baseline_gate_from;
     TGNumberEntry *NEntr_baseline_gate_to;
@@ -100,6 +111,7 @@ private:
 
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;
+    Pixel_t pixel_t_white;
 
 
     //Threads

@@ -1,6 +1,6 @@
 #include "mymainframe.h"
 
-MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
+MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14), tdatime()
 {
     // Create the main frame
     fMain = new TGMainFrame(p,w,h);
@@ -12,6 +12,8 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     time_signal_gate_to = 8;
     time_signal_gate_fast_to = 1.6;
 
+
+
     //set size
     const UInt_t canvas_w = 500;//in pixel
     const UInt_t canvas_h = 500;//in pixel
@@ -19,6 +21,8 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     //colors
     gClient->GetColorByName("yellow",pixel_t_yellow);
     gClient->GetColorByName("red", pixel_t_red);
+    gClient->GetColorByName("white",pixel_t_white);
+
 
 
     //Different LayoutHints
@@ -248,6 +252,16 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     //========== end rate
 
 
+    //========== status label
+    gframe_status_label = new TGGroupFrame(gframe_control_panel,"Status message",kFitWidth);
+    gframe_status_label->SetBackgroundColor(pixel_t_white);
+    twStatus_label = new TGTextView(gframe_status_label, 400, 300);
+    sst_status_label << GetCurrentTime() << "Press \"Start acquisition\" to get, analyze and draw data";
+    twStatus_label->AddLine(sst_status_label.str().c_str());
+    gframe_status_label->AddFrame(twStatus_label, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    //========== end status label
+
+
 
     gframe_cp_common_opt->AddFrame(hframe_start, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_cp_common_opt->AddFrame(hframe_update_time, new TGLayoutHints(kLHintsLeft,0,0,0,0));
@@ -262,6 +276,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)
     gframe_control_panel->AddFrame(gframe_cp_hist_opt, new TGLayoutHints(kLHintsLeft));
     gframe_control_panel->AddFrame(gframe_cp_stability_gr_opt, new TGLayoutHints(kLHintsLeft));
     gframe_control_panel->AddFrame(hframe_rate, new TGLayoutHints(kLHintsLeft));
+    gframe_control_panel->AddFrame(gframe_status_label, new TGLayoutHints(kLHintsLeft));
 
 
     vframe_control_panel->AddFrame(gframe_control_panel, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -594,9 +609,9 @@ void MyMainFrame::InitGraphs()
 
             line_baseline_gate_from[i]->Draw();
             line_baseline_gate_to[i]->Draw();
-            line_signal_gate_from[i]->Draw();
-            line_signal_gate_fast_to[i]->Draw();
-            line_signal_gate_to[i]->Draw();
+//            line_signal_gate_from[i]->Draw();
+//            line_signal_gate_fast_to[i]->Draw();
+//            line_signal_gate_to[i]->Draw();
         }
         else if (i >= 6 && i < 12)
         {
