@@ -34,6 +34,8 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
     vector<Double_t> integral(p->aNrGraphs);
 
     double total_integral;
+
+    bool is_good_baseline_calc = true;
     //-----------
 
 
@@ -71,7 +73,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     if(tmp_time > 1.500 && tmp_time < 10.000)
                     {
                         //val -= 1000 * ( TMath::Gaus(tmp_time, 2000, 100, kTRUE) ) ;
-                        val -= 50 * TMath::Exp( - (tmp_time - t0) / tau_slow) /* /  tau_slow*/;
+                        val -= (1 + i) * 50 * TMath::Exp( - (tmp_time - t0) / tau_slow) /* /  tau_slow*/;
                     }
 
                     yvv[i][j] = val;
@@ -85,13 +87,43 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             //analize data ( you can move this code in slave_2 thread if you know how to do this:) )
             for (int i = 0; i < p->aNrGraphs; ++i)
             {
+                //calc baseline
+                Double_t baseline_cacl = 0;
+                const UInt_t point_from = (p->time_baseline_gate_from / time_step);
+                const UInt_t point_to = (p->time_baseline_gate_to / time_step);
+                if(point_from == point_to) // possible, but undesirable situation
+                {
+                    is_good_baseline_calc = false;
+                    break;
+                }
+                else if (point_from > point_to) // incorrect situation
+                {
+                    is_good_baseline_calc = false;
+                    break;
+                }
+                else // standart situation
+                {
+                    for (int j = point_from; j < point_to; ++j)
+                    {
+                       baseline_cacl += yvv[i][j];
+                    }
+
+                    baseline_cacl /= (point_to - point_from);
+                }
+
+//                cout << "for ch_" << i <<  " baseline_cacl = " << baseline_cacl << endl;
+//                gSystem->Sleep(300);//test
+
+                //calc integral
                 integral[i] = 0;
                 for (int j = 0; j < p->n_points; ++j)
                 {
-                    integral[i] += (yvv[i][j] - baseline);
+                    integral[i] += (yvv[i][j] - baseline_cacl);
                 }
-
                 integral[i] *= time_step;
+
+
+
             }
             total_integral = 0;
             for (int i = 0; i < p->aNrGraphs; ++i)
@@ -101,8 +133,32 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
 
 
             //================================================================================
-            //Global mutex to avoid data race (it is not so important in my case, but it is better do not remove mutex)
+            //Global mutex to avoid data race
             TThread::Lock();
+
+            if(p->is_can_draw_now && !is_good_baseline_calc)
+            {
+                std::ostringstream osstr;
+                osstr << p->GetCurrentTime() << "n_lines = " << p->twStatus_label->ReturnLineCount()
+                      << "Error! There are no points to calc baseline";
+
+                //I am in global mutex, but there is something strange. May be data race with the main thread.
+                //I have to fix this #experimental
+
+                //v1
+                p->twStatus_label->AddLine(osstr.str().c_str());
+                p->twStatus_label->ShowBottom();
+
+//                //v2
+//                p->twStatus_label->AddLine(osstr.str().c_str());
+//                p->twStatus_label->SetVsbPosition(p->twStatus_label->ReturnLineCount());
+//                p->twStatus_label->ShowBottom();
+
+//                //v3
+//                p->twStatus_label->AddLineFast(osstr.str().c_str());
+//                p->twStatus_label->Update();
+//                p->twStatus_label->ShowBottom();
+            }
 
 
             //graphs
@@ -198,7 +254,6 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             //shift left
             p->yv_gr_mean.erase(p->yv_gr_mean.begin());
             p->yv_gr_mean.insert( p->yv_gr_mean.end(), mean_value_hist );
-
             if(p->is_can_draw_now)
             {
                 for (int j = 0; j < p->yv_gr_mean.size(); ++j)
@@ -260,11 +315,6 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
         {
             //Wait permission to read data
             gSystem->Sleep(300);
-
-//            TThread::Lock();
-//            p->fLabel_income_rate->SetText( "No input."  );
-//            p->fLabel_update_rate->SetText( "No input."  );
-//            TThread::UnLock();
         }
 
 

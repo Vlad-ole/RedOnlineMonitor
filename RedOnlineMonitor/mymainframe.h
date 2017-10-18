@@ -98,7 +98,7 @@ private:
     //status label
     std::string GetCurrentTime();
     TGTextView *twStatus_label;
-    TDatime tdatime;
+    //TDatime tdatime;
     TGGroupFrame *gframe_status_label;
     std::ostringstream sst_status_label;
 

@@ -105,7 +105,6 @@ void MyMainFrame::SetSignalGateFrom()
 
     twStatus_label->AddLine(sst_status_label.str().c_str());
     twStatus_label->ShowBottom();
-
 }
 
 void MyMainFrame::SetSignalGateTo()
@@ -116,7 +115,7 @@ void MyMainFrame::SetSignalGateTo()
     if ( result.compare("good values") == 0 )
     {
         time_signal_gate_to = NEntr_signal_gate_to->GetNumberEntry()->GetNumber();
-        sst_status_label << GetCurrentTime() << "Time_to for signal gate has been changed to: " << time_signal_gate_to;
+        sst_status_label << GetCurrentTime()  << "Time_to for signal gate has been changed to: " << time_signal_gate_to;
     }
     else
     {
@@ -151,7 +150,8 @@ void MyMainFrame::SetSignalGateFastTo()
 std::string MyMainFrame::GetCurrentTime()
 {
     std::ostringstream osst;
-    tdatime.Set();
+    TDatime tdatime;
+    //tdatime.Set();
     osst << tdatime.GetHour() << "h:" << tdatime.GetMinute() << "m:" << tdatime.GetSecond() << "s; ";
 
     std::string str = osst.str();

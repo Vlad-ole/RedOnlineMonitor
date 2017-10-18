@@ -1,6 +1,6 @@
 #include "mymainframe.h"
 
-MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14), tdatime()
+MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*, tdatime()*/
 {
     // Create the main frame
     fMain = new TGMainFrame(p,w,h);
