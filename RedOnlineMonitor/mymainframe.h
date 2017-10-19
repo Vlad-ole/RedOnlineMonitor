@@ -111,6 +111,11 @@ private:
     TGNumberEntry *NEntr_signal_gate_to;
     TGNumberEntry *NEntr_signal_gate_fast_to;
 
+    //hist limits
+
+    Double_t *hist_l_limits;
+    Double_t *hist_r_limits;
+
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;
     Pixel_t pixel_t_blue;

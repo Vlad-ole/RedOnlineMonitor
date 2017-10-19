@@ -1,6 +1,6 @@
 #include "mymainframe.h"
 
-MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*, tdatime()*/
+MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), aNrGraphs(6)
 {
     // Create the main frame
     fMain = new TGMainFrame(p,w,h);
@@ -33,6 +33,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
     TGLayoutHints *fL_canvas = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX |kLHintsExpandY, 5, 5, 5, 5);
     TGLayoutHints *fL_ExpandY = new TGLayoutHints(kLHintsExpandY);
     TGLayoutHints *fL_control_panel = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandY, 5, 5, 5, 5);
+    TGLayoutHints *fL_TL = new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 5, 5, 5);
     TGLayoutHints *fL_fMain = new TGLayoutHints(kLHintsTop | kLHintsRight | kLHintsExpandX |kLHintsExpandY, 5, 5, 5, 5);
 
     //hframe for control_panel and tab_frame
@@ -45,9 +46,6 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
 
     TGGroupFrame *gframe_control_panel = new TGGroupFrame(vframe_control_panel,"Control panel",kVerticalFrame);
     gframe_control_panel->SetTitlePos(TGGroupFrame::kLeft);
-
-    TGGroupFrame *gframe_cp_hist_opt = new TGGroupFrame(gframe_control_panel,"Hist options",kVerticalFrame);
-    gframe_cp_hist_opt->SetTitlePos(TGGroupFrame::kCenter);
 
     TGGroupFrame *gframe_cp_stability_gr_opt = new TGGroupFrame(gframe_control_panel,"Stability graph options",kVerticalFrame);
     gframe_cp_stability_gr_opt->SetTitlePos(TGGroupFrame::kCenter);
@@ -217,9 +215,24 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
 
 
     //========== Hist options
+    TGGroupFrame *gframe_cp_hist_opt = new TGGroupFrame(gframe_control_panel,"Hist options",kVerticalFrame);
+    gframe_cp_hist_opt->SetTitlePos(TGGroupFrame::kCenter);
+
     TGTextButton *redraw_button = new TGTextButton(gframe_cp_hist_opt,"&Redraw hist");
     redraw_button->Connect("Clicked()","MyMainFrame",this,"RedrawHist()");
 
+
+    TGHorizontalFrame *hframe_cp_hist_opt_limits_row1 = new TGHorizontalFrame(gframe_cp_hist_opt,200,40);
+//    NEntr_n_events_for_avr = new TGNumberEntry(hframe_cp_hist_opt_limits_row1, 1, 6, 2,
+//             TGNumberFormat::kNESInteger,   //style
+//             TGNumberFormat::kNEAPositive,   //input value filter
+//             TGNumberFormat::kNELLimitMinMax, //specify limits
+//             1,5000);
+//    NEntr_n_events_for_avr->Connect("ValueSet(Long_t)", "MyMainFrame", this, "ChangeNEventsForAvr()");
+//    NEntr_n_events_for_avr->SetState(kFALSE);
+
+    gframe_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_cp_hist_opt->AddFrame(hframe_cp_hist_opt_limits_row1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     //========== end Hist options
 
 
@@ -281,8 +294,6 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
     gframe_cp_common_opt->AddFrame(hframe_gates, new TGLayoutHints(kLHintsLeft));
     gframe_cp_common_opt->AddFrame(hframe, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
-    gframe_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-
     gframe_cp_stability_gr_opt->AddFrame(hframe_n_events_for_avr, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
     gframe_control_panel->AddFrame(gframe_cp_common_opt, new TGLayoutHints(kLHintsLeft));
@@ -311,7 +322,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
 
     //----------------------------- Wavefoms tab
     //Create Tab_1
-    TGCompositeFrame *tab_frame = fTab->AddTab("Waveforms (ch0 - ch1)");    
+    TGCompositeFrame *tab_frame = fTab->AddTab("Waveforms (ch0 - ch5)");
 
     //Create vertical frame for 2 rows
     TGVerticalFrame *vframe_canvases = new TGVerticalFrame(tab_frame,w,h);
@@ -371,7 +382,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
 
 
     //----------------------------- Hists tab
-    tab_frame = fTab->AddTab("Hists (ch0 - ch1)");
+    tab_frame = fTab->AddTab("Hists (ch0 - ch5)");
 
     //Create vertical frame for 2 rows
     TGVerticalFrame *vframe_hists = new TGVerticalFrame(tab_frame,w,h);
@@ -427,20 +438,68 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
 
 
 
+    //----------------------------- Combined hists tab
+    tab_frame = fTab->AddTab("Combined hists");
+
+    TGVerticalFrame *vframe_combined_hists = new TGVerticalFrame(tab_frame,200,40);
+
+    //row1
+    TGHorizontalFrame *hframe_combined_hists_row1 = new TGHorizontalFrame(vframe_combined_hists,200,40);
+    //panel
+    TGGroupFrame *gframe_combined_hists_panel1 = new TGGroupFrame(hframe_combined_hists_row1,"Combine hists:",kVerticalFrame);
+
+    TGCheckButton **check_button_combined_hists_row1;
+    check_button_combined_hists_row1 = new TGCheckButton*[aNrGraphs];
+    for (int i = 0; i < aNrGraphs; ++i)
+    {
+        std::ostringstream osst;
+        osst << "ch_" << i;
+        check_button_combined_hists_row1[i] = new TGCheckButton(gframe_combined_hists_panel1, osst.str().c_str(), i);
+        check_button_combined_hists_row1[i]->SetState(kButtonDown);
+        gframe_combined_hists_panel1->AddFrame(check_button_combined_hists_row1[i], fL_TL);
+    }
+
+//    TGCheckButton *check_button_combined_hists_row1_ch0 = new TGCheckButton(gframe_combined_hists_panel1, "ch_0",1);
+//    check_button_combined_hists_row1_ch0->SetState(kButtonDown);
+//    gframe_combined_hists_panel1->AddFrame(check_button_combined_hists_row1_ch0, fL_TL);
+    hframe_combined_hists_row1->AddFrame(gframe_combined_hists_panel1, fL_TL);
+
+    fEcanvas_arr[12] = new TRootEmbeddedCanvas("Combined hist 1: total integral",hframe_combined_hists_row1,canvas_w,canvas_h);
+    hframe_combined_hists_row1->AddFrame(fEcanvas_arr[12], fL_canvas);
+
+    fEcanvas_arr[13] = new TRootEmbeddedCanvas("Combined hist 1: fast integral",hframe_combined_hists_row1,canvas_w,canvas_h);
+    hframe_combined_hists_row1->AddFrame(fEcanvas_arr[13], fL_canvas);
+
+    //row2
+    TGHorizontalFrame *hframe_combined_hists_row2 = new TGHorizontalFrame(vframe_combined_hists,200,40);
+    fEcanvas_arr[14] = new TRootEmbeddedCanvas("Combined hist 2: total integral",hframe_combined_hists_row2,canvas_w,canvas_h);
+    hframe_combined_hists_row2->AddFrame(fEcanvas_arr[14], fL_canvas);
+
+    fEcanvas_arr[15] = new TRootEmbeddedCanvas("Combined hist 2: fast integral",hframe_combined_hists_row2,canvas_w,canvas_h);
+    hframe_combined_hists_row2->AddFrame(fEcanvas_arr[15], fL_canvas);
+
+
+    vframe_combined_hists->AddFrame(hframe_combined_hists_row1, fL_canvas);
+    vframe_combined_hists->AddFrame(hframe_combined_hists_row2, fL_canvas);
+    tab_frame->AddFrame(vframe_combined_hists, fL_canvas);
+    //----------------------------- end Combined hists tab
+
+
+
 
 
 
     //----------------------------- Evergy_information tab
-    //Create Tab_2
+    //Create Tab
     tab_frame = fTab->AddTab("Energy info");
 
     TGHorizontalFrame *hframe_tab2 = new TGHorizontalFrame(tab_frame,200,40);
 
-    fEcanvas_arr[12] = new TRootEmbeddedCanvas("Ecanvas_evergy_spectrum",hframe_tab2,canvas_w,canvas_h);
-    hframe_tab2->AddFrame(fEcanvas_arr[12], fL_canvas);
+    fEcanvas_arr[16] = new TRootEmbeddedCanvas("Ecanvas_evergy_spectrum",hframe_tab2,canvas_w,canvas_h);
+    hframe_tab2->AddFrame(fEcanvas_arr[16], fL_canvas);
 
-    fEcanvas_arr[13] = new TRootEmbeddedCanvas("Ecanvas_Npe_vs_time",hframe_tab2,canvas_w,canvas_h);
-    hframe_tab2->AddFrame(fEcanvas_arr[13], fL_canvas);
+    fEcanvas_arr[17] = new TRootEmbeddedCanvas("Ecanvas_Npe_vs_time",hframe_tab2,canvas_w,canvas_h);
+    hframe_tab2->AddFrame(fEcanvas_arr[17], fL_canvas);
 
 
     tab_frame->AddFrame(hframe_tab2, fL_canvas);
@@ -479,7 +538,6 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(14)/*
 //    }
 
     //Set params
-    aNrGraphs = 6;
     n_points = 1000;
     is_redraw_hist = true;
     global_counter = 0;
@@ -547,13 +605,6 @@ void MyMainFrame::InitGraphs()
         line_signal_gate_to[i] = new TLine(x_signal_gate_to, y_min, x_signal_gate_to, y_max);
         line_signal_gate_to[i]->SetLineColor(kMagenta);
     }
-
-
-//    TLine **line_baseline_gate_to;
-//    TLine **line_signal_gate_from;
-//    TLine **line_signal_gate_to;
-//    TLine **line_signal_gate_fast_to;
-
     //---------------- end gate lines
 
 
@@ -630,11 +681,15 @@ void MyMainFrame::InitGraphs()
         {
             hists[i-6]->Draw();
         }
-        else if (i == 12)
+        else if (i >= 12 && i < 16)
+        {
+
+        }
+        else if (i == 16)
         {
             hist->Draw();
         }
-        else if (i == 13)
+        else if (i == 17)
         {
             gr_mean->Draw(/*"AB"*/);
         }
