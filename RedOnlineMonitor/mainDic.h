@@ -67,6 +67,7 @@ extern G__linked_taginfo G__mainDicLN_TGWindow;
 extern G__linked_taginfo G__mainDicLN_TGTextButton;
 extern G__linked_taginfo G__mainDicLN_TGMainFrame;
 extern G__linked_taginfo G__mainDicLN_TGGroupFrame;
+extern G__linked_taginfo G__mainDicLN_TGCheckButton;
 extern G__linked_taginfo G__mainDicLN_TRootEmbeddedCanvas;
 extern G__linked_taginfo G__mainDicLN_TGNumberEntry;
 extern G__linked_taginfo G__mainDicLN_TGLabel;

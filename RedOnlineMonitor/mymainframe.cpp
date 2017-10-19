@@ -447,8 +447,6 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     TGHorizontalFrame *hframe_combined_hists_row1 = new TGHorizontalFrame(vframe_combined_hists,200,40);
     //panel
     TGGroupFrame *gframe_combined_hists_panel1 = new TGGroupFrame(hframe_combined_hists_row1,"Combine hists:",kVerticalFrame);
-
-    TGCheckButton **check_button_combined_hists_row1;
     check_button_combined_hists_row1 = new TGCheckButton*[aNrGraphs];
     for (int i = 0; i < aNrGraphs; ++i)
     {
@@ -458,10 +456,6 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
         check_button_combined_hists_row1[i]->SetState(kButtonDown);
         gframe_combined_hists_panel1->AddFrame(check_button_combined_hists_row1[i], fL_TL);
     }
-
-//    TGCheckButton *check_button_combined_hists_row1_ch0 = new TGCheckButton(gframe_combined_hists_panel1, "ch_0",1);
-//    check_button_combined_hists_row1_ch0->SetState(kButtonDown);
-//    gframe_combined_hists_panel1->AddFrame(check_button_combined_hists_row1_ch0, fL_TL);
     hframe_combined_hists_row1->AddFrame(gframe_combined_hists_panel1, fL_TL);
 
     fEcanvas_arr[12] = new TRootEmbeddedCanvas("Combined hist 1: total integral",hframe_combined_hists_row1,canvas_w,canvas_h);
@@ -472,6 +466,19 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
     //row2
     TGHorizontalFrame *hframe_combined_hists_row2 = new TGHorizontalFrame(vframe_combined_hists,200,40);
+    //panel
+    TGGroupFrame *gframe_combined_hists_panel2 = new TGGroupFrame(hframe_combined_hists_row2,"Combine hists:",kVerticalFrame);
+    check_button_combined_hists_row2 = new TGCheckButton*[aNrGraphs];
+    for (int i = 0; i < aNrGraphs; ++i)
+    {
+        std::ostringstream osst;
+        osst << "ch_" << i;
+        check_button_combined_hists_row2[i] = new TGCheckButton(gframe_combined_hists_panel2, osst.str().c_str(), i);
+        check_button_combined_hists_row2[i]->SetState(kButtonDown);
+        gframe_combined_hists_panel2->AddFrame(check_button_combined_hists_row2[i], fL_TL);
+    }
+    hframe_combined_hists_row2->AddFrame(gframe_combined_hists_panel2, fL_TL);
+
     fEcanvas_arr[14] = new TRootEmbeddedCanvas("Combined hist 2: total integral",hframe_combined_hists_row2,canvas_w,canvas_h);
     hframe_combined_hists_row2->AddFrame(fEcanvas_arr[14], fL_canvas);
 
@@ -639,6 +646,36 @@ void MyMainFrame::InitGraphs()
         }
     }
 
+    //combined hists
+    hists_combined_hists = new TH1F*[4];
+    for (int i = 0; i < 4; i++)
+    {
+        std::ostringstream oss;
+
+        switch (i)
+        {
+        case 0:
+            oss << "Combined hist 1: total integral";
+            break;
+        case 1:
+            oss << "Combined hist 1: fast/total ratio";
+            break;
+        case 2:
+            oss << "Combined hist 2: total integral";
+            break;
+        case 3:
+            oss << "Combined hist 2: fast/total ratio";
+            break;
+        default:
+            break;
+        }
+
+        hists_combined_hists[i] = new TH1F( oss.str().c_str(), oss.str().c_str(), 100, -1, 1 );
+        hists_combined_hists[i]->SetBit(TH1::kCanRebin);
+        hists_combined_hists[i]->Fill(rnd.Uniform(-0.5 + i, 0.5 + i));
+    }
+
+
 
     //hist
     //TH1::SetDefaultSumw2(kTRUE);
@@ -683,7 +720,7 @@ void MyMainFrame::InitGraphs()
         }
         else if (i >= 12 && i < 16)
         {
-
+            hists_combined_hists[i - 2 *aNrGraphs]->Draw();
         }
         else if (i == 16)
         {

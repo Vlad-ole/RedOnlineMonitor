@@ -33,6 +33,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
 
     vector<Double_t> integral(p->aNrGraphs);
     vector<Double_t> integral_fast(p->aNrGraphs);
+    vector<Double_t> integral_combined_hists(4);
 
     double total_integral;
 
@@ -257,6 +258,44 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             for (int i = 0; i < p->aNrGraphs; ++i)
             {
                 p->hists[i]->Fill(integral[i]);
+            }
+
+
+            //combined hists
+            if(p->is_redraw_hist)
+            {
+                for (int i = 0; i < 4; ++i)
+                {
+                    const int n_bins = p->hists_combined_hists[i]->GetNbinsX();
+                    for (int j = 0; j < n_bins + 1; ++j)
+                    {
+                        p->hists_combined_hists[i]->SetBinContent(j, 0);
+                    }
+                    p->hists_combined_hists[i]->SetEntries(0);
+                }
+            }
+            for (int i = 0; i < 4; ++i)
+            {
+                integral_combined_hists[i] = 0;
+                bool is_down;
+                for (int j = 0; j < p->aNrGraphs; ++j)
+                {
+                    if(i < 2)
+                        is_down = p->check_button_combined_hists_row1[j]->IsDown();
+                    else
+                        is_down = p->check_button_combined_hists_row2[j]->IsDown();
+
+                    if( ((i==0) || (i==2)) && is_down)
+                    {
+                        integral_combined_hists[i] += integral[j];
+                    }
+
+                    if( ((i==1) || (i==3)) && is_down)
+                    {
+                        integral_combined_hists[i] += (integral_fast[j] / integral[j]);
+                    }
+                }
+                p->hists_combined_hists[i]->Fill(integral_combined_hists[i]);
             }
 
             //hist

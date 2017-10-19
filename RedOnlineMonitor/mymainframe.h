@@ -111,8 +111,13 @@ private:
     TGNumberEntry *NEntr_signal_gate_to;
     TGNumberEntry *NEntr_signal_gate_fast_to;
 
-    //hist limits
+    //combined hists
+    TGCheckButton **check_button_combined_hists_row1;
+    TGCheckButton **check_button_combined_hists_row2;
+    TH1F **hists_combined_hists;
 
+
+    //hist limits
     Double_t *hist_l_limits;
     Double_t *hist_r_limits;
 
