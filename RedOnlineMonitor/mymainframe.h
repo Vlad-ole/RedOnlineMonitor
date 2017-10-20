@@ -120,6 +120,9 @@ private:
     //hist limits
     Double_t *hist_l_limits;
     Double_t *hist_r_limits;
+    TGNumberEntry **NEntr_hframe_cp_hist_l_limits;
+    TGNumberEntry **NEntr_hframe_cp_hist_r_limits;
+
 
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;

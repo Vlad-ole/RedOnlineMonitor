@@ -221,18 +221,61 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     TGTextButton *redraw_button = new TGTextButton(gframe_cp_hist_opt,"&Redraw hist");
     redraw_button->Connect("Clicked()","MyMainFrame",this,"RedrawHist()");
 
+    //hist limits
+    TGGroupFrame *gframe_cp_hist_opt_hist_limits = new TGGroupFrame(gframe_cp_hist_opt,"Set left and right limits",kHorizontalFrame);
+    TGVerticalFrame *vframe_hlimits_labels = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
+    TGVerticalFrame *vframe_hlimits_llimits = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
+    TGVerticalFrame *vframe_hlimits_rlimits = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
+    const UInt_t n_rows = aNrGraphs + 4;
+    TGLabel **hlimits_labels = new TGLabel*[n_rows];
+    NEntr_hframe_cp_hist_l_limits = new TGNumberEntry*[n_rows];
+    NEntr_hframe_cp_hist_r_limits = new TGNumberEntry*[n_rows];
 
-    TGHorizontalFrame *hframe_cp_hist_opt_limits_row1 = new TGHorizontalFrame(gframe_cp_hist_opt,200,40);
-//    NEntr_n_events_for_avr = new TGNumberEntry(hframe_cp_hist_opt_limits_row1, 1, 6, 2,
-//             TGNumberFormat::kNESInteger,   //style
-//             TGNumberFormat::kNEAPositive,   //input value filter
-//             TGNumberFormat::kNELLimitMinMax, //specify limits
-//             1,5000);
-//    NEntr_n_events_for_avr->Connect("ValueSet(Long_t)", "MyMainFrame", this, "ChangeNEventsForAvr()");
-//    NEntr_n_events_for_avr->SetState(kFALSE);
+    for (int i = 0; i < n_rows; ++i)
+    {
+        const int pad = 0;
+
+        std::ostringstream osstr;
+        if (i < aNrGraphs)
+        {
+            osstr << "ch_" << i;
+        }
+        else if ( i == (aNrGraphs) ) osstr << "CombH1TotInt";
+        else if ( i == (aNrGraphs + 1) ) osstr << "CombH1FasInt";
+        else if ( i == (aNrGraphs + 2) ) osstr << "CombH2TotInt";
+        else if ( i == (aNrGraphs + 3) ) osstr << "CombH2FasInt";
+        else osstr << "unknown";
+
+
+
+        hlimits_labels[i] = new TGLabel(vframe_hlimits_labels, osstr.str().c_str());
+        vframe_hlimits_labels->AddFrame(hlimits_labels[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
+
+        //l_limit
+        NEntr_hframe_cp_hist_l_limits[i] = new TGNumberEntry(vframe_hlimits_llimits, -100, 6, 20 + i,
+                                                             TGNumberFormat::kNESReal,   //style
+                                                             TGNumberFormat::kNEAAnyNumber,   //input value filter
+                                                             TGNumberFormat::kNELNoLimits //specify limits
+                                                             );
+        vframe_hlimits_llimits->AddFrame(NEntr_hframe_cp_hist_l_limits[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
+
+
+        //r_limit
+        NEntr_hframe_cp_hist_r_limits[i] = new TGNumberEntry(vframe_hlimits_rlimits, 100, 6, 20 + i,
+                                                             TGNumberFormat::kNESReal,   //style
+                                                             TGNumberFormat::kNEAAnyNumber,   //input value filter
+                                                             TGNumberFormat::kNELNoLimits //specify limits
+                                                             );
+        vframe_hlimits_rlimits->AddFrame(NEntr_hframe_cp_hist_r_limits[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
+
+    }
+
+    gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_labels, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
+    gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_llimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
+    gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_rlimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
 
     gframe_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    gframe_cp_hist_opt->AddFrame(hframe_cp_hist_opt_limits_row1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    gframe_cp_hist_opt->AddFrame(gframe_cp_hist_opt_hist_limits, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     //========== end Hist options
 
 
@@ -278,9 +321,9 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
 
     //========== status label
-    gframe_status_label = new TGGroupFrame(gframe_control_panel,"Status message",kFitWidth);
+    gframe_status_label = new TGGroupFrame(gframe_control_panel,"Status box",kFitWidth);
     //gframe_status_label->SetBackgroundColor(pixel_t_white);
-    twStatus_label = new TGTextView(gframe_status_label, 400, 300);
+    twStatus_label = new TGTextView(gframe_status_label, 400, 150);
     sst_status_label << GetCurrentTime() << "Press \"Start acquisition\" to get, analyze and draw data";
     twStatus_label->AddLine(sst_status_label.str().c_str());
     twStatus_label->ShowBottom();
@@ -473,7 +516,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     {
         std::ostringstream osst;
         osst << "ch_" << i;
-        check_button_combined_hists_row2[i] = new TGCheckButton(gframe_combined_hists_panel2, osst.str().c_str(), i);
+        check_button_combined_hists_row2[i] = new TGCheckButton(gframe_combined_hists_panel2, osst.str().c_str(), i + aNrGraphs);
         check_button_combined_hists_row2[i]->SetState(kButtonDown);
         gframe_combined_hists_panel2->AddFrame(check_button_combined_hists_row2[i], fL_TL);
     }
