@@ -59,12 +59,15 @@ public:
     void Clicked_start_button();
     void RedrawHist();
     void ChangeNEventsForAvr();
+
     void SetDesirableUpdateRate();
     void SetBaselineGateFrom();
     void SetBaselineGateTo();
     void SetSignalGateFrom();
     void SetSignalGateTo();
     void SetSignalGateFastTo();
+
+    void SetHistLimits();
 
 
 private:
@@ -118,8 +121,9 @@ private:
 
 
     //hist limits
-    Double_t *hist_l_limits;
-    Double_t *hist_r_limits;
+    std::vector<Double_t> hlimits_lvalues;
+    std::vector<Double_t> hlimits_rvalues;
+    TGLabel **hlimits_labels;
     TGNumberEntry **NEntr_hframe_cp_hist_l_limits;
     TGNumberEntry **NEntr_hframe_cp_hist_r_limits;
 

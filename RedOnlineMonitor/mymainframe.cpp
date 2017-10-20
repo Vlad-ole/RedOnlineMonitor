@@ -227,9 +227,11 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     TGVerticalFrame *vframe_hlimits_llimits = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     TGVerticalFrame *vframe_hlimits_rlimits = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     const UInt_t n_rows = aNrGraphs + 4;
-    TGLabel **hlimits_labels = new TGLabel*[n_rows];
+    hlimits_labels = new TGLabel*[n_rows];
     NEntr_hframe_cp_hist_l_limits = new TGNumberEntry*[n_rows];
     NEntr_hframe_cp_hist_r_limits = new TGNumberEntry*[n_rows];
+    hlimits_lvalues.resize(n_rows, -100);
+    hlimits_rvalues.resize(n_rows, 100);
 
     for (int i = 0; i < n_rows; ++i)
     {
@@ -252,20 +254,22 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
         vframe_hlimits_labels->AddFrame(hlimits_labels[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
 
         //l_limit
-        NEntr_hframe_cp_hist_l_limits[i] = new TGNumberEntry(vframe_hlimits_llimits, -100, 6, 20 + i,
+        NEntr_hframe_cp_hist_l_limits[i] = new TGNumberEntry(vframe_hlimits_llimits, hlimits_lvalues[i], 6, 20 + i,
                                                              TGNumberFormat::kNESReal,   //style
                                                              TGNumberFormat::kNEAAnyNumber,   //input value filter
                                                              TGNumberFormat::kNELNoLimits //specify limits
                                                              );
+        NEntr_hframe_cp_hist_l_limits[i]->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetHistLimits()");
         vframe_hlimits_llimits->AddFrame(NEntr_hframe_cp_hist_l_limits[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
 
 
         //r_limit
-        NEntr_hframe_cp_hist_r_limits[i] = new TGNumberEntry(vframe_hlimits_rlimits, 100, 6, 20 + i,
+        NEntr_hframe_cp_hist_r_limits[i] = new TGNumberEntry(vframe_hlimits_rlimits, hlimits_rvalues[i], 6, 50 + i,
                                                              TGNumberFormat::kNESReal,   //style
                                                              TGNumberFormat::kNEAAnyNumber,   //input value filter
                                                              TGNumberFormat::kNELNoLimits //specify limits
                                                              );
+        NEntr_hframe_cp_hist_r_limits[i]->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetHistLimits()");
         vframe_hlimits_rlimits->AddFrame(NEntr_hframe_cp_hist_r_limits[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
 
     }

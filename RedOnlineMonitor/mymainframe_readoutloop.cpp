@@ -253,6 +253,8 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                         p->hists[i]->SetBinContent(j, 0);
                     }
                     p->hists[i]->SetEntries(0);
+                    p->hists[i]->GetXaxis()->SetLimits(p->hlimits_lvalues[i], p->hlimits_rvalues[i]);
+                    p->hists[i]->GetXaxis()->SetRangeUser(p->hlimits_lvalues[i], p->hlimits_rvalues[i]);
                 }
             }
             for (int i = 0; i < p->aNrGraphs; ++i)
@@ -272,6 +274,9 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                         p->hists_combined_hists[i]->SetBinContent(j, 0);
                     }
                     p->hists_combined_hists[i]->SetEntries(0);
+                    const int index = i + p->aNrGraphs;
+                    p->hists_combined_hists[i]->GetXaxis()->SetLimits(p->hlimits_lvalues[index], p->hlimits_rvalues[index]);
+                    p->hists_combined_hists[i]->GetXaxis()->SetRangeUser(p->hlimits_lvalues[index], p->hlimits_rvalues[index]);
                 }
             }
             for (int i = 0; i < 4; ++i)

@@ -205,4 +205,44 @@ std::string MyMainFrame::IsGoodSignalGateValues()
     return str_status;
 }
 
+void MyMainFrame::SetHistLimits()
+{
+    sst_status_label.str("");
+    bool is_good_values = true;
+
+    const UInt_t n = hlimits_lvalues.size();
+    std::vector<Double_t> hlimits_lvalues_tmp(n);
+    std::vector<Double_t> hlimits_rvalues_tmp(n);
+
+    for (int i = 0; i < n; ++i)
+    {
+        hlimits_lvalues_tmp[i] = NEntr_hframe_cp_hist_l_limits[i]->GetNumberEntry()->GetNumber();
+        hlimits_rvalues_tmp[i] = NEntr_hframe_cp_hist_r_limits[i]->GetNumberEntry()->GetNumber();
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        if(hlimits_lvalues_tmp[i] >= hlimits_rvalues_tmp[i])
+        {
+            sst_status_label << GetCurrentTime() << "Incorrect values for " <<  *(hlimits_labels[i]->GetText());
+            is_good_values = false;
+            break;
+        }
+    }
+
+    if ( is_good_values )
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            hlimits_lvalues[i] = hlimits_lvalues_tmp[i];
+            hlimits_rvalues[i] = hlimits_rvalues_tmp[i];
+        }
+
+        sst_status_label << GetCurrentTime() << "Limits has been changed correctly";
+    }
+
+    twStatus_label->AddLine(sst_status_label.str().c_str());
+    twStatus_label->ShowBottom();
+}
+
 
