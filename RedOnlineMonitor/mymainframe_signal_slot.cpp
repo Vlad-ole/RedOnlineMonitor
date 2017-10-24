@@ -152,6 +152,7 @@ std::string MyMainFrame::GetCurrentTime()
     std::ostringstream osst;
     TDatime tdatime;
     //tdatime.Set();
+    osst << twStatus_label->ReturnLineCount() << "; ";
     osst << tdatime.GetHour() << "h:" << tdatime.GetMinute() << "m:" << tdatime.GetSecond() << "s; ";
 
     std::string str = osst.str();
@@ -240,6 +241,22 @@ void MyMainFrame::SetHistLimits()
 
         sst_status_label << GetCurrentTime() << "Limits has been changed correctly";
     }
+
+    twStatus_label->AddLine(sst_status_label.str().c_str());
+    twStatus_label->ShowBottom();
+}
+
+void MyMainFrame::SetHistNBins()
+{
+    sst_status_label.str("");
+
+    const UInt_t n = hlimits_n_bins.size();
+    for (int i = 0; i < n; ++i)
+    {
+        hlimits_n_bins[i] = NEntr_hframe_cp_hist_n_bins[i]->GetNumberEntry()->GetNumber();
+    }
+
+    sst_status_label << GetCurrentTime() << "N_bins has been changed";
 
     twStatus_label->AddLine(sst_status_label.str().c_str());
     twStatus_label->ShowBottom();

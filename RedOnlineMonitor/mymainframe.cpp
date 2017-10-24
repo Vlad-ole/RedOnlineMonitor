@@ -222,16 +222,19 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     redraw_button->Connect("Clicked()","MyMainFrame",this,"RedrawHist()");
 
     //hist limits
-    TGGroupFrame *gframe_cp_hist_opt_hist_limits = new TGGroupFrame(gframe_cp_hist_opt,"Set left and right limits",kHorizontalFrame);
+    TGGroupFrame *gframe_cp_hist_opt_hist_limits = new TGGroupFrame(gframe_cp_hist_opt,"Set left/right limits, n_bins",kHorizontalFrame);
     TGVerticalFrame *vframe_hlimits_labels = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     TGVerticalFrame *vframe_hlimits_llimits = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     TGVerticalFrame *vframe_hlimits_rlimits = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
+    TGVerticalFrame *vframe_hlimits_n_bins = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     const UInt_t n_rows = aNrGraphs + 4;
     hlimits_labels = new TGLabel*[n_rows];
     NEntr_hframe_cp_hist_l_limits = new TGNumberEntry*[n_rows];
     NEntr_hframe_cp_hist_r_limits = new TGNumberEntry*[n_rows];
+    NEntr_hframe_cp_hist_n_bins = new TGNumberEntry*[n_rows];
     hlimits_lvalues.resize(n_rows, -100);
     hlimits_rvalues.resize(n_rows, 100);
+    hlimits_n_bins.resize(n_rows, 1000);
 
     for (int i = 0; i < n_rows; ++i)
     {
@@ -272,11 +275,22 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
         NEntr_hframe_cp_hist_r_limits[i]->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetHistLimits()");
         vframe_hlimits_rlimits->AddFrame(NEntr_hframe_cp_hist_r_limits[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
 
+
+        //n_bins
+        NEntr_hframe_cp_hist_n_bins[i] = new TGNumberEntry(vframe_hlimits_n_bins, hlimits_n_bins[i], 6, 70 + i,
+                                                             TGNumberFormat::kNESInteger,   //style
+                                                             TGNumberFormat::kNEAPositive,   //input value filter
+                                                             TGNumberFormat::kNELNoLimits //specify limits
+                                                             );
+        NEntr_hframe_cp_hist_n_bins[i]->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetHistNBins()");
+        vframe_hlimits_n_bins->AddFrame(NEntr_hframe_cp_hist_n_bins[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
+
     }
 
     gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_labels, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_llimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_rlimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
+    gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_n_bins, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
 
     gframe_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_cp_hist_opt->AddFrame(gframe_cp_hist_opt_hist_limits, new TGLayoutHints(kLHintsCenterX,2,2,2,2));

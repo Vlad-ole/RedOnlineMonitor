@@ -40,6 +40,9 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
     bool is_good_baseline_calc = true;
     bool is_good_integral_calc = true;
     bool is_first_error = true;
+
+    TRandom3 rnd3;
+    Double_t L = 3;
     //-----------
 
 
@@ -70,6 +73,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             const double t0 = 1.500;
             for (int i = 0; i < p->aNrGraphs; ++i)
             {
+                Double_t amp = rnd3.PoissonD(L);
                 for (int j = 0; j < p->n_points; ++j)
                 {
                     Double_t val = rnd.Uniform(-10, 10) + baseline;
@@ -77,7 +81,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     if(tmp_time > 1.500 && tmp_time < 10.000)
                     {
                         //val -= 1000 * ( TMath::Gaus(tmp_time, 2000, 100, kTRUE) ) ;
-                        val -= (1 + i) * 50 * TMath::Exp( - (tmp_time - t0) / tau_slow) /* /  tau_slow*/;
+                        val -= (amp) * 50 * TMath::Exp( - (tmp_time - t0) / tau_slow) /* /  tau_slow*/;
                     }
 
                     yvv[i][j] = val;

@@ -18,6 +18,7 @@
 #include "TLine.h"
 #include "TDatime.h"
 #include "TROOT.h"
+#include "TRandom3.h"
 
 //root cern Thread
 #include "TThread.h"
@@ -69,6 +70,7 @@ public:
     void SetSignalGateFastTo();
 
     void SetHistLimits();
+    void SetHistNBins();
 
 
 private:
@@ -121,12 +123,14 @@ private:
     TH1F **hists_combined_hists;
 
 
-    //hist limits
+    //hist limits and n_bins
     std::vector<Double_t> hlimits_lvalues;
     std::vector<Double_t> hlimits_rvalues;
+    std::vector<Double_t> hlimits_n_bins;
     TGLabel **hlimits_labels;
     TGNumberEntry **NEntr_hframe_cp_hist_l_limits;
     TGNumberEntry **NEntr_hframe_cp_hist_r_limits;
+    TGNumberEntry **NEntr_hframe_cp_hist_n_bins;
 
 
     Pixel_t pixel_t_yellow;
