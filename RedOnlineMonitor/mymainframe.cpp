@@ -326,6 +326,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
     //========== status label
     gframe_status_label = new TGGroupFrame(gframe_control_panel,"Status box",kFitWidth);
+    gframe_status_label->SetTextColor(pixel_t_green);
     //gframe_status_label->SetBackgroundColor(pixel_t_white);
     twStatus_label = new TGTextView(gframe_status_label, 400, 150);
     sst_status_label << GetCurrentTime() << "Press \"Start acquisition\" to get, analyze and draw data";

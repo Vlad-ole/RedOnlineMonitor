@@ -39,6 +39,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
 
     bool is_good_baseline_calc = true;
     bool is_good_integral_calc = true;
+    bool is_first_error = true;
     //-----------
 
 
@@ -112,6 +113,8 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     break;
                 }
 
+                is_good_baseline_calc = true;
+                is_good_integral_calc = true;
 
                 //calc baseline
                 Double_t baseline_cacl = 0;
@@ -155,45 +158,57 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             }
 
 
-            //================================================================================
-            //Global mutex to avoid data race
-            TThread::Lock();
 
-            if(p->is_can_draw_now && !is_good_baseline_calc)
+            //--------------- There is an error with twStatus_label here. I can't understand the exact reason
+            if(p->is_can_draw_now && !is_good_baseline_calc && is_first_error)
             {
+                is_first_error = false;
                 std::ostringstream osstr;
-                osstr << p->GetCurrentTime() << "n_lines = " << p->twStatus_label->ReturnLineCount()
-                      << "Error! There are no points to calc baseline";
+                osstr << p->GetCurrentTime() << "Error! There are no points to calc baseline";
 
-                //I am in global mutex, but there is something strange. May be data race with the main thread.
-                //I have to fix this #experimental
+                //variant1 - there are problems
+                //p->twStatus_label->AddLine(osstr.str().c_str());
+                //p->twStatus_label->ShowBottom();
 
-                //v1 problems
-                p->twStatus_label->AddLine(osstr.str().c_str());
-                p->twStatus_label->ShowBottom();
+                //variant2: gROOT->ProcessLine will call code in main thread - there are problems too
+                gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->AddLine(\"%s\");", (ULong_t)p->twStatus_label, osstr.str().c_str()));
+                gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->ShowBottom();", (ULong_t)p->twStatus_label));
 
-//                //v2 problems
-//                p->twStatus_label->AddLine(osstr.str().c_str());
-//                p->twStatus_label->SetVsbPosition(p->twStatus_label->ReturnLineCount());
-//                p->twStatus_label->ShowBottom();
-
-//                //v3 problems
-//                p->twStatus_label->AddLineFast(osstr.str().c_str());
-//                p->twStatus_label->Update();
-//                p->twStatus_label->ShowBottom();
+                p->gframe_status_label->SetTextColor(p->pixel_t_red);
             }
-
-            if(p->is_can_draw_now && !is_good_integral_calc)
+            if(p->is_can_draw_now && !is_good_integral_calc && is_first_error)
             {
+                is_first_error = false;
                 std::ostringstream osstr;
                 osstr << p->GetCurrentTime() << "Error! There are no points to calc integtal";
 
-                //#experimental
-                //v1 problems
-                p->twStatus_label->AddLine(osstr.str().c_str());
-                p->twStatus_label->ShowBottom();
+                gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->AddLine(\"%s\");", (ULong_t)p->twStatus_label, osstr.str().c_str()));
+                gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->ShowBottom();", (ULong_t)p->twStatus_label));
+
+                p->gframe_status_label->SetTextColor(p->pixel_t_red);
+            }
+            //---------------
+            //let's minimize consequence of this error
+            if(p->is_can_draw_now && is_good_baseline_calc && is_good_integral_calc && !is_first_error)
+            {
+                is_first_error = true;
+                std::ostringstream osstr;
+                osstr << p->GetCurrentTime() << "Baseline gate is correct";
+
+                gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->AddLine(\"%s\");", (ULong_t)p->twStatus_label, osstr.str().c_str()));
+                gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->ShowBottom();", (ULong_t)p->twStatus_label));
+
+                p->gframe_status_label->SetTextColor(p->pixel_t_green);
             }
 
+
+
+
+
+
+            //================================================================================
+            //Global mutex to avoid data race
+            TThread::Lock();
 
             //graphs
             if(p->is_can_draw_now)

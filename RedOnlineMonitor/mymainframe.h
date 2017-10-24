@@ -17,6 +17,7 @@
 #include "TMath.h"
 #include "TLine.h"
 #include "TDatime.h"
+#include "TROOT.h"
 
 //root cern Thread
 #include "TThread.h"
