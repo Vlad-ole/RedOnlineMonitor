@@ -289,6 +289,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
         //auto rebin check_buttons
         check_button_hlimits[i] = new TGCheckButton(vframe_hlimits_check_buttons,"", 100 + i);
+        check_button_hlimits[i]->SetState(kButtonDown);
         vframe_hlimits_check_buttons->AddFrame(check_button_hlimits[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
     }
 

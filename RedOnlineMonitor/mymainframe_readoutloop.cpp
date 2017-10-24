@@ -275,6 +275,9 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     p->hists[i]->GetXaxis()->SetLimits(p->hlimits_lvalues[i], p->hlimits_rvalues[i]);
                     p->hists[i]->GetXaxis()->SetRangeUser(p->hlimits_lvalues[i], p->hlimits_rvalues[i]);
                     p->hists[i]->GetXaxis()->Set(p->hlimits_n_bins[i], p->hlimits_lvalues[i], p->hlimits_rvalues[i]);
+
+                    if (p->check_button_hlimits[i]->IsDown()) p->hists[i]->SetBit(TH1::kCanRebin, kTRUE);
+                    else p->hists[i]->SetBit(TH1::kCanRebin, kFALSE);
                 }
             }
             for (int i = 0; i < p->aNrGraphs; ++i)
@@ -298,6 +301,9 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     p->hists_combined_hists[i]->GetXaxis()->SetLimits(p->hlimits_lvalues[index], p->hlimits_rvalues[index]);
                     p->hists_combined_hists[i]->GetXaxis()->SetRangeUser(p->hlimits_lvalues[index], p->hlimits_rvalues[index]);
                     p->hists_combined_hists[i]->GetXaxis()->Set(p->hlimits_n_bins[index], p->hlimits_lvalues[index], p->hlimits_rvalues[index]);
+
+                    if (p->check_button_hlimits[index]->IsDown()) p->hists_combined_hists[i]->SetBit(TH1::kCanRebin, kTRUE);
+                    else p->hists_combined_hists[i]->SetBit(TH1::kCanRebin, kFALSE);
                 }
             }
             for (int i = 0; i < 4; ++i)
