@@ -215,14 +215,19 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
 
     //========== Hist options
-    TGGroupFrame *gframe_cp_hist_opt = new TGGroupFrame(gframe_control_panel,"Hist options",kVerticalFrame);
-    gframe_cp_hist_opt->SetTitlePos(TGGroupFrame::kCenter);
+    //create the Tab widget for hists
+    TGTab *fTab_cp_hist = new TGTab(gframe_control_panel, 300, 300);
 
-    TGTextButton *redraw_button = new TGTextButton(gframe_cp_hist_opt,"&Redraw hist");
+    //Create Hist Tab_1
+    TGCompositeFrame *tab_frame_cp_hist_opt = fTab_cp_hist->AddTab("Hist options");
+    //TGGroupFrame *gframe_cp_hist_opt = new TGGroupFrame(gframe_control_panel,"Hist options",kVerticalFrame);
+    //gframe_cp_hist_opt->SetTitlePos(TGGroupFrame::kCenter);
+
+    TGTextButton *redraw_button = new TGTextButton(tab_frame_cp_hist_opt,"&Redraw hist");
     redraw_button->Connect("Clicked()","MyMainFrame",this,"RedrawHist()");
 
     //hist limits
-    TGGroupFrame *gframe_cp_hist_opt_hist_limits = new TGGroupFrame(gframe_cp_hist_opt,"Set left/right limits, n_bins, auto_rebin",kHorizontalFrame);
+    TGGroupFrame *gframe_cp_hist_opt_hist_limits = new TGGroupFrame(tab_frame_cp_hist_opt,"Set left/right limits, n_bins, auto_rebin",kHorizontalFrame);
     TGVerticalFrame *vframe_hlimits_labels = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     TGVerticalFrame *vframe_hlimits_llimits = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     TGVerticalFrame *vframe_hlimits_rlimits = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
@@ -302,8 +307,21 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_n_bins, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_check_buttons, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
 
-    gframe_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
-    gframe_cp_hist_opt->AddFrame(gframe_cp_hist_opt_hist_limits, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    tab_frame_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    tab_frame_cp_hist_opt->AddFrame(gframe_cp_hist_opt_hist_limits, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+
+
+
+    //Create Hist Tab_2
+    TGCompositeFrame *tab_frame_cp_hist_analysis = fTab_cp_hist->AddTab("Hist analysis");
+
+
+
+
+
+
+
     //========== end Hist options
 
 
@@ -369,7 +387,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     gframe_cp_stability_gr_opt->AddFrame(hframe_n_events_for_avr, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
     gframe_control_panel->AddFrame(gframe_cp_common_opt, new TGLayoutHints(kLHintsLeft));
-    gframe_control_panel->AddFrame(gframe_cp_hist_opt, new TGLayoutHints(kLHintsLeft));
+    gframe_control_panel->AddFrame(fTab_cp_hist, new TGLayoutHints(kLHintsLeft));
     gframe_control_panel->AddFrame(gframe_cp_stability_gr_opt, new TGLayoutHints(kLHintsLeft));
     gframe_control_panel->AddFrame(hframe_rate, new TGLayoutHints(kLHintsLeft));
     gframe_control_panel->AddFrame(gframe_status_label, new TGLayoutHints(kLHintsLeft));
@@ -383,7 +401,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
 
 
-    //create the Tab widget
+    //create the Tab widget for canvases
     TGTab *fTab = new TGTab(hframe_control_panel_tab_frame, 300, 300);
 
     //---------------- canvases
