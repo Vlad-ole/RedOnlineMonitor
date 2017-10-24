@@ -128,6 +128,7 @@ private:
     std::vector<Double_t> hlimits_rvalues;
     std::vector<Double_t> hlimits_n_bins;
     TGLabel **hlimits_labels;
+    TGCheckButton **check_button_hlimits;
     TGNumberEntry **NEntr_hframe_cp_hist_l_limits;
     TGNumberEntry **NEntr_hframe_cp_hist_r_limits;
     TGNumberEntry **NEntr_hframe_cp_hist_n_bins;

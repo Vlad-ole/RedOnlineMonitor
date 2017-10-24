@@ -222,16 +222,18 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     redraw_button->Connect("Clicked()","MyMainFrame",this,"RedrawHist()");
 
     //hist limits
-    TGGroupFrame *gframe_cp_hist_opt_hist_limits = new TGGroupFrame(gframe_cp_hist_opt,"Set left/right limits, n_bins",kHorizontalFrame);
+    TGGroupFrame *gframe_cp_hist_opt_hist_limits = new TGGroupFrame(gframe_cp_hist_opt,"Set left/right limits, n_bins, auto_rebin",kHorizontalFrame);
     TGVerticalFrame *vframe_hlimits_labels = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     TGVerticalFrame *vframe_hlimits_llimits = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     TGVerticalFrame *vframe_hlimits_rlimits = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     TGVerticalFrame *vframe_hlimits_n_bins = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
+    TGVerticalFrame *vframe_hlimits_check_buttons = new TGVerticalFrame(gframe_cp_hist_opt_hist_limits,200,40);
     const UInt_t n_rows = aNrGraphs + 4;
     hlimits_labels = new TGLabel*[n_rows];
     NEntr_hframe_cp_hist_l_limits = new TGNumberEntry*[n_rows];
     NEntr_hframe_cp_hist_r_limits = new TGNumberEntry*[n_rows];
     NEntr_hframe_cp_hist_n_bins = new TGNumberEntry*[n_rows];
+    check_button_hlimits = new TGCheckButton*[n_rows];
     hlimits_lvalues.resize(n_rows, -100);
     hlimits_rvalues.resize(n_rows, 100);
     hlimits_n_bins.resize(n_rows, 1000);
@@ -285,12 +287,19 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
         NEntr_hframe_cp_hist_n_bins[i]->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetHistNBins()");
         vframe_hlimits_n_bins->AddFrame(NEntr_hframe_cp_hist_n_bins[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
 
+        //auto rebin check_buttons
+        check_button_hlimits[i] = new TGCheckButton(vframe_hlimits_check_buttons,"", 100 + i);
+        vframe_hlimits_check_buttons->AddFrame(check_button_hlimits[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
     }
+
+    //vframe_hlimits_labels->SetBackgroundColor(pixel_t_red);//debug
+    //vframe_hlimits_check_buttons->SetBackgroundColor(pixel_t_red);//debug
 
     gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_labels, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_llimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_rlimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_n_bins, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
+    gframe_cp_hist_opt_hist_limits->AddFrame(vframe_hlimits_check_buttons, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
 
     gframe_cp_hist_opt->AddFrame(redraw_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
     gframe_cp_hist_opt->AddFrame(gframe_cp_hist_opt_hist_limits, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -692,7 +701,7 @@ void MyMainFrame::InitGraphs()
     gr_mean->SetTitle("<N_pe> vs time");
     gr_mean->SetFillColor(kGreen);
 
-    //hists
+    //hists individual ch
     TRandom rnd;
     hists = new TH1F*[ aNrGraphs ];
     for (int i = 0; i < aNrGraphs; i++)
@@ -700,7 +709,7 @@ void MyMainFrame::InitGraphs()
         std::ostringstream oss;
         oss << "ch_" << i;
 
-        hists[i] = new TH1F( oss.str().c_str(), oss.str().c_str(), 100, -1, 1 );
+        hists[i] = new TH1F( oss.str().c_str(), oss.str().c_str(), hlimits_n_bins[i], -1, 1 );
         hists[i]->SetBit(TH1::kCanRebin);
         for(Int_t j = 0; j < n_points; j++)
         {
@@ -732,7 +741,7 @@ void MyMainFrame::InitGraphs()
             break;
         }
 
-        hists_combined_hists[i] = new TH1F( oss.str().c_str(), oss.str().c_str(), 100, -1, 1 );
+        hists_combined_hists[i] = new TH1F( oss.str().c_str(), oss.str().c_str(), hlimits_n_bins[i + aNrGraphs], -1, 1 );
         hists_combined_hists[i]->SetBit(TH1::kCanRebin);
         hists_combined_hists[i]->Fill(rnd.Uniform(-0.5 + i, 0.5 + i));
     }
@@ -743,7 +752,7 @@ void MyMainFrame::InitGraphs()
     //TH1::SetDefaultSumw2(kTRUE);
     summ_value_hist = 0;
     hist = new TH1F("h1", "N_pe histogram", 100, -1, 1);
-    hist->SetBit(TH1::kCanRebin);
+    hist->SetBit(TH1::kCanRebin);//The histogram bit TH1::kCanRebin has been removed in root 6. I should add #ifdef
     for (int i = 0; i < 1000; ++i)
     {
         hist->Fill(rnd.Uniform(-1, 1));

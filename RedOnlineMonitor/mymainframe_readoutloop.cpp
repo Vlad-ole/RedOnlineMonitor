@@ -274,6 +274,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     p->hists[i]->SetEntries(0);
                     p->hists[i]->GetXaxis()->SetLimits(p->hlimits_lvalues[i], p->hlimits_rvalues[i]);
                     p->hists[i]->GetXaxis()->SetRangeUser(p->hlimits_lvalues[i], p->hlimits_rvalues[i]);
+                    p->hists[i]->GetXaxis()->Set(p->hlimits_n_bins[i], p->hlimits_lvalues[i], p->hlimits_rvalues[i]);
                 }
             }
             for (int i = 0; i < p->aNrGraphs; ++i)
@@ -296,6 +297,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     const int index = i + p->aNrGraphs;
                     p->hists_combined_hists[i]->GetXaxis()->SetLimits(p->hlimits_lvalues[index], p->hlimits_rvalues[index]);
                     p->hists_combined_hists[i]->GetXaxis()->SetRangeUser(p->hlimits_lvalues[index], p->hlimits_rvalues[index]);
+                    p->hists_combined_hists[i]->GetXaxis()->Set(p->hlimits_n_bins[index], p->hlimits_lvalues[index], p->hlimits_rvalues[index]);
                 }
             }
             for (int i = 0; i < 4; ++i)
