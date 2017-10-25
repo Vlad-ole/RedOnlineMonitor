@@ -98,20 +98,23 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 //check time gates
                 UInt_t point_baseline_gate_from = (p->time_baseline_gate_from / time_step);
                 UInt_t point_baseline_gate_to = (p->time_baseline_gate_to / time_step);
-                if(point_baseline_gate_from >= point_baseline_gate_to) // incorrect situation
+                if( (point_baseline_gate_from >= point_baseline_gate_to) ||
+                        (point_baseline_gate_to >= (p->n_points - 1)) ) // incorrect situation
                 {
                     is_good_baseline_calc = false;
                     break;
                 }
                 UInt_t point_signal_gate_from = (p->time_signal_gate_from / time_step);
                 UInt_t point_signal_gate_to = (p->time_signal_gate_to / time_step);
-                if(point_signal_gate_from >= point_signal_gate_to) // incorrect situation
+                if( (point_signal_gate_from >= point_signal_gate_to) ||
+                        (point_signal_gate_to >= (p->n_points - 1)) ) // incorrect situation
                 {
                     is_good_integral_calc = false;
                     break;
                 }
                 UInt_t point_signal_gate_fast_to = (p->time_signal_gate_fast_to / time_step);
-                if(point_signal_gate_from >= point_signal_gate_fast_to) // incorrect situation
+                if( (point_signal_gate_from >= point_signal_gate_fast_to) ||
+                       (point_signal_gate_fast_to >= (p->n_points - 1)) ) // incorrect situation
                 {
                     is_good_integral_calc = false;
                     break;
@@ -168,7 +171,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             {
                 is_first_error = false;
                 std::ostringstream osstr;
-                osstr << p->GetCurrentTime() << "Error! There are no points to calc baseline";
+                osstr << p->GetCurrentTime() << "Error! Too big or too small baseline gate";
 
                 //variant1 - there are problems
                 //p->twStatus_label->AddLine(osstr.str().c_str());
@@ -184,7 +187,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             {
                 is_first_error = false;
                 std::ostringstream osstr;
-                osstr << p->GetCurrentTime() << "Error! There are no points to calc integtal";
+                osstr << p->GetCurrentTime() << "Error! Too big or too small integral gate";
 
                 gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->AddLine(\"%s\");", (ULong_t)p->twStatus_label, osstr.str().c_str()));
                 gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->ShowBottom();", (ULong_t)p->twStatus_label));
@@ -197,7 +200,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
             {
                 is_first_error = true;
                 std::ostringstream osstr;
-                osstr << p->GetCurrentTime() << "Baseline gate is correct";
+                osstr << p->GetCurrentTime() << "Baseline & integral gates are correct";
 
                 gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->AddLine(\"%s\");", (ULong_t)p->twStatus_label, osstr.str().c_str()));
                 gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->ShowBottom();", (ULong_t)p->twStatus_label));
