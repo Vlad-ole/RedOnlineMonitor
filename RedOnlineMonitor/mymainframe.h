@@ -69,8 +69,14 @@ public:
     void SetSignalGateTo();
     void SetSignalGateFastTo();
 
+    //hist options
     void SetHistLimits();
     void SetHistNBins();
+
+    //hist analysis
+    void SetAnalysisHistLimits();
+    void SetAnalysisHistSigma();
+    void AnalyzeHistsSlot();
 
 
 private:
@@ -133,6 +139,14 @@ private:
     TGNumberEntry **NEntr_hframe_cp_hist_r_limits;
     TGNumberEntry **NEntr_hframe_cp_hist_n_bins;
 
+    //hist analysis
+    std::vector<Double_t> hanalysis_lvalues;
+    std::vector<Double_t> hanalysis_rvalues;
+    std::vector<Double_t> hanalysis_sigma;
+    TGNumberEntry **NEntr_hanalysis_lvalues;
+    TGNumberEntry **NEntr_hanalysis_rvalues;
+    TGNumberEntry **NEntr_hanalysis_sigma;
+
 
     Pixel_t pixel_t_yellow;
     Pixel_t pixel_t_red;
@@ -145,7 +159,9 @@ private:
 
     //Threads
     static void *ReadoutLoop(void*);
+    static void *AnalyzeHistsWorker(void*);
     TThread *slave_thread;
+    TThread *slave2_thread;
 
     //
     DataStr data_str;

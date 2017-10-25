@@ -314,13 +314,70 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
 
     //Create Hist Tab_2
-    TGCompositeFrame *tab_frame_cp_hist_analysis = fTab_cp_hist->AddTab("Hist analysis");
+    TGCompositeFrame *tab_frame_cp_hanalysis = fTab_cp_hist->AddTab("Hist analysis");
+    TGTextButton *analyze_button = new TGTextButton(tab_frame_cp_hanalysis,"&Analyze");
+    analyze_button->Connect("Clicked()","MyMainFrame",this,"AnalyzeHistsSlot()");
+    tab_frame_cp_hanalysis->AddFrame(analyze_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+
+//    //hist analysis options
+    TGGroupFrame *gframe_cp_hanalysis = new TGGroupFrame(tab_frame_cp_hanalysis,"Set left/right limits, sigma[bins]",kHorizontalFrame);
+    TGVerticalFrame *vframe_hanalysis_labels = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
+//    vframe_hanalysis_labels->SetBackgroundColor(pixel_t_red);
+    TGVerticalFrame *vframe_hanalysis_llimits = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
+    TGVerticalFrame *vframe_hanalysis_rlimits = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
+    TGVerticalFrame *vframe_hanalysis_sigma = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
+
+    hanalysis_lvalues.resize(aNrGraphs, -100);
+    hanalysis_rvalues.resize(aNrGraphs, 100);
+    hanalysis_sigma.resize(aNrGraphs, 8);
+    TGLabel **analysis_options_labels = new TGLabel*[aNrGraphs];
+    NEntr_hanalysis_lvalues = new TGNumberEntry*[aNrGraphs];
+    NEntr_hanalysis_rvalues = new TGNumberEntry*[aNrGraphs];
+    NEntr_hanalysis_sigma = new TGNumberEntry*[aNrGraphs];
+
+    for (int i = 0; i < aNrGraphs; ++i)
+    {
+        const int pad = 0;
+
+//        //labels
+        analysis_options_labels[i] = new TGLabel(vframe_hanalysis_labels, new TGString(hlimits_labels[i]->GetText()) );
+        vframe_hanalysis_labels->AddFrame(analysis_options_labels[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
+
+//        //llimits
+        NEntr_hanalysis_lvalues[i] = new TGNumberEntry(vframe_hanalysis_llimits, hanalysis_lvalues[i], 6, 200 + i,
+                                                             TGNumberFormat::kNESReal,   //style
+                                                             TGNumberFormat::kNEAAnyNumber,   //input value filter
+                                                             TGNumberFormat::kNELNoLimits //specify limits
+                                                             );
+        NEntr_hanalysis_lvalues[i]->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetAnalysisHistLimits()");
+        vframe_hanalysis_llimits->AddFrame(NEntr_hanalysis_lvalues[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
+
+        //rlimits
+        NEntr_hanalysis_rvalues[i] = new TGNumberEntry(vframe_hanalysis_rlimits, hanalysis_rvalues[i], 6, 250 + i,
+                                                             TGNumberFormat::kNESReal,   //style
+                                                             TGNumberFormat::kNEAAnyNumber,   //input value filter
+                                                             TGNumberFormat::kNELNoLimits //specify limits
+                                                             );
+        NEntr_hanalysis_rvalues[i]->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetAnalysisHistLimits()");
+        vframe_hanalysis_rlimits->AddFrame(NEntr_hanalysis_rvalues[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
 
 
+        //llimits
+        NEntr_hanalysis_sigma[i] = new TGNumberEntry(vframe_hanalysis_sigma, hanalysis_sigma[i], 6, 300 + i,
+                                                             TGNumberFormat::kNESInteger,   //style
+                                                             TGNumberFormat::kNEAPositive,   //input value filter
+                                                             TGNumberFormat::kNELLimitMinMax, //specify limits
+                                                             1, 30000);
+        NEntr_hanalysis_sigma[i]->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetAnalysisHistSigma()");
+        vframe_hanalysis_sigma->AddFrame(NEntr_hanalysis_sigma[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
 
+    }
 
-
-
+    gframe_cp_hanalysis->AddFrame(vframe_hanalysis_labels, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
+    gframe_cp_hanalysis->AddFrame(vframe_hanalysis_llimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
+    gframe_cp_hanalysis->AddFrame(vframe_hanalysis_rlimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
+    gframe_cp_hanalysis->AddFrame(vframe_hanalysis_sigma, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
+    tab_frame_cp_hanalysis->AddFrame(gframe_cp_hanalysis, new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsExpandY,2,2,2,2));
 
     //========== end Hist options
 

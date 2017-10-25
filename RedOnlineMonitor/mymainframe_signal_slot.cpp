@@ -262,4 +262,30 @@ void MyMainFrame::SetHistNBins()
     twStatus_label->ShowBottom();
 }
 
+void MyMainFrame::AnalyzeHistsSlot()
+{
+    //Threads
+    slave2_thread = new TThread("slave2_thread", (void(*) (void *)) AnalyzeHistsWorker, (void*) this);
+    slave2_thread->Run();
+}
+
+void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
+{
+    MyMainFrame *p = (MyMainFrame*)aPtr;
+    printf("You are in AnalyzeHistsWorker() (Thread %d) \n", syscall(__NR_gettid));
+
+
+}
+
+void MyMainFrame::SetAnalysisHistLimits()
+{
+
+}
+
+void MyMainFrame::SetAnalysisHistSigma()
+{
+
+}
+
+
 
