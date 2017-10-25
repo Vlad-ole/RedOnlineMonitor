@@ -345,15 +345,31 @@ void MyMainFrame::fTab_selected(Int_t val)
 
 void MyMainFrame::EnableFrame(TGCompositeFrame *frame, Bool_t is_enabled)
 {
+    //cout << endl;
+    EnableListRecursive(frame->GetList(), is_enabled);
+}
+
+//I did it!
+void MyMainFrame::EnableListRecursive(TList *list, Bool_t is_enabled)
+{
     TGFrameElement *el;
-    TIter next( frame->GetList() );
+    TIter next( list );
+    //cout << "list->GetSize()" << list->GetSize() << endl;
+
     while ( ( el = (TGFrameElement *) next() ) )
     {
         if (el->fFrame->InheritsFrom("TGTextButton") )
+        {
             ((TGTextButton *)el->fFrame)->SetEnabled(is_enabled);
-
-        if (el->fFrame->InheritsFrom("TGNumberEntry") )
+        }
+        else if (el->fFrame->InheritsFrom("TGNumberEntry") )
+        {
             ((TGNumberEntry *)el->fFrame)->SetState(is_enabled);
+        }
+        else if(el->fFrame->InheritsFrom("TGCompositeFrame"))
+        {
+            EnableListRecursive( ((TGGroupFrame *)el->fFrame)->GetList(), is_enabled);
+        }
     }
 }
 

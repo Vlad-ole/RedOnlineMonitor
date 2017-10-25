@@ -92,6 +92,7 @@ private:
     TGTextButton *button_start;
 
     void EnableFrame(TGCompositeFrame *frame, Bool_t is_enabled);
+    void EnableListRecursive(TList *list, Bool_t is_enabled);
 
 
     bool is_start_button_activated;
