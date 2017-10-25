@@ -225,7 +225,7 @@ void MyMainFrame::SetHistLimits()
     {
         if(hlimits_lvalues_tmp[i] >= hlimits_rvalues_tmp[i])
         {
-            sst_status_label << GetCurrentTime() << "Incorrect values for " <<  *(hlimits_labels[i]->GetText());
+            sst_status_label << GetCurrentTime() << "Incorrect hist limits values for " <<  *(hlimits_labels[i]->GetText());
             is_good_values = false;
             break;
         }
@@ -239,7 +239,7 @@ void MyMainFrame::SetHistLimits()
             hlimits_rvalues[i] = hlimits_rvalues_tmp[i];
         }
 
-        sst_status_label << GetCurrentTime() << "Limits has been changed correctly";
+        sst_status_label << GetCurrentTime() << "Hist limits has been changed correctly";
     }
 
     twStatus_label->AddLine(sst_status_label.str().c_str());
@@ -279,13 +279,84 @@ void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
 
 void MyMainFrame::SetAnalysisHistLimits()
 {
+    sst_status_label.str("");
+    bool is_good_values = true;
 
+    const UInt_t n = hanalysis_lvalues.size();
+    std::vector<Double_t> hanalysis_lvalues_tmp(n);
+    std::vector<Double_t> hanalysis_rvalues_tmp(n);
+
+    for (int i = 0; i < n; ++i)
+    {
+        hanalysis_lvalues_tmp[i] = NEntr_hanalysis_lvalues[i]->GetNumberEntry()->GetNumber();
+        hanalysis_rvalues_tmp[i] = NEntr_hanalysis_rvalues[i]->GetNumberEntry()->GetNumber();
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        if(hanalysis_lvalues_tmp[i] >= hanalysis_rvalues_tmp[i])
+        {
+            sst_status_label << GetCurrentTime() << "Incorrect hist analysis gate values for " <<  *(hlimits_labels[i]->GetText());
+            is_good_values = false;
+            break;
+        }
+    }
+
+    if ( is_good_values )
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            hanalysis_lvalues[i] = hanalysis_lvalues_tmp[i];
+            hanalysis_rvalues[i] = hanalysis_rvalues_tmp[i];
+        }
+
+        sst_status_label << GetCurrentTime() << "Hist analysis gate values has been changed correctly";
+    }
+
+    twStatus_label->AddLine(sst_status_label.str().c_str());
+    twStatus_label->ShowBottom();
 }
 
 void MyMainFrame::SetAnalysisHistSigma()
 {
+    sst_status_label.str("");
 
+    const UInt_t n = hanalysis_sigma.size();
+    for (int i = 0; i < n; ++i)
+    {
+        hanalysis_sigma[i] = NEntr_hanalysis_sigma[i]->GetNumberEntry()->GetNumber();
+    }
+
+    sst_status_label << GetCurrentTime() << "Sigma has been changed";
+
+    twStatus_label->AddLine(sst_status_label.str().c_str());
+    twStatus_label->ShowBottom();
 }
+
+void MyMainFrame::fTab_cp_hist_selected(Int_t val)
+{
+    cout << "current cp_hist tab = " << val << endl;
+}
+
+void MyMainFrame::fTab_selected(Int_t val)
+{
+    cout << "current canvas tab = " << val << endl;
+}
+
+void MyMainFrame::EnableFrame(TGCompositeFrame *frame, Bool_t is_enabled)
+{
+    TGFrameElement *el;
+    TIter next( frame->GetList() );
+    while ( ( el = (TGFrameElement *) next() ) )
+    {
+        if (el->fFrame->InheritsFrom("TGTextButton") )
+            ((TGTextButton *)el->fFrame)->SetEnabled(is_enabled);
+
+        if (el->fFrame->InheritsFrom("TGNumberEntry") )
+            ((TGNumberEntry *)el->fFrame)->SetState(is_enabled);
+    }
+}
+
 
 
 

@@ -195,7 +195,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 p->gframe_status_label->SetTextColor(p->pixel_t_red);
             }
             //---------------
-            //let's minimize consequence of this error
+            //let's minimize consequence of this error (I will show error message only once)
             if(p->is_can_draw_now && is_good_baseline_calc && is_good_integral_calc && !is_first_error)
             {
                 is_first_error = true;

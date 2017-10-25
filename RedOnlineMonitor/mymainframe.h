@@ -69,6 +69,10 @@ public:
     void SetSignalGateTo();
     void SetSignalGateFastTo();
 
+    //tab
+    void fTab_cp_hist_selected(Int_t);
+    void fTab_selected(Int_t);
+
     //hist options
     void SetHistLimits();
     void SetHistNBins();
@@ -86,6 +90,9 @@ private:
     const Int_t n_canvases;
 
     TGTextButton *button_start;
+
+    void EnableFrame(TGCompositeFrame *frame, Bool_t is_enabled);
+
 
     bool is_start_button_activated;
     bool is_can_draw_now;
@@ -127,6 +134,7 @@ private:
     TGCheckButton **check_button_combined_hists_row1;
     TGCheckButton **check_button_combined_hists_row2;
     TH1F **hists_combined_hists;
+
 
 
     //hist limits and n_bins

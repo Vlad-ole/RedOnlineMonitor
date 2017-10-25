@@ -315,6 +315,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
     //Create Hist Tab_2
     TGCompositeFrame *tab_frame_cp_hanalysis = fTab_cp_hist->AddTab("Hist analysis");
+    //tab_frame_cp_hanalysis->SetEditable(kFALSE);
     TGTextButton *analyze_button = new TGTextButton(tab_frame_cp_hanalysis,"&Analyze");
     analyze_button->Connect("Clicked()","MyMainFrame",this,"AnalyzeHistsSlot()");
     tab_frame_cp_hanalysis->AddFrame(analyze_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -378,6 +379,13 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     gframe_cp_hanalysis->AddFrame(vframe_hanalysis_rlimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     gframe_cp_hanalysis->AddFrame(vframe_hanalysis_sigma, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     tab_frame_cp_hanalysis->AddFrame(gframe_cp_hanalysis, new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsExpandY,2,2,2,2));
+
+    fTab_cp_hist->Connect("Selected(Int_t)", "MyMainFrame", this, "fTab_cp_hist_selected(Int_t)");
+
+    //gframe_cp_hanalysis->Activate(kFALSE);
+    //gframe_cp_hanalysis->GetList();
+
+    EnableFrame(tab_frame_cp_hanalysis, kFALSE);
 
     //========== end Hist options
 
@@ -659,6 +667,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     tab_frame->AddFrame(hframe_tab2, fL_canvas);
     //----------------------------- end Evergy_information tab
 
+    fTab->Connect("Selected(Int_t)", "MyMainFrame", this, "fTab_selected(Int_t)");
 
 
 
