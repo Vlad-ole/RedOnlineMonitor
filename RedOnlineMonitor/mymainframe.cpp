@@ -100,7 +100,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
 
     //---------gates
-    TGHorizontalFrame *hframe_gates = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
+    hframe_gates = new TGHorizontalFrame(gframe_cp_common_opt,200,40);
 
     //baseline gate
     TGGroupFrame *gframe_cp_common_opt_baseline_gate = new TGGroupFrame(hframe_gates,"Baseline gate",kVerticalFrame);
@@ -115,9 +115,6 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
              TGNumberFormat::kNELLimitMinMax, //specify limits
              0,1E6);
     NEntr_baseline_gate_from->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetBaselineGateFrom()");
-    //(NEntr_baseline_gate_from->GetNumberEntry())->Connect("ReturnPressed()", "MyMainFrame", this, "SetBaselineGateFrom()");
-//    TGCheckButton *cbutt_bgate_from = new TGCheckButton(hframe_cp_copt_bgate_gframe_row1, "",1);
-//    cbutt_bgate_from->SetState(kButtonDown);
 
     TGLabel *label_bgate_row1 = new TGLabel(hframe_cp_copt_bgate_gframe_row1, "t_from [us]");
     label_bgate_row1->SetTextColor(pixel_t_red);
@@ -433,7 +430,10 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     gframe_status_label->SetTextColor(pixel_t_green);
     //gframe_status_label->SetBackgroundColor(pixel_t_white);
     twStatus_label = new TGTextView(gframe_status_label, 400, 150);
-    sst_status_label << GetCurrentTime() << "Press \"Start acquisition\" to get, analyze and draw data";
+    sst_status_label << GetCurrentTime() << "Press \"Start acquisition\" to get, integral and draw data";
+    twStatus_label->AddLine(sst_status_label.str().c_str());
+    sst_status_label.str("");
+    sst_status_label<< GetCurrentTime() << "Note: to analyze data \"acquisition\" should be stopped";
     twStatus_label->AddLine(sst_status_label.str().c_str());
     twStatus_label->ShowBottom();
     gframe_status_label->AddFrame(twStatus_label, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
@@ -464,7 +464,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
 
     //create the Tab widget for canvases
-    TGTab *fTab = new TGTab(hframe_control_panel_tab_frame, 300, 300);
+    fTab = new TGTab(hframe_control_panel_tab_frame, 300, 300);
 
     //---------------- canvases
     fEcanvas_arr = new TRootEmbeddedCanvas*[ n_canvases ];
@@ -694,9 +694,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
     //Enable/Disable panels
     EnableFrame(tab_frame_cp_hist_opt, kFALSE);
-    //EnableFrame(tab_frame_cp_hanalysis, kFALSE);
-
-    IsDownIsEnable(check_button_hlimits[0]);
+    EnableFrame(tab_frame_cp_hanalysis, kFALSE);
 
     //Set params
     n_points = 1000;

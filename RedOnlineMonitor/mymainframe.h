@@ -124,6 +124,7 @@ private:
     std::ostringstream sst_status_label;
 
     //gates
+    TGHorizontalFrame *hframe_gates;
     std::string IsGoodBaselineGateValues();
     std::string IsGoodSignalGateValues();
     TGNumberEntry *NEntr_baseline_gate_from;
@@ -158,6 +159,8 @@ private:
     TGNumberEntry **NEntr_hanalysis_lvalues;
     TGNumberEntry **NEntr_hanalysis_rvalues;
     TGNumberEntry **NEntr_hanalysis_sigma;
+
+    TGTab *fTab;
 
 
     Pixel_t pixel_t_yellow;

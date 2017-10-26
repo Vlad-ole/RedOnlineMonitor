@@ -9,6 +9,7 @@ void MyMainFrame::Clicked_start_button()
         button_start->SetBackgroundColor(pixel_t_red);
         is_start_button_activated = false;
 
+        fTab_selected(fTab->GetCurrent());
 
         sst_status_label << GetCurrentTime() << "Program has been stopped";
         twStatus_label->AddLine(sst_status_label.str().c_str());
@@ -17,6 +18,8 @@ void MyMainFrame::Clicked_start_button()
     {
         button_start->SetBackgroundColor(pixel_t_yellow);
         is_start_button_activated = true;
+
+        fTab_selected(fTab->GetCurrent());
 
         sst_status_label << GetCurrentTime() << "Program is working";
         twStatus_label->AddLine(sst_status_label.str().c_str());
@@ -343,8 +346,15 @@ void MyMainFrame::fTab_selected(Int_t val)
     switch (val)
     {
     case 0:
+    {
+        EnableFrame(hframe_gates, kTRUE);
+        EnableFrame(tab_frame_cp_hist_opt, kFALSE);
+        EnableFrame(tab_frame_cp_hanalysis, kFALSE);
+        break;
+    }
     case 3:
     {
+        EnableFrame(hframe_gates, kFALSE);
         EnableFrame(tab_frame_cp_hist_opt, kFALSE);
         EnableFrame(tab_frame_cp_hanalysis, kFALSE);
         break;
@@ -352,13 +362,15 @@ void MyMainFrame::fTab_selected(Int_t val)
     case 1:
     case 2:
     {
+        EnableFrame(hframe_gates, kFALSE);
         EnableFrame(tab_frame_cp_hist_opt, kTRUE);
-        EnableFrame(tab_frame_cp_hanalysis, kTRUE);
+        if(is_start_button_activated) EnableFrame(tab_frame_cp_hanalysis, kFALSE);
+        else EnableFrame(tab_frame_cp_hanalysis, kTRUE);
         break;
     }
     default:
     {
-        cout << "Error! Add case in fTab_selected" << val << endl;
+        cout << "Error! Add this case in fTab_selected" << val << endl;
         break;
     }
     }
@@ -373,7 +385,8 @@ void MyMainFrame::EnableFrame(TGCompositeFrame *frame, Bool_t is_enabled)
     EnableListRecursive(frame->GetList(), is_enabled);
 }
 
-//I did it! Right now root do not have recursive Enable/Disable
+//I did it!
+//Right now root does not have recursive Enable/Disable
 //See https://root-forum.cern.ch/t/root-cern-gui-how-to-disable-child-objects/26667 (Root cern GUI: how to disable child objects?)
 void MyMainFrame::EnableListRecursive(TList *list, Bool_t is_enabled)
 {
