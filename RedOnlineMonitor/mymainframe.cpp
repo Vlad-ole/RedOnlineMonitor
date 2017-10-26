@@ -219,7 +219,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     TGTab *fTab_cp_hist = new TGTab(gframe_control_panel, 300, 300);
 
     //Create Hist Tab_1
-    TGCompositeFrame *tab_frame_cp_hist_opt = fTab_cp_hist->AddTab("Hist options");
+    tab_frame_cp_hist_opt = fTab_cp_hist->AddTab("Hist options");
     //TGGroupFrame *gframe_cp_hist_opt = new TGGroupFrame(gframe_control_panel,"Hist options",kVerticalFrame);
     //gframe_cp_hist_opt->SetTitlePos(TGGroupFrame::kCenter);
 
@@ -314,7 +314,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
 
     //Create Hist Tab_2
-    TGCompositeFrame *tab_frame_cp_hanalysis = fTab_cp_hist->AddTab("Hist analysis");
+    tab_frame_cp_hanalysis = fTab_cp_hist->AddTab("Hist analysis");
     //tab_frame_cp_hanalysis->SetEditable(kFALSE);
     TGTextButton *analyze_button = new TGTextButton(tab_frame_cp_hanalysis,"&Analyze");
     analyze_button->Connect("Clicked()","MyMainFrame",this,"AnalyzeHistsSlot()");
@@ -384,9 +384,6 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
     //gframe_cp_hanalysis->Activate(kFALSE);
     //gframe_cp_hanalysis->GetList();
-
-    EnableFrame(tab_frame_cp_hanalysis, kFALSE);
-
     //========== end Hist options
 
 
@@ -670,11 +667,6 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     fTab->Connect("Selected(Int_t)", "MyMainFrame", this, "fTab_selected(Int_t)");
 
 
-
-
-
-
-
     hframe_control_panel_tab_frame->AddFrame(vframe_control_panel, fL_control_panel);
     hframe_control_panel_tab_frame->AddFrame(fTab, fL_canvas);
     fMain->AddFrame(hframe_control_panel_tab_frame, fL_fMain);
@@ -699,6 +691,12 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 //    {
 //        data_str.data_vv[i].resize(n_points);
 //    }
+
+    //Enable/Disable panels
+    EnableFrame(tab_frame_cp_hist_opt, kFALSE);
+    //EnableFrame(tab_frame_cp_hanalysis, kFALSE);
+
+    IsDownIsEnable(check_button_hlimits[0]);
 
     //Set params
     n_points = 1000;

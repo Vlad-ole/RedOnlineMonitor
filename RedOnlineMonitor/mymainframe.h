@@ -91,9 +91,10 @@ private:
 
     TGTextButton *button_start;
 
+    // Enable/Disable frame
     void EnableFrame(TGCompositeFrame *frame, Bool_t is_enabled);
     void EnableListRecursive(TList *list, Bool_t is_enabled);
-
+    std::pair<bool, bool> IsDownIsEnable(TGCheckButton *ch_button);
 
     bool is_start_button_activated;
     bool is_can_draw_now;
@@ -139,6 +140,7 @@ private:
 
 
     //hist limits and n_bins
+    TGCompositeFrame *tab_frame_cp_hist_opt;
     std::vector<Double_t> hlimits_lvalues;
     std::vector<Double_t> hlimits_rvalues;
     std::vector<Double_t> hlimits_n_bins;
@@ -149,6 +151,7 @@ private:
     TGNumberEntry **NEntr_hframe_cp_hist_n_bins;
 
     //hist analysis
+    TGCompositeFrame *tab_frame_cp_hanalysis;
     std::vector<Double_t> hanalysis_lvalues;
     std::vector<Double_t> hanalysis_rvalues;
     std::vector<Double_t> hanalysis_sigma;

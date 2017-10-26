@@ -340,6 +340,30 @@ void MyMainFrame::fTab_cp_hist_selected(Int_t val)
 
 void MyMainFrame::fTab_selected(Int_t val)
 {
+    switch (val)
+    {
+    case 0:
+    case 3:
+    {
+        EnableFrame(tab_frame_cp_hist_opt, kFALSE);
+        EnableFrame(tab_frame_cp_hanalysis, kFALSE);
+        break;
+    }
+    case 1:
+    case 2:
+    {
+        EnableFrame(tab_frame_cp_hist_opt, kTRUE);
+        EnableFrame(tab_frame_cp_hanalysis, kTRUE);
+        break;
+    }
+    default:
+    {
+        cout << "Error! Add case in fTab_selected" << val << endl;
+        break;
+    }
+    }
+
+
     cout << "current canvas tab = " << val << endl;
 }
 
@@ -349,7 +373,8 @@ void MyMainFrame::EnableFrame(TGCompositeFrame *frame, Bool_t is_enabled)
     EnableListRecursive(frame->GetList(), is_enabled);
 }
 
-//I did it!
+//I did it! Right now root do not have recursive Enable/Disable
+//See https://root-forum.cern.ch/t/root-cern-gui-how-to-disable-child-objects/26667 (Root cern GUI: how to disable child objects?)
 void MyMainFrame::EnableListRecursive(TList *list, Bool_t is_enabled)
 {
     TGFrameElement *el;
@@ -358,9 +383,51 @@ void MyMainFrame::EnableListRecursive(TList *list, Bool_t is_enabled)
 
     while ( ( el = (TGFrameElement *) next() ) )
     {
-        if (el->fFrame->InheritsFrom("TGTextButton") )
+
+        if( strcmp(el->fFrame->ClassName(), "TGCheckButton") == 0 )
+        {
+
+            TGCheckButton *ch_button = ((TGCheckButton *)el->fFrame);
+
+            pair<bool, bool> isdown_isenabled = IsDownIsEnable(ch_button);
+
+            if(isdown_isenabled.first && !isdown_isenabled.second)
+            {
+                if(is_enabled) ch_button->SetState(kButtonDown);
+            }
+            else if (isdown_isenabled.first && isdown_isenabled.second)
+            {
+                if(!is_enabled) ch_button->SetDisabledAndSelected(kTRUE);
+            }
+            else if (!isdown_isenabled.first && isdown_isenabled.second)
+            {
+                if(!is_enabled)
+                {
+                    ch_button->SetDisabledAndSelected(kFALSE);
+                    ch_button->SetState(kButtonDisabled);
+                }
+            }
+            else if(!isdown_isenabled.first && !isdown_isenabled.second)
+            {
+                if(is_enabled)
+                {
+                    ch_button->SetDisabledAndSelected(kFALSE);
+                    ch_button->SetState(kButtonUp);
+                }
+            }
+
+        }
+        else if (el->fFrame->InheritsFrom("TGTextButton") )
         {
             ((TGTextButton *)el->fFrame)->SetEnabled(is_enabled);
+
+
+            //cout << "In else if( InheritsFrom(TGTextButton) ); ClassName = " << el->fFrame->ClassName() << endl;
+
+//            cout << "ClassName = " << el->fFrame->ClassName() << " ; " <<
+//                    (strcmp(el->fFrame->ClassName(), "TGCheckButton") == 0) << endl;
+
+
         }
         else if (el->fFrame->InheritsFrom("TGNumberEntry") )
         {
@@ -371,6 +438,49 @@ void MyMainFrame::EnableListRecursive(TList *list, Bool_t is_enabled)
             EnableListRecursive( ((TGGroupFrame *)el->fFrame)->GetList(), is_enabled);
         }
     }
+}
+
+//Right now root has problems with TGCheckButton.
+//See https://root-forum.cern.ch/t/root-cern-gui-tgcheckbutton-states/26685 (Root cern GUI: TGCheckButton states)
+//and https://root-forum.cern.ch/t/tgcheckbutton-and-setenabled/7228 (TGCheckButton and SetEnabled)
+pair<bool, bool> MyMainFrame::IsDownIsEnable(TGCheckButton *ch_button)
+{
+    pair<bool, bool> state;
+
+    bool is_d = ch_button->IsDown();
+    bool is_e = ch_button->IsEnabled();
+    bool is_das = ch_button->IsDisabledAndSelected();
+
+    if(is_das)
+    {
+        //cout << "down, disabled" << endl;
+        state.first = true;
+        state.second = false;
+    }
+    else
+    {
+        if( is_d && is_e)
+        {
+            //cout << "down, enabled" << endl;
+            state.first = true;
+            state.second = true;
+        }
+        else if( !is_d && is_e )
+        {
+            //cout << "up, enabled" << endl;
+            state.first = false;
+            state.second = true;
+        }
+        else if( !is_d && !is_e )
+        {
+            //cout << "up, disabled" << endl;
+            state.first = false;
+            state.second = false;
+        }
+
+    }
+
+    return state;
 }
 
 
