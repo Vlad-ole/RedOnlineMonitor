@@ -67,6 +67,7 @@ extern G__linked_taginfo G__mainDicLN_reverse_iteratorlEvectorlETStringcOallocat
 extern G__linked_taginfo G__mainDicLN_TGWindow;
 extern G__linked_taginfo G__mainDicLN_TGCompositeFrame;
 extern G__linked_taginfo G__mainDicLN_TGTextButton;
+extern G__linked_taginfo G__mainDicLN_TGVerticalFrame;
 extern G__linked_taginfo G__mainDicLN_TGHorizontalFrame;
 extern G__linked_taginfo G__mainDicLN_TGMainFrame;
 extern G__linked_taginfo G__mainDicLN_TGGroupFrame;

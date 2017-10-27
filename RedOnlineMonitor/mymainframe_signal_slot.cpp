@@ -361,7 +361,20 @@ void MyMainFrame::fTab_selected(Int_t val)
         EnableFrame(hframe_gates, kFALSE);
         EnableFrame(tab_frame_cp_hist_opt, kTRUE);
         if(is_start_button_activated) EnableFrame(tab_frame_cp_hanalysis, kFALSE);
-        else EnableFrame(tab_frame_cp_hanalysis, kTRUE);
+        else
+        {
+            EnableFrame(tab_frame_cp_hanalysis, kTRUE);
+
+//            //Enable auto_limits or l/r limits
+//            for (int i = 0; i < aNrGraphs; ++i)
+//            {
+//                if( IsDownIsEnable(Chbt_hanalysis_auto_limits_checkb[i]).first )
+//                {
+//                    NEntr_hanalysis_lvalues[i]->SetState(kFALSE);
+//                    NEntr_hanalysis_rvalues[i]->SetState(kFALSE);
+//                }
+//            }
+        }
         break;
     }
     default:

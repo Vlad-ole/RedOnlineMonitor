@@ -322,8 +322,8 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     TGVerticalFrame *vframe_hanalysis_labels = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
 //    vframe_hanalysis_labels->SetBackgroundColor(pixel_t_red);
     TGVerticalFrame *vframe_hanalysis_auto_limits_checkb = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
-    TGVerticalFrame *vframe_hanalysis_llimits = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
-    TGVerticalFrame *vframe_hanalysis_rlimits = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
+    vframe_hanalysis_llimits = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
+    vframe_hanalysis_rlimits = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
     TGVerticalFrame *vframe_hanalysis_sigma = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
 
     hanalysis_lvalues.resize(aNrGraphs, -100);
