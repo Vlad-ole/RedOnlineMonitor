@@ -164,7 +164,7 @@ private:
     TGNumberEntry **NEntr_hanalysis_lvalues;
     TGNumberEntry **NEntr_hanalysis_rvalues;
     TGNumberEntry **NEntr_hanalysis_sigma;
-
+    TGCheckButton ** Chbt_hanalysis_auto_limits_checkb;
     TGTab *fTab;
 
 

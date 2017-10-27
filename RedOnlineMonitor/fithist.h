@@ -32,7 +32,7 @@ class FitHist
 public:
     FitHist(TH1F *hist);
     ~FitHist();
-    void FindPeaks(Double_t llimit, Double_t rlimit, Float_t sigma); /*unit of sigma is number of bins (can be real number) */
+    void FindPeaks(Float_t sigma, Double_t llimit = 0, Double_t rlimit = 0); /*unit of sigma is number of bins (can be real number) */
 private:
     TH1F *h;
     Int_t nbins;

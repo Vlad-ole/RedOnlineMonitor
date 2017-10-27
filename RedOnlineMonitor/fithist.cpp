@@ -20,32 +20,15 @@ FitHist::~FitHist()
     delete s;
 }
 
-void FitHist::FindPeaks(Double_t llimit, Double_t rlimit, Float_t sigma)
+void FitHist::FindPeaks(Float_t sigma, Double_t llimit, Double_t rlimit)
 {
     printf("You are in FitHist::FindPeaks() (Thread %d) \n", syscall(__NR_gettid));
 
-
-
-    //Double_t xmin     = -3;
-    //Double_t xmax     = 10;
-
-
-    //use the whole spectrum
-    //nbins = h->GetNbinsX();
-    //Float_t source[nbins], dest[nbins];
-    //for (int i = 0; i < nbins; i++) source[i]=h->GetBinContent(i + 1);
-
-    //-----------------------------
-    //use used-defined limits
-    //find left and right bins corresponding llimit and rlimit
-
-//    llimit = h->GetBinLowEdge(1) * 0.1;
-//    rlimit = h->GetBinLowEdge(h->GetNbinsX());
-
-//    cout << "llimit = " << llimit << endl;
-//    cout << "rlimit = " << rlimit << endl;
-//    cout << "real llimit = " << h->GetBinLowEdge(1) << endl;
-//    cout << "real rlimit = " << h->GetBinLowEdge(h->GetNbinsX()) << endl;
+    if(llimit == 0 && rlimit == 0)
+    {
+        llimit = h->GetBinLowEdge(1);
+        rlimit = h->GetBinLowEdge(nbins+1);
+    }
 
     Int_t lbin = ((llimit - h->GetBinLowEdge(1)) / h->GetBinWidth(1));
     if( lbin >= 0 ) lbin++;
@@ -62,10 +45,8 @@ void FitHist::FindPeaks(Double_t llimit, Double_t rlimit, Float_t sigma)
     {
         source[i]=h->GetBinContent(i + lbin);
     }
-    //-----------------------------
 
     nfound = s->SearchHighRes(&source[0], &dest[0], nbins, sigma, 2, kFALSE, 3, kTRUE, 3);
-    cout << "nfound = " << nfound << endl;
     fPositionX.resize(nfound);
     fPositionY.resize(nfound);
 
@@ -78,12 +59,10 @@ void FitHist::FindPeaks(Double_t llimit, Double_t rlimit, Float_t sigma)
        Int_t bin = lbin + Int_t(a + 0.5);
        fPositionX[i] = h->GetBinCenter(bin);
        fPositionY[i] = h->GetBinContent(bin);
-       cout << i << " " << fPositionX[i] << " " << fPositionY[i] << endl;
     }
 
     //Show peaks on the hist
     TPolyMarker * pm = (TPolyMarker*)h->GetListOfFunctions()->FindObject("TPolyMarker");
-    cout << "pm = " << pm << endl;
     if (pm)
     {
        h->GetListOfFunctions()->Remove(pm);

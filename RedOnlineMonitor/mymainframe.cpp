@@ -321,6 +321,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     TGGroupFrame *gframe_cp_hanalysis = new TGGroupFrame(tab_frame_cp_hanalysis,"Set left/right limits, sigma[bins]",kHorizontalFrame);
     TGVerticalFrame *vframe_hanalysis_labels = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
 //    vframe_hanalysis_labels->SetBackgroundColor(pixel_t_red);
+    TGVerticalFrame *vframe_hanalysis_auto_limits_checkb = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
     TGVerticalFrame *vframe_hanalysis_llimits = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
     TGVerticalFrame *vframe_hanalysis_rlimits = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
     TGVerticalFrame *vframe_hanalysis_sigma = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
@@ -332,6 +333,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     NEntr_hanalysis_lvalues = new TGNumberEntry*[aNrGraphs];
     NEntr_hanalysis_rvalues = new TGNumberEntry*[aNrGraphs];
     NEntr_hanalysis_sigma = new TGNumberEntry*[aNrGraphs];
+    Chbt_hanalysis_auto_limits_checkb = new TGCheckButton*[aNrGraphs];
 
     for (int i = 0; i < aNrGraphs; ++i)
     {
@@ -341,6 +343,12 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
         analysis_options_labels[i] = new TGLabel(vframe_hanalysis_labels, new TGString(hlimits_labels[i]->GetText()) );
         vframe_hanalysis_labels->AddFrame(analysis_options_labels[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
 
+        //auto_limits_checkb
+        Chbt_hanalysis_auto_limits_checkb[i] = new TGCheckButton(vframe_hanalysis_auto_limits_checkb, "");
+        vframe_hanalysis_auto_limits_checkb->AddFrame(Chbt_hanalysis_auto_limits_checkb[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
+        Chbt_hanalysis_auto_limits_checkb[i]->SetState(kButtonDown);
+
+
 //        //llimits
         NEntr_hanalysis_lvalues[i] = new TGNumberEntry(vframe_hanalysis_llimits, hanalysis_lvalues[i], 6, 200 + i,
                                                              TGNumberFormat::kNESReal,   //style
@@ -349,6 +357,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
                                                              );
         NEntr_hanalysis_lvalues[i]->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetAnalysisHistLimits()");
         vframe_hanalysis_llimits->AddFrame(NEntr_hanalysis_lvalues[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
+        NEntr_hanalysis_lvalues[i]->SetState(kFALSE);
 
         //rlimits
         NEntr_hanalysis_rvalues[i] = new TGNumberEntry(vframe_hanalysis_rlimits, hanalysis_rvalues[i], 6, 250 + i,
@@ -358,9 +367,10 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
                                                              );
         NEntr_hanalysis_rvalues[i]->Connect("ValueSet(Long_t)", "MyMainFrame", this, "SetAnalysisHistLimits()");
         vframe_hanalysis_rlimits->AddFrame(NEntr_hanalysis_rvalues[i], new TGLayoutHints(kLHintsCenterY | kLHintsCenterX,pad,pad,pad,pad));
+        NEntr_hanalysis_rvalues[i]->SetState(kFALSE);
 
 
-        //llimits
+        //sigma
         NEntr_hanalysis_sigma[i] = new TGNumberEntry(vframe_hanalysis_sigma, hanalysis_sigma[i], 6, 300 + i,
                                                              TGNumberFormat::kNESReal,   //style
                                                              TGNumberFormat::kNEAPositive,   //input value filter
@@ -372,6 +382,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     }
 
     gframe_cp_hanalysis->AddFrame(vframe_hanalysis_labels, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
+    gframe_cp_hanalysis->AddFrame(vframe_hanalysis_auto_limits_checkb, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     gframe_cp_hanalysis->AddFrame(vframe_hanalysis_llimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     gframe_cp_hanalysis->AddFrame(vframe_hanalysis_rlimits, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
     gframe_cp_hanalysis->AddFrame(vframe_hanalysis_sigma, new TGLayoutHints(kLHintsExpandY,2,2,2,2));
