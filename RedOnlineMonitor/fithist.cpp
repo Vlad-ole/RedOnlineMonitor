@@ -7,14 +7,12 @@ FitHist::FitHist(TH1F *hist)
 {
     //h = (TH1F*)hist->Clone();
     h = hist;
-    nbins = h->GetNbinsX();
+    //nbins = h->GetNbinsX();
     cout << "h->GetEntries() = " << h->GetEntries() << endl;
 
 
     s = new TSpectrum(100);
     nfound = 0;
-    fPositionX.resize(nbins);
-    fPositionY.resize(nbins);
 }
 
 FitHist::~FitHist()
@@ -31,16 +29,45 @@ void FitHist::FindPeaks(Double_t llimit, Double_t rlimit, Float_t sigma)
     //Double_t xmin     = -3;
     //Double_t xmax     = 10;
 
-    Float_t source[nbins], dest[nbins];
 
-    //Double_t fPositionX[100];
-    //Double_t fPositionY[100];
+    //use the whole spectrum
+    //nbins = h->GetNbinsX();
+    //Float_t source[nbins], dest[nbins];
+    //for (int i = 0; i < nbins; i++) source[i]=h->GetBinContent(i + 1);
 
-    for (int i = 0; i < nbins; i++) source[i]=h->GetBinContent(i + 1);
+    //-----------------------------
+    //use used-defined limits
+    //find left and right bins corresponding llimit and rlimit
 
-    nfound = s->SearchHighRes(source, dest, nbins, sigma, 2, kTRUE, 3, kTRUE, 3);
+//    llimit = h->GetBinLowEdge(1) * 0.1;
+//    rlimit = h->GetBinLowEdge(h->GetNbinsX());
+
+//    cout << "llimit = " << llimit << endl;
+//    cout << "rlimit = " << rlimit << endl;
+//    cout << "real llimit = " << h->GetBinLowEdge(1) << endl;
+//    cout << "real rlimit = " << h->GetBinLowEdge(h->GetNbinsX()) << endl;
+
+    Int_t lbin = ((llimit - h->GetBinLowEdge(1)) / h->GetBinWidth(1));
+    if( lbin >= 0 ) lbin++;
+    else lbin = 1;
+    Int_t rbin = ((rlimit - h->GetBinLowEdge(1)) / h->GetBinWidth(1));
+    if( !(rbin >= h->GetNbinsX()) ) rbin++;
+    else rbin = h->GetNbinsX();
+
+    nbins = (rbin - lbin + 1);
+    vector<Float_t> source(nbins);
+    vector<Float_t> dest(nbins);
+
+    for (int i = 0; i < nbins; i++)
+    {
+        source[i]=h->GetBinContent(i + lbin);
+    }
+    //-----------------------------
+
+    nfound = s->SearchHighRes(&source[0], &dest[0], nbins, sigma, 2, kFALSE, 3, kTRUE, 3);
     cout << "nfound = " << nfound << endl;
-
+    fPositionX.resize(nfound);
+    fPositionY.resize(nfound);
 
 
     //Get peaks positions
@@ -48,7 +75,7 @@ void FitHist::FindPeaks(Double_t llimit, Double_t rlimit, Float_t sigma)
     for (int i = 0; i < nfound; i++)
     {
        Double_t a = xpeaks[i];
-       Int_t bin = 1 + Int_t(a + 0.5);
+       Int_t bin = lbin + Int_t(a + 0.5);
        fPositionX[i] = h->GetBinCenter(bin);
        fPositionY[i] = h->GetBinContent(bin);
        cout << i << " " << fPositionX[i] << " " << fPositionY[i] << endl;

@@ -21,8 +21,8 @@ void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
 
 
 
-
-    for (int i = 0; i < p->aNrGraphs; ++i)
+    //analyze
+    for (int i = 0; i < /*p->aNrGraphs*/ 1; ++i)
     {
         FitHist fit_hist(p->hists[i]);
         fit_hist.FindPeaks(p->hanalysis_lvalues[i], p->hanalysis_rvalues[i], p->hanalysis_sigma[i]);
@@ -31,12 +31,7 @@ void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
         p->aCanvas_arr[index]->Modified();
         p->aCanvas_arr[index]->Update();
     }
-
-
     //gSystem->Sleep(2000);
-
-
-
 
 
 
