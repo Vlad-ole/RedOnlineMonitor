@@ -12,7 +12,9 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mymainframe.cpp \
     mymainframe_readoutloop.cpp \
-    mymainframe_signal_slot.cpp
+    mymainframe_signal_slot.cpp \
+    fithist.cpp \
+    mymainframe_analysis.cpp
 
 INCLUDEPATH += "/home/darkside/Vlad_Programs/root/include"
 
@@ -103,4 +105,5 @@ DISTFILES += \
 
 HEADERS += \
     linkdef.h \
-    mymainframe.h
+    mymainframe.h \
+    fithist.h

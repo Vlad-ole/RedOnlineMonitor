@@ -32,6 +32,7 @@ extern void G__set_cpp_environmentmainDic();
 #include "TObject.h"
 #include "TMemberInspector.h"
 #include "mymainframe.h"
+#include "fithist.h"
 #include <algorithm>
 namespace std { }
 using namespace std;
@@ -80,5 +81,7 @@ extern G__linked_taginfo G__mainDicLN_vectorlEvectorlEfloatcOallocatorlEfloatgRs
 extern G__linked_taginfo G__mainDicLN_reverse_iteratorlEvectorlEvectorlEfloatcOallocatorlEfloatgRsPgRcOallocatorlEvectorlEfloatcOallocatorlEfloatgRsPgRsPgRsPgRcLcLiteratorgR;
 extern G__linked_taginfo G__mainDicLN_MyMainFrame;
 extern G__linked_taginfo G__mainDicLN_pairlEboolcOboolgR;
+extern G__linked_taginfo G__mainDicLN_TSpectrum;
+extern G__linked_taginfo G__mainDicLN_FitHist;
 
 /* STUB derived class for protected member access */

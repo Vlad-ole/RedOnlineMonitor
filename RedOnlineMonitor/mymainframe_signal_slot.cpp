@@ -1,5 +1,6 @@
 #include "mymainframe.h"
 
+
 void MyMainFrame::Clicked_start_button()
 {
     sst_status_label.str("");
@@ -270,14 +271,9 @@ void MyMainFrame::AnalyzeHistsSlot()
     //Threads
     slave2_thread = new TThread("slave2_thread", (void(*) (void *)) AnalyzeHistsWorker, (void*) this);
     slave2_thread->Run();
-}
 
-void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
-{
-    MyMainFrame *p = (MyMainFrame*)aPtr;
-    printf("You are in AnalyzeHistsWorker() (Thread %d) \n", syscall(__NR_gettid));
-
-
+    //slave2_thread->Join();
+    //cout << "After slave2_thread" << endl;
 }
 
 void MyMainFrame::SetAnalysisHistLimits()
@@ -433,14 +429,6 @@ void MyMainFrame::EnableListRecursive(TList *list, Bool_t is_enabled)
         else if (el->fFrame->InheritsFrom("TGTextButton") )
         {
             ((TGTextButton *)el->fFrame)->SetEnabled(is_enabled);
-
-
-            //cout << "In else if( InheritsFrom(TGTextButton) ); ClassName = " << el->fFrame->ClassName() << endl;
-
-//            cout << "ClassName = " << el->fFrame->ClassName() << " ; " <<
-//                    (strcmp(el->fFrame->ClassName(), "TGCheckButton") == 0) << endl;
-
-
         }
         else if (el->fFrame->InheritsFrom("TGNumberEntry") )
         {

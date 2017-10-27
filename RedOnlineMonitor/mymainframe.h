@@ -132,6 +132,11 @@ private:
     TGNumberEntry *NEntr_signal_gate_from;
     TGNumberEntry *NEntr_signal_gate_to;
     TGNumberEntry *NEntr_signal_gate_fast_to;
+    TLine **line_baseline_gate_from;
+    TLine **line_baseline_gate_to;
+    TLine **line_signal_gate_from;
+    TLine **line_signal_gate_to;
+    TLine **line_signal_gate_fast_to;
 
     //combined hists
     TGCheckButton **check_button_combined_hists_row1;
@@ -155,7 +160,7 @@ private:
     TGCompositeFrame *tab_frame_cp_hanalysis;
     std::vector<Double_t> hanalysis_lvalues;
     std::vector<Double_t> hanalysis_rvalues;
-    std::vector<Double_t> hanalysis_sigma;
+    std::vector<Float_t> hanalysis_sigma;
     TGNumberEntry **NEntr_hanalysis_lvalues;
     TGNumberEntry **NEntr_hanalysis_rvalues;
     TGNumberEntry **NEntr_hanalysis_sigma;
@@ -178,23 +183,18 @@ private:
     TThread *slave_thread;
     TThread *slave2_thread;
 
-    //
+    //data
     DataStr data_str;
     TGraph **graphs;
     TH1F **hists;
     TH1F *hist;
     Double_t summ_value_hist;
-    Int_t n_events_for_avr;
 
-    TLine **line_baseline_gate_from;
-    TLine **line_baseline_gate_to;
-    TLine **line_signal_gate_from;
-    TLine **line_signal_gate_to;
-    TLine **line_signal_gate_fast_to;
-
+    //gr_mean
     TGraph *gr_mean;
     std::vector<Double_t> xv_gr_mean;
     std::vector<Double_t> yv_gr_mean;
+    Int_t n_events_for_avr;
 
     Int_t aNrGraphs;
     Int_t n_points;

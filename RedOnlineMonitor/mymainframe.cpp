@@ -362,7 +362,7 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
 
         //llimits
         NEntr_hanalysis_sigma[i] = new TGNumberEntry(vframe_hanalysis_sigma, hanalysis_sigma[i], 6, 300 + i,
-                                                             TGNumberFormat::kNESInteger,   //style
+                                                             TGNumberFormat::kNESReal,   //style
                                                              TGNumberFormat::kNEAPositive,   //input value filter
                                                              TGNumberFormat::kNELLimitMinMax, //specify limits
                                                              1, 30000);

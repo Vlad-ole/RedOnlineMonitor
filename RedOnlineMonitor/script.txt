@@ -1,6 +1,6 @@
 #!/bin/bash
 # use this command to make script executable: chmod +x ./script.txt
 trap 'echo "# $BASH_COMMAND"' DEBUG
-rootcint -f mainDic.cpp -c  mymainframe.h linkdef.h;
-g++ -o main main.cpp mymainframe.cpp mymainframe_readoutloop.cpp mymainframe_signal_slot.cpp mainDic.cpp `root-config --cflags --glibs`;
+rootcint -f mainDic.cpp -c  mymainframe.h fithist.h linkdef.h;
+g++ -o main main.cpp mymainframe.cpp mymainframe_readoutloop.cpp mymainframe_signal_slot.cpp mymainframe_analysis.cpp fithist.cpp mainDic.cpp `root-config --cflags --glibs` -lSpectrum;
 #./main

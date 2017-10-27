@@ -1,5 +1,7 @@
 #include "mymainframe.h"
 
+#include "TSpectrum.h"
+
 int main(int argc, char *argv[])
 {
     TApplication theApp("App",&argc,argv);
