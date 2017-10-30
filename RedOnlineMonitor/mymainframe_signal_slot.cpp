@@ -365,13 +365,13 @@ void MyMainFrame::fTab_selected(Int_t val)
         {
             EnableFrame(tab_frame_cp_hanalysis, kTRUE);
 
-//            //Enable auto_limits or l/r limits
+            //Enable auto_limits or l/r limits
 //            for (int i = 0; i < aNrGraphs; ++i)
 //            {
 //                if( IsDownIsEnable(Chbt_hanalysis_auto_limits_checkb[i]).first )
 //                {
-//                    NEntr_hanalysis_lvalues[i]->SetState(kFALSE);
-//                    NEntr_hanalysis_rvalues[i]->SetState(kFALSE);
+//                    //NEntr_hanalysis_lvalues[i]->SetState(kFALSE);
+//                    //NEntr_hanalysis_rvalues[i]->SetState(kFALSE);
 //                }
 //            }
         }

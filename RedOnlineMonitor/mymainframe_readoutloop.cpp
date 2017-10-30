@@ -76,7 +76,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                 Double_t amp = rnd3.PoissonD(L);
                 for (int j = 0; j < p->n_points; ++j)
                 {
-                    Double_t val = rnd.Uniform(-10, 10) + baseline;
+                    Double_t val = /*rnd.Uniform(-10, 10)*/ rnd.Gaus(0, 50) + baseline;
                     Double_t tmp_time = j * time_step;
                     if(tmp_time > 1.500 && tmp_time < 10.000)
                     {
