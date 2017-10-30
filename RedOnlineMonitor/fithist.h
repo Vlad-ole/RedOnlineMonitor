@@ -28,6 +28,16 @@
 #include <sys/types.h>
 #include <sys/syscall.h>
 
+template <class T1, class T2, class Pred = std::less<T2> >
+struct sort_pair_first
+{
+    bool operator()(const std::pair<T1,T2>&left, const std::pair<T1,T2>&right)
+    {
+        Pred p;
+        return p(left.first, right.first);
+    }
+};
+
 struct FitParameters
 {
     //hist param
@@ -37,6 +47,7 @@ struct FitParameters
     Double_t llimit;
     Double_t rlimit;
 
+
     //peak founder params
     Float_t sigma;
     Int_t nfound;
@@ -44,7 +55,9 @@ struct FitParameters
 
     //analysis of hist
     Double_t spe_value;
+    Double_t spe_value_err;
     Double_t pedestal_shift;
+    Double_t pedestal_shift_err;
 
     //Vinogradov fit
     Double_t p;
@@ -57,10 +70,13 @@ public:
     FitHist(TH1F *hist);
     ~FitHist();
     void FindPeaks(Float_t sigma, Double_t llimit = 0, Double_t rlimit = 0); /*unit of sigma is number of bins (can be real number) */
+    void FindSpe(bool is_ped_on_the_left);
     FitParameters GetFitParameters();
+    void ShowFitParameters();
 private:
     TH1F *h;
-    //Int_t nbins;
+    Int_t lbin;
+    Int_t rbin;
 
     FitParameters params;
 

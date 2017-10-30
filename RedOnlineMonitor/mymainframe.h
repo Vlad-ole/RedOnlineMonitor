@@ -158,6 +158,7 @@ private:
 
     //hist analysis
     TGCompositeFrame *tab_frame_cp_hanalysis;
+    TGCheckButton * Chbt_hanalysis_is_ped_on_left;
     std::vector<Double_t> hanalysis_lvalues;
     std::vector<Double_t> hanalysis_rvalues;
     std::vector<Float_t> hanalysis_sigma;

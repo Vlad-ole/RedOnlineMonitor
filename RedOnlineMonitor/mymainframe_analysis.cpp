@@ -6,8 +6,8 @@ void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
     MyMainFrame *p = (MyMainFrame*)aPtr;
     printf("You are in AnalyzeHistsWorker() (Thread %d) \n", syscall(__NR_gettid));
 
+    //pre set
     {
-        //pre set
         TThread::Lock();
         std::ostringstream osstr;
         osstr << p->GetCurrentTime() << "Analysis has been started";
@@ -37,6 +37,10 @@ void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
             fit_hist.FindPeaks(p->hanalysis_sigma[i], p->hanalysis_lvalues[i], p->hanalysis_rvalues[i]);
         }
 
+        fit_hist.ShowFitParameters();
+        fit_hist.FindSpe( p->IsDownIsEnable(p->Chbt_hanalysis_is_ped_on_left).first );
+        //fit_hist.ShowFitParameters();
+
         Int_t index = i + p->aNrGraphs;
         p->aCanvas_arr[index]->Modified();
         p->aCanvas_arr[index]->Update();
@@ -44,8 +48,8 @@ void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
     //gSystem->Sleep(2000);
 
 
+    //post set
     {
-        //post set
         TThread::Lock();
         p->EnableFrame(p->tab_frame_cp_hist_opt, kTRUE);
         p->EnableFrame(p->tab_frame_cp_hanalysis, kTRUE);

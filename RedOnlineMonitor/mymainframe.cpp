@@ -313,12 +313,17 @@ MyMainFrame::MyMainFrame(const TGWindow *p,UInt_t w,UInt_t h) : n_canvases(18), 
     //Create Hist Tab_2
     tab_frame_cp_hanalysis = fTab_cp_hist->AddTab("Hist analysis");
     //tab_frame_cp_hanalysis->SetEditable(kFALSE);
-    TGTextButton *analyze_button = new TGTextButton(tab_frame_cp_hanalysis,"&Analyze");
+    TGHorizontalFrame *hframe_hanalysis_cp1 = new TGHorizontalFrame(tab_frame_cp_hanalysis, 200, 40);
+    TGTextButton *analyze_button = new TGTextButton(hframe_hanalysis_cp1,"&Analyze");
     analyze_button->Connect("Clicked()","MyMainFrame",this,"AnalyzeHistsSlot()");
-    tab_frame_cp_hanalysis->AddFrame(analyze_button, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
+    Chbt_hanalysis_is_ped_on_left = new TGCheckButton(hframe_hanalysis_cp1, "Is ped on the left");
+    Chbt_hanalysis_is_ped_on_left->SetState(kButtonDown);
+    hframe_hanalysis_cp1->AddFrame(analyze_button, new TGLayoutHints(kLHintsLeft,2,2,2,2));
+    hframe_hanalysis_cp1->AddFrame(Chbt_hanalysis_is_ped_on_left, new TGLayoutHints(kLHintsLeft,2,2,2,2));
+    tab_frame_cp_hanalysis->AddFrame(hframe_hanalysis_cp1, new TGLayoutHints(kLHintsCenterX,2,2,2,2));
 
 //    //hist analysis options
-    TGGroupFrame *gframe_cp_hanalysis = new TGGroupFrame(tab_frame_cp_hanalysis,"Set left/right limits, sigma[bins]",kHorizontalFrame);
+    TGGroupFrame *gframe_cp_hanalysis = new TGGroupFrame(tab_frame_cp_hanalysis,"Set auto or left/right limits, sigma[bins]",kHorizontalFrame);
     TGVerticalFrame *vframe_hanalysis_labels = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
 //    vframe_hanalysis_labels->SetBackgroundColor(pixel_t_red);
     TGVerticalFrame *vframe_hanalysis_auto_limits_checkb = new TGVerticalFrame(gframe_cp_hanalysis,200,40);
