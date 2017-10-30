@@ -7,12 +7,13 @@ FitHist::FitHist(TH1F *hist)
 {
     //h = (TH1F*)hist->Clone();
     h = hist;
-    //nbins = h->GetNbinsX();
+    params.nbins_initial = h->GetNbinsX();
+    params.nEntries = h->GetEntries();
     cout << "h->GetEntries() = " << h->GetEntries() << endl;
 
 
     s = new TSpectrum(100);
-    nfound = 0;
+    params.nfound = 0;
 }
 
 FitHist::~FitHist()
@@ -20,66 +21,60 @@ FitHist::~FitHist()
     delete s;
 }
 
+FitParameters FitHist::GetFitParameters()
+{
+    return params;
+}
+
 void FitHist::FindPeaks(Float_t sigma, Double_t llimit, Double_t rlimit)
 {
     printf("You are in FitHist::FindPeaks() (Thread %d) \n", syscall(__NR_gettid));
 
-    if(llimit == 0 && rlimit == 0)
+    params.llimit = llimit;
+    params.rlimit = rlimit;
+    params.sigma = sigma;
+
+    if(params.llimit == 0 && params.rlimit == 0)
     {
-        //llimit = h->GetBinLowEdge(1);
-        //rlimit = h->GetBinLowEdge(nbins+1);
-
-        llimit = h->GetXaxis()->GetBinLowEdge(1);
-        //rlimit = h->GetXaxis()->GetBinLowEdge(nbins+1);
-        rlimit = h->GetXaxis()->GetBinLowEdge(1) + h->GetBinWidth(1) * h->GetNbinsX();
+        params.llimit = h->GetXaxis()->GetBinLowEdge(1);
+        params.rlimit = h->GetXaxis()->GetBinLowEdge(1) + h->GetBinWidth(1) * /*h->GetNbinsX()*/ params.nbins_initial;
     }
-    cout << __LINE__ << endl;
 
-    Int_t lbin = ((llimit - h->GetBinLowEdge(1)) / h->GetBinWidth(1));
+    Int_t lbin = ((params.llimit - h->GetXaxis()->GetBinLowEdge(1)) / h->GetBinWidth(1));
     if( lbin >= 0 ) lbin++;
     else lbin = 1;
-    Int_t rbin = ((rlimit - /*h->GetBinLowEdge(1)*/ h->GetXaxis()->GetBinLowEdge(1)) / h->GetBinWidth(1));
-    cout << "rlimit =" << rlimit << endl;
-    cout << "h->GetXaxis()->GetBinLowEdge(1) =" << h->GetXaxis()->GetBinLowEdge(1) << endl;
-    cout << "numerator = " << (rlimit - h->GetXaxis()->GetBinLowEdge(1)) << endl;
-    cout << "denominator = " << h->GetBinWidth(1) << endl;
-    cout << "rbin before if/else = " << rbin << endl;
-    if( !(rbin >= h->GetNbinsX()) ) rbin++;
-    else rbin = h->GetNbinsX();
+    Int_t rbin = ((params.rlimit - h->GetXaxis()->GetBinLowEdge(1)) / h->GetBinWidth(1));
+    if( !(rbin >= /*h->GetNbinsX()*/ params.nbins_initial) ) rbin++;
+    else rbin = /*h->GetNbinsX()*/ params.nbins_initial;
 
-    cout << __LINE__ << endl;
-    cout << "lbin = " << lbin << endl;
-    cout << "rbin = " << rbin << endl;
-    nbins = (rbin - lbin + 1);
-    cout << "nbins = " << nbins << endl;
-    vector<Float_t> source(nbins);
-    vector<Float_t> dest(nbins);
-    cout << "source.size() = " << source.size() << endl;
-    cout << "dest.size() = " << dest.size() << endl;
+    params.nbins_user_limits = (rbin - lbin + 1);
+    cout << "nbins = " << params.nbins_user_limits << endl;
+    vector<Float_t> source(params.nbins_user_limits);
+    vector<Float_t> dest(params.nbins_user_limits);
 
-    cout << __LINE__ << endl;
-    for (int i = 0; i < nbins; i++)
+    for (int i = 0; i < params.nbins_user_limits; i++)
     {
         source[i]=h->GetBinContent(i + lbin);
     }
 
-    cout << __LINE__ << endl;
-    nfound = s->SearchHighRes(&source[0], &dest[0], nbins, sigma, 2, kFALSE, 3, kTRUE, 3);
-    if(nfound > 0)
+    //cout << __LINE__ << endl;
+    params.nfound = s->SearchHighRes(&source[0], &dest[0], params.nbins_user_limits, params.sigma, 2, kFALSE, 3, kTRUE, 3);
+    if(params.nfound > 0)
     {
-        cout << "you found " << nfound << " peaks" << endl;
-        fPositionX.resize(nfound);
-        fPositionY.resize(nfound);
+        cout << "you found " << params.nfound << " peaks" << endl;
+        params.peak_positions_xy.resize(params.nfound);
+        //fPositionX.resize(params.nfound);
+        //fPositionY.resize(params.nfound);
         //cout << __LINE__ << endl;
 
         //Get peaks positions
         Float_t *xpeaks = s->GetPositionX();
-        for (int i = 0; i < nfound; i++)
+        for (int i = 0; i < params.nfound; i++)
         {
             Double_t a = xpeaks[i];
             Int_t bin = lbin + Int_t(a + 0.5);
-            fPositionX[i] = h->GetBinCenter(bin);
-            fPositionY[i] = h->GetBinContent(bin);
+            /*fPositionX[i]*/ (params.peak_positions_xy[i]).first = h->GetBinCenter(bin);
+            /*fPositionY[i]*/ (params.peak_positions_xy[i]).second = h->GetBinContent(bin);
         }
         //cout << "Get peaks positions finished" << endl;
 
@@ -90,7 +85,14 @@ void FitHist::FindPeaks(Float_t sigma, Double_t llimit, Double_t rlimit)
             h->GetListOfFunctions()->Remove(pm);
             delete pm;
         }
-        pm = new TPolyMarker(nfound, &fPositionX[0], &fPositionY[0]);
+        std::vector<Double_t> fPositionX(params.nfound);
+        std::vector<Double_t> fPositionY(params.nfound);
+        for (int i = 0; i < params.nfound; ++i)
+        {
+            fPositionX[i] = (params.peak_positions_xy[i]).first;
+            fPositionY[i] = (params.peak_positions_xy[i]).second;
+        }
+        pm = new TPolyMarker(params.nfound, &fPositionX[0], &fPositionY[0]);
         pm->SetMarkerStyle(23);
         pm->SetMarkerColor(kRed);
         pm->SetMarkerSize(1.3);
