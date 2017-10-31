@@ -25,7 +25,7 @@ void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
 
 
     //analyze
-    for (int i = 0; i < /*p->aNrGraphs*/ 1; ++i)
+    for (int i = 0; i < p->aNrGraphs /*1*/; ++i)
     {
         FitHist fit_hist(p->hists[i], p->IsDownIsEnable(p->Chbt_hanalysis_is_ped_on_left).first );
         if( p->IsDownIsEnable(p->Chbt_hanalysis_auto_limits_checkb[i]).first )

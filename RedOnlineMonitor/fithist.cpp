@@ -129,6 +129,19 @@ void FitHist::FindSpe()
     gr.Fit("pol1", "Q");//do not use "N" mode (problems with GetFunction may be)
     TF1 *myfunc = gr.GetFunction("pol1");
 
+    //retunr the previous state
+    if(!is_ped_on_the_left)
+    {
+        for (int i = 0; i < params.nfound; ++i)
+        {
+            (params.peak_positions_xy[i]).first *= -1;
+        }
+
+        std::sort(params.peak_positions_xy.begin(), params.peak_positions_xy.end(),
+                  sort_pair_first<Double_t, Double_t, std::greater<Double_t> >());
+    }
+
+
     params.spe_value = myfunc->GetParameter(1);
     params.spe_value_err = myfunc->GetParError(1);
     params.pedestal_shift = myfunc->GetParameter(0);
@@ -183,25 +196,24 @@ void FitHist::GetLP()
     //cout << "L = " << params.L << endl;
 
     VinogradovPDF vin_pdf;
-    TF1 *fit_func = new TF1("fit",vin_pdf,0,100,2);
-    TH1F *h_discrete = new TH1F("h_pdf", "h_pdf", hist_discrete_x.size(), min_npe, max_npe);
-    //cout << "h_discrete.GetBinWidth(1) = " << h_discrete->GetBinWidth(1) << endl;
+    TF1 fit_func("fit",vin_pdf,0,100,2);
+    TH1F h_discrete("h_pdf", "h_pdf", hist_discrete_x.size(), min_npe, max_npe);
     for (int i = 0; i < hist_discrete_x.size(); ++i)
     {
-        h_discrete->SetBinContent(i+1, hist_discrete_x[i]);
+        h_discrete.SetBinContent(i+1, hist_discrete_x[i]);
     }
-    fit_func->SetParLimits(0,0,0.2);
+    fit_func.SetParLimits(0,0,0.2);
 
-    fit_func->SetParameter(1,0.3);
-    fit_func->SetParLimits(1,0.3,0.3);
+    fit_func.SetParameter(1,0.3);
+    fit_func.SetParLimits(1,0.3,0.3);
 
-    h_discrete->Fit("fit", "QN");
+    h_discrete.Fit("fit", "QN");
 
-    params.p_fit_discrete = fit_func->GetParameter(0);
-    params.p_fit_discrete_err = fit_func->GetParError(0);
-    params.L_fit_discrete = fit_func->GetParameter(1);
-    params.L_fit_discrete_err = fit_func->GetParError(1);
-    params.chi2_per_ndf_fit_discrete = ( fit_func->GetChisquare() ) / ( fit_func->GetNDF() );
+    params.p_fit_discrete = fit_func.GetParameter(0);
+    params.p_fit_discrete_err = fit_func.GetParError(0);
+    params.L_fit_discrete = fit_func.GetParameter(1);
+    params.L_fit_discrete_err = fit_func.GetParError(1);
+    params.chi2_per_ndf_fit_discrete = ( fit_func.GetChisquare() ) / ( fit_func.GetNDF() );
 }
 
 void FitHist::ShowFitParameters()
