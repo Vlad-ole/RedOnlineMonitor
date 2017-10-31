@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     mymainframe_readoutloop.cpp \
     mymainframe_signal_slot.cpp \
     fithist.cpp \
-    mymainframe_analysis.cpp
+    mymainframe_analysis.cpp \
+    vinogradovpdf.cpp
 
 INCLUDEPATH += "/home/darkside/Vlad_Programs/root/include"
 
@@ -106,4 +107,5 @@ DISTFILES += \
 HEADERS += \
     linkdef.h \
     mymainframe.h \
-    fithist.h
+    fithist.h \
+    vinogradovpdf.h

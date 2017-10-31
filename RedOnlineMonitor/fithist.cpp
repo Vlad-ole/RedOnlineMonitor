@@ -3,14 +3,13 @@
 
 using namespace std;
 
-FitHist::FitHist(TH1F *hist)
+FitHist::FitHist(TH1F *hist, bool is_ped_on_the_left) : is_ped_on_the_left(is_ped_on_the_left)
 {
     //h = (TH1F*)hist->Clone();
     h = hist;
     params.nbins_initial = h->GetNbinsX();
     params.nEntries = h->GetEntries();
     //cout << "h->GetEntries() = " << h->GetEntries() << endl;
-
 
     s = new TSpectrum(100);
     params.nfound = 0;
@@ -108,11 +107,9 @@ void FitHist::FindPeaks(Float_t sigma, Double_t llimit, Double_t rlimit)
     }
 }
 
-void FitHist::FindSpe(bool is_ped_on_the_left)
+void FitHist::FindSpe()
 {
     //if signal was negative, after this operation you will have peaks as after positive signal
-    //cout << __LINE__ << endl;
-
     if(!is_ped_on_the_left)
     {
       std::sort(params.peak_positions_xy.begin(), params.peak_positions_xy.end(),
@@ -124,7 +121,6 @@ void FitHist::FindSpe(bool is_ped_on_the_left)
       }
     }
 
-    //cout << __LINE__ << endl;
     TGraph gr(params.nfound);
     for (int i = 0; i < params.nfound; ++i)
     {
@@ -132,25 +128,15 @@ void FitHist::FindSpe(bool is_ped_on_the_left)
     }
     gr.Fit("pol1", "Q");//do not use "N" mode (problems with GetFunction may be)
     TF1 *myfunc = gr.GetFunction("pol1");
-    Double_t chi2 = myfunc->GetChisquare();
-    Double_t p0 = myfunc->GetParameter(0);
-    Double_t p1 = myfunc->GetParameter(1);
-    Double_t p0_err = myfunc->GetParError(0);
-    Double_t p1_err = myfunc->GetParError(1);
 
-//    cout << "chi2 =" << chi2 << endl;
-//    cout << "p0 = " << p0 << endl;
-//    cout << "p1 = " << p1 << endl;
-    params.spe_value = p1;
-    params.spe_value_err = p1_err;
-    params.pedestal_shift = p0;
-    params.pedestal_shift_err = p0_err;
+    params.spe_value = myfunc->GetParameter(1);
+    params.spe_value_err = myfunc->GetParError(1);
+    params.pedestal_shift = myfunc->GetParameter(0);
+    params.pedestal_shift_err = myfunc->GetParError(0);
+}
 
-    cout << "params.spe_value = " << params.spe_value << endl;
-    cout << "params.pedestal_shift = " << params.pedestal_shift << endl;
-    cout << "h->GetBinCenter(1) = " << h->GetBinCenter(1)  << endl;
-    cout << "h->GetBinCenter(params.nbins_initial) = " << h->GetBinCenter(params.nbins_initial)  << endl;
-
+void FitHist::GetLP()
+{
     //discrete hist
     //vector<pair<Int_t, Int_t> > hist_discrete_xy_values;
     Int_t min_npe = (h->GetBinCenter(1) - params.pedestal_shift)/(params.spe_value) + 0.5;
@@ -161,8 +147,8 @@ void FitHist::FindSpe(bool is_ped_on_the_left)
         min_npe = -max_npe;
         max_npe = -tmp;
     }
-    cout <<  "min_npe = "<< min_npe << endl;
-    cout <<  "max_npe = "<< max_npe << endl;
+    //cout <<  "min_npe = "<< min_npe << endl;
+    //cout <<  "max_npe = "<< max_npe << endl;
     vector<Double_t> hist_discrete_x(max_npe - min_npe);
 
     //in case of negative signal I will use invertied X axis
@@ -176,17 +162,53 @@ void FitHist::FindSpe(bool is_ped_on_the_left)
         }
     }
 
-
+    Double_t hist_discrete_x_summ = 0;
     for (int i = 0; i < hist_discrete_x.size(); ++i)
     {
-        cout << i << " " << hist_discrete_x[i] << endl;
+        //cout << i << " " << hist_discrete_x[i] << endl;
+        hist_discrete_x_summ += hist_discrete_x[i];
     }
+
+    //normalized (pdf) values
+    Double_t f0 = hist_discrete_x[0] / hist_discrete_x_summ;
+    Double_t f1 = hist_discrete_x[1] / hist_discrete_x_summ;
+
+    //cout << "f0 = " << f0 << endl;
+    //cout << "f1 = " << f1 << endl;
+
+    params.p_01_peaks = 1 + f1 / (f0 * log(f0));
+    params.L_01_peaks = - log(f0);
+
+    //cout << "p = " << params.p << endl;
+    //cout << "L = " << params.L << endl;
+
+    VinogradovPDF vin_pdf;
+    TF1 *fit_func = new TF1("fit",vin_pdf,0,100,2);
+    TH1F *h_discrete = new TH1F("h_pdf", "h_pdf", hist_discrete_x.size(), min_npe, max_npe);
+    //cout << "h_discrete.GetBinWidth(1) = " << h_discrete->GetBinWidth(1) << endl;
+    for (int i = 0; i < hist_discrete_x.size(); ++i)
+    {
+        h_discrete->SetBinContent(i+1, hist_discrete_x[i]);
+    }
+    fit_func->SetParLimits(0,0,0.2);
+
+    fit_func->SetParameter(1,0.3);
+    fit_func->SetParLimits(1,0.3,0.3);
+
+    h_discrete->Fit("fit", "QN");
+
+    params.p_fit_discrete = fit_func->GetParameter(0);
+    params.p_fit_discrete_err = fit_func->GetParError(0);
+    params.L_fit_discrete = fit_func->GetParameter(1);
+    params.L_fit_discrete_err = fit_func->GetParError(1);
+    params.chi2_per_ndf_fit_discrete = ( fit_func->GetChisquare() ) / ( fit_func->GetNDF() );
 }
 
 void FitHist::ShowFitParameters()
 {
-    cout << __LINE__ << endl;
-    cout << "FitParameters --------------------------------" << endl;
+    //cout << __LINE__ << endl;
+
+    cout << "Properties of " << h->GetTitle() << "--------------------------------" << endl;
 
     cout << "nEntries = " << params.nEntries << endl;
     cout << "nbins_initial = " << params.nbins_initial << endl;
@@ -202,5 +224,13 @@ void FitHist::ShowFitParameters()
              << "y = " << (params.peak_positions_xy[i]).second << endl;
     }
 
-    cout << "end FitParameters --------------------------------" << endl;
+    cout << endl;
+    cout  << "Vinogradov approximation:" << endl;
+    cout << "p_01_peaks = " << params.p_01_peaks << endl;
+    cout << "L_01_peaks = " << params.L_01_peaks << endl;
+    cout << "chi2_per_ndf_fit_discrete = " << params.chi2_per_ndf_fit_discrete << endl;
+    cout << "p_fit_discrete = " << params.p_fit_discrete << " +- " << params.p_fit_discrete_err << endl;
+    cout << "L_fit_discrete = " << params.L_fit_discrete << " +- " << params.L_fit_discrete_err << endl;
+
+    cout << h->GetTitle() << "--------------------------------" << endl;
 }

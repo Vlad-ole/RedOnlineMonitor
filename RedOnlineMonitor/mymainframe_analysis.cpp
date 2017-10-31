@@ -27,7 +27,7 @@ void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
     //analyze
     for (int i = 0; i < /*p->aNrGraphs*/ 1; ++i)
     {
-        FitHist fit_hist(p->hists[i]);
+        FitHist fit_hist(p->hists[i], p->IsDownIsEnable(p->Chbt_hanalysis_is_ped_on_left).first );
         if( p->IsDownIsEnable(p->Chbt_hanalysis_auto_limits_checkb[i]).first )
         {
             fit_hist.FindPeaks(p->hanalysis_sigma[i]);
@@ -37,9 +37,10 @@ void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
             fit_hist.FindPeaks(p->hanalysis_sigma[i], p->hanalysis_lvalues[i], p->hanalysis_rvalues[i]);
         }
 
-        fit_hist.ShowFitParameters();
-        fit_hist.FindSpe( p->IsDownIsEnable(p->Chbt_hanalysis_is_ped_on_left).first );
         //fit_hist.ShowFitParameters();
+        fit_hist.FindSpe();
+        fit_hist.GetLP();
+        fit_hist.ShowFitParameters();
 
         Int_t index = i + p->aNrGraphs;
         p->aCanvas_arr[index]->Modified();

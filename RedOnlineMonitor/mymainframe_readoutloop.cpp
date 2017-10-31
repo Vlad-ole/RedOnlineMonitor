@@ -87,7 +87,7 @@ void *MyMainFrame::ReadoutLoop(void *aPtr)
                     yvv[i][j] = val;
                 }
             }
-            gSystem->Sleep(5);//test
+            gSystem->Sleep(1);//test
             t_income_rate.Stop();
             accumulated_income_time += t_income_rate.RealTime();
             income_counter++;

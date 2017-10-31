@@ -33,6 +33,7 @@ extern void G__set_cpp_environmentmainDic();
 #include "TMemberInspector.h"
 #include "mymainframe.h"
 #include "fithist.h"
+#include "vinogradovpdf.h"
 #include <algorithm>
 namespace std { }
 using namespace std;
@@ -83,8 +84,9 @@ extern G__linked_taginfo G__mainDicLN_reverse_iteratorlEvectorlEvectorlEfloatcOa
 extern G__linked_taginfo G__mainDicLN_MyMainFrame;
 extern G__linked_taginfo G__mainDicLN_pairlEboolcOboolgR;
 extern G__linked_taginfo G__mainDicLN_TSpectrum;
-extern G__linked_taginfo G__mainDicLN_FitParameters;
 extern G__linked_taginfo G__mainDicLN_pairlEdoublecOdoublegR;
+extern G__linked_taginfo G__mainDicLN_maplEstringcOTObjArraymUcOlesslEstringgRcOallocatorlEpairlEconstsPstringcOTObjArraymUgRsPgRsPgR;
+extern G__linked_taginfo G__mainDicLN_FitParameters;
 extern G__linked_taginfo G__mainDicLN_vectorlEpairlEdoublecOdoublegRcOallocatorlEpairlEdoublecOdoublegRsPgRsPgR;
 extern G__linked_taginfo G__mainDicLN_reverse_iteratorlEvectorlEpairlEdoublecOdoublegRcOallocatorlEpairlEdoublecOdoublegRsPgRsPgRcLcLiteratorgR;
 extern G__linked_taginfo G__mainDicLN_FitHist;
