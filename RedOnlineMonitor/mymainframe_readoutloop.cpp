@@ -3,7 +3,11 @@
 void *MyMainFrame::ReadoutLoop(void *aPtr)
 {
     //the whole func ReadoutLoop will be in slave thread
+
+#ifdef __linux__
     printf("You are in MyMainFrame::ReadoutLoop() (Thread %d) \n", syscall(__NR_gettid));
+#elif _WIN32
+#endif
 
     MyMainFrame *p = (MyMainFrame*)aPtr;
 

@@ -8,7 +8,12 @@ int main(int argc, char *argv[])
 {
     TApplication theApp("App",&argc,argv);
 
+
+#ifdef __linux__
     printf("You are in main(int argc, char *argv[]) (Thread %d) \n", syscall(__NR_gettid));
+#elif _WIN32
+#endif
+
     MyMainFrame *my_mframe = new MyMainFrame(gClient->GetRoot(),1500,900);
     my_mframe->InitGraphs();
     my_mframe->RunThread();

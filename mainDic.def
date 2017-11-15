@@ -1,0 +1,17 @@
+NAME              "" WINDOWAPI
+
+VERSION           1.0
+
+HEAPSIZE  1048576,4096
+
+EXPORTS
+        G__cpp_dllrevmainDic @1
+        G__set_cpp_environmentmainDic @2
+        G__cpp_setup_tagtablemainDic @3
+        G__cpp_setup_inheritancemainDic @4
+        G__cpp_setup_typetablemainDic @5
+        G__cpp_setup_memvarmainDic @6
+        G__cpp_setup_memfuncmainDic @7
+        G__cpp_setup_globalmainDic @8
+        G__cpp_setup_funcmainDic @9
+        G__cpp_setupmainDic @10

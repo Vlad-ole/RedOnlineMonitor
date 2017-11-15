@@ -25,9 +25,14 @@
 #include "TRandom3.h"
 #include "TSpectrum.h"
 
+#include <functional>
+
+#ifdef __linux__
 //to show thread_id for linux systems
 #include <sys/types.h>
 #include <sys/syscall.h>
+#elif _WIN32
+#endif
 
 //this project
 #include "vinogradovpdf.h"

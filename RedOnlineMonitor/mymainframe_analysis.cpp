@@ -4,7 +4,11 @@
 void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
 {
     MyMainFrame *p = (MyMainFrame*)aPtr;
+
+#ifdef __linux__
     printf("You are in AnalyzeHistsWorker() (Thread %d) \n", syscall(__NR_gettid));
+#elif _WIN32
+#endif
 
     //pre set
     {
@@ -64,5 +68,7 @@ void *MyMainFrame::AnalyzeHistsWorker(void *aPtr)
         gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->AddLine(\"%s\");", (ULong_t)p->twStatus_label, osstr.str().c_str()));
         gROOT->ProcessLine(Form("((TGTextView *)0x%lx)->ShowBottom();", (ULong_t)p->twStatus_label));
     }
+
+    return NULL;
 
 }

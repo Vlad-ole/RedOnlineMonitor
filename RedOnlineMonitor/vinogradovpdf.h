@@ -16,9 +16,12 @@
 #include "TList.h"
 #include "TFile.h"
 
+#ifdef __linux__
 //to show thread_id for linux systems
 #include <sys/types.h>
 #include <sys/syscall.h>
+#elif _WIN32
+#endif
 
 #include "Rtypes.h"
 
