@@ -1,0 +1,15 @@
+#script for Windows
+#
+#!/bin/bash
+# use this command to make script executable: chmod +x ./script.txt
+trap 'echo "# $BASH_COMMAND"' DEBUG
+#rootcint creates dictionaries
+rootcint -f mainDic.cpp -c  mymainframe.h fithist.h vinogradovpdf.h linkdef.h;
+
+#Remember!
+#You should use the same compiler which was used to build root cern libraries!
+#This will help to avoid name mangling problem https://en.wikipedia.org/wiki/Name_mangling
+
+#in case of g++ compiler
+g++ -o main main.cpp mymainframe.cpp mymainframe_readoutloop.cpp mymainframe_signal_slot.cpp mymainframe_analysis.cpp fithist.cpp vinogradovpdf.cpp mainDic.cpp `root-config --cflags --glibs` -lSpectrum;
+#./main
